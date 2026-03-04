@@ -63,8 +63,12 @@ export default function Home() {
                 <span className="inline-block py-1.5 px-3 bg-brand-surface text-teal-800 rounded-full text-sm font-bold tracking-wide mb-6">
                   ✨ NEW COLLECTION
                 </span>
-                <h1 className="text-[28px] md:text-[40px] xl:text-[48px] font-heading font-extrabold text-brand-text leading-[1.15] mb-6">
-                  Handmade Accessories for <span className="text-brand-primary">Little Princesses</span> 👑
+                <h1 className="text-[28px] md:text-[40px] xl:text-[48px] font-heading font-extrabold text-brand-text leading-[1.25] mb-6">
+                  Handmade Accessories for <br className="hidden md:block" />
+                  <span className="relative inline-block mt-1">
+                    <span className="relative z-10 px-2">Little Princesses</span>
+                    <span className="absolute bottom-1 left-0 w-full h-[12px] md:h-[16px] bg-brand-primary/60 -z-10 rounded-sm"></span>
+                  </span> 👑
                 </h1>
                 <p className="text-base md:text-lg text-brand-700 font-body mb-8 max-w-[480px]">
                   Beautiful handmade headbands made with love. Perfect unique accessories to celebrate your little one's everyday moments.
@@ -82,7 +86,7 @@ export default function Home() {
 
             {/* Right Column: Image Collage */}
             <div className="lg:w-1/2 relative w-full flex justify-center lg:justify-end mt-12 lg:mt-0">
-              <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.8 }} className="relative w-full max-w-[420px] aspect-square mx-auto lg:mr-0">
+              <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.8 }} className="relative w-full max-w-[280px] sm:max-w-[340px] md:max-w-[420px] aspect-square mx-auto lg:mr-0">
                 {/* Main Image */}
                 <div className="absolute top-0 right-0 left-auto w-[78%] h-[78%] bg-white rounded-2xl p-2 shadow-xl z-20">
                   <img src="https://images.unsplash.com/photo-1503944583220-79d8926ad5e2?auto=format&fit=crop&q=80&w=600" alt="Kids accessories" className="w-full h-full object-cover rounded-[12px]" />
@@ -201,11 +205,11 @@ export default function Home() {
       )}
 
       {/* 5. PROMO BANNER */}
-      <section className="w-full bg-gradient-to-r from-pink-300 via-brand-primary to-brand-secondary py-12 md:py-16 relative overflow-hidden">
-        <motion.div animate={{ rotate: 360 }} transition={{ duration: 20, repeat: Infinity, ease: "linear" }} className="absolute -top-10 -left-10 text-white/20">
+      <section className="w-full h-[160px] bg-gradient-to-r from-pink-300 via-brand-primary to-brand-secondary relative overflow-hidden flex flex-col justify-center">
+        <motion.div animate={{ rotate: 360 }} transition={{ duration: 20, repeat: Infinity, ease: "linear" }} className="absolute -top-10 -left-10 text-white/20 pointer-events-none">
           <Sparkles size={120} />
         </motion.div>
-        <div className="max-w-screen-2xl mx-auto px-4 text-center relative z-10">
+        <div className="max-w-screen-2xl mx-auto px-4 text-center relative z-10 w-full">
           <h2 className="text-[28px] md:text-[36px] font-heading font-extrabold text-white mb-2 drop-shadow-sm">
             Free Gift with Orders Over 500 EGP 🎁
           </h2>

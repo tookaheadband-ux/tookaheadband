@@ -13,7 +13,7 @@ export default function ProductCard({ product }) {
   return (
     <div className="group relative flex flex-col h-full bg-transparent">
       <Link href={`/products/${product._id}`} className="block flex-1 group">
-        <div className="relative aspect-[3/4] overflow-hidden rounded-[16px] bg-white border border-brand-200 shadow-sm mb-4 cursor-pointer">
+        <div className="relative aspect-[3/4] overflow-hidden rounded-[16px] bg-white shadow-sm mb-4 cursor-pointer">
           <img
             src={image}
             alt={name}
@@ -30,21 +30,21 @@ export default function ProductCard({ product }) {
           )}
         </div>
 
-        <div className="flex flex-col gap-1 items-center text-center px-2">
-          <h3 className="font-heading font-bold text-brand-text text-base tracking-wide line-clamp-1 transition-colors group-hover:text-brand-primary">
+        <div className="flex flex-col gap-1 items-center text-center px-4">
+          <h3 className="font-heading font-bold text-brand-text text-[18px] tracking-wide line-clamp-1 transition-colors group-hover:text-brand-primary">
             {name}
           </h3>
-          <p className="text-brand-700 text-[15px] font-body font-semibold">
-            {product.price} <span className="text-xs uppercase tracking-wider text-brand-400 font-bold">{ui.egp}</span>
+          <p className="text-brand-700 text-[16px] font-body font-semibold mt-1">
+            {product.price} <span className="text-xs uppercase tracking-wider text-brand-400 font-bold ml-1">{ui.egp}</span>
           </p>
         </div>
       </Link>
 
-      <div className="mt-4 px-2 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity duration-300 w-full relative z-10">
+      <div className="mt-4 px-4 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity duration-300 w-full relative z-10">
         <button
           onClick={(e) => { e.preventDefault(); addItem(product); }}
           disabled={product.stock <= 0}
-          className="w-full h-[40px] bg-brand-primary text-brand-text font-bold text-sm tracking-wide rounded-xl hover:scale-105 transition-transform disabled:opacity-40 disabled:scale-100 disabled:cursor-not-allowed shadow-sm border border-brand-primary/20"
+          className="w-full h-[48px] bg-brand-primary text-brand-text font-bold text-sm tracking-wide rounded-xl hover:scale-[1.03] hover:bg-[#ffb8c7] transition-all duration-200 disabled:opacity-40 disabled:scale-100 disabled:cursor-not-allowed shadow-sm"
         >
           {ui.addToCart}
         </button>

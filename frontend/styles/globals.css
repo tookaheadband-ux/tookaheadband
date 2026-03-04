@@ -31,19 +31,6 @@
   --font-family-arabic: 'Nunito', sans-serif;
 }
 
-* {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-}
-
-/* Ensure mx-auto centering works — the * reset above sets margin:0 which
-   can override Tailwind's mx-auto on some Tailwind v4 builds. */
-[class*="mx-auto"] {
-  margin-left: auto !important;
-  margin-right: auto !important;
-}
-
 html {
   scroll-behavior: smooth;
 }
@@ -103,13 +90,13 @@ body {
   border: 1px solid var(--color-brand-900);
   border-radius: 12px;
   /* Soft rounded corners */
-  padding: 14px 32px;
+  padding: 12px 24px;
   font-weight: 500;
   font-size: 0.875rem;
   letter-spacing: 0.05em;
   text-transform: uppercase;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: all 0.2s ease-out;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -133,13 +120,13 @@ body {
   color: var(--color-brand-900);
   border: 1px solid var(--color-brand-900);
   border-radius: 12px;
-  padding: 14px 32px;
+  padding: 12px 24px;
   font-weight: 500;
   font-size: 0.875rem;
   letter-spacing: 0.05em;
   text-transform: uppercase;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: all 0.2s ease-out;
   display: inline-flex;
   align-items: center;
   justify-content: center;
