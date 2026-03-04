@@ -122,48 +122,6 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Decorative Wave Divider */}
-      <div className="w-full overflow-hidden leading-none rotate-180 bg-white">
-        <svg data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 120" preserveAspectRatio="none" className="block w-full h-[40px] md:h-[60px]" style={{ fill: 'var(--color-brand-background)' }}>
-          <path d="M321.39,56.44c58-10.79,114.16-30.13,172-41.86,82.39-16.72,168.19-17.73,250.45-.39C823.78,31,906.67,72,985.66,92.83c70.05,18.48,146.53,26.09,214.34,3V0H0V27.35A600.21,600.21,0,0,0,321.39,56.44Z"></path>
-        </svg>
-      </div>
-
-      {/* 2. FEATURES SECTION */}
-      <section className="py-[40px] md:py-[60px] xl:py-[80px]">
-        <div className="max-w-screen-2xl mx-auto px-4 md:px-5 lg:px-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-5 xl:gap-6">
-            <div className="bg-white p-6 rounded-2xl shadow-[0_4px_20px_-4px_rgba(0,0,0,0.05)] flex items-start gap-4 hover:-translate-y-1 transition-transform">
-              <div className="w-12 h-12 rounded-full bg-brand-primary/20 flex items-center justify-center text-pink-500 shrink-0">
-                <Heart size={24} fill="currentColor" />
-              </div>
-              <div>
-                <h3 className="font-heading font-bold text-brand-text text-lg mb-1">Handmade with Love</h3>
-                <p className="text-sm text-brand-700 font-body">Crafted carefully by hand ensuring unique quality.</p>
-              </div>
-            </div>
-            <div className="bg-white p-6 rounded-2xl shadow-[0_4px_20px_-4px_rgba(0,0,0,0.05)] flex items-start gap-4 hover:-translate-y-1 transition-transform">
-              <div className="w-12 h-12 rounded-full bg-brand-surface flex items-center justify-center text-teal-600 shrink-0">
-                <ShieldCheck size={24} />
-              </div>
-              <div>
-                <h3 className="font-heading font-bold text-brand-text text-lg mb-1">Safe for Kids</h3>
-                <p className="text-sm text-brand-700 font-body">Soft, non-toxic materials perfect for delicate skin.</p>
-              </div>
-            </div>
-            <div className="bg-white p-6 rounded-2xl shadow-[0_4px_20px_-4px_rgba(0,0,0,0.05)] flex items-start gap-4 hover:-translate-y-1 transition-transform">
-              <div className="w-12 h-12 rounded-full bg-brand-secondary/40 flex items-center justify-center text-purple-600 shrink-0">
-                <Truck size={24} />
-              </div>
-              <div>
-                <h3 className="font-heading font-bold text-brand-text text-lg mb-1">Cash on Delivery</h3>
-                <p className="text-sm text-brand-700 font-body">Pay securely when your package arrives at your door.</p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
       {/* 3. CATEGORIES SECTION */}
       {categories.length > 0 && (
         <motion.section
@@ -279,7 +237,7 @@ export default function Home() {
         <div className="max-w-screen-2xl mx-auto px-4 md:px-5 lg:px-6">
           <div className="flex flex-col md:flex-row items-center gap-8 lg:gap-16">
             <div className="w-full md:w-1/2 relative h-[260px] md:h-[380px] rounded-[16px] overflow-hidden">
-              <img src="https://images.unsplash.com/photo-1607525384119-9dc490de9f41?auto=format&fit=crop&w=800&q=80" alt="Making headbands" className="w-full h-full object-cover" />
+              <img src="https://images.unsplash.com/photo-1471286174890-9c112ac6f1ad?auto=format&fit=crop&w=800&q=80" alt="Making headbands" className="w-full h-full object-cover" />
             </div>
             <div className="w-full md:w-1/2 flex flex-col items-center md:items-start text-center md:text-left">
               <h2 className="text-[24px] xl:text-[32px] font-heading font-bold text-brand-text mb-4">
