@@ -1,4 +1,5 @@
 import Image from 'next/image';
+import { motion, AnimatePresence } from 'framer-motion';
 import { useLang } from '@/context/LanguageContext';
 import { useCart } from '@/context/CartContext';
 
@@ -9,72 +10,102 @@ export default function CartDrawer() {
   if (!isOpen) return null;
 
   return (
-    <>
-      <div className="fixed inset-0 bg-black/20 z-50 backdrop-blur-sm" onClick={() => setIsOpen(false)} />
-      <div className="fixed top-0 right-0 h-full w-full sm:w-[400px] bg-white z-50 shadow-2xl animate-slide-in flex flex-col" dir="ltr">
-        {/* Header */}
-        <div className="flex items-center justify-between px-5 py-4 border-b border-neutral-100">
-          <h2 className="text-base font-semibold text-neutral-900">{ui.yourCart}</h2>
-          <button onClick={() => setIsOpen(false)} className="p-1.5 rounded-lg hover:bg-neutral-100 transition-colors">
-            <svg className="w-5 h-5 text-neutral-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M6 18L18 6M6 6l12 12" />
-            </svg>
-          </button>
-        </div>
-
-        {/* Items */}
-        <div className="flex-1 overflow-y-auto px-5 py-4 space-y-4">
-          {items.length === 0 ? (
-            <div className="text-center py-16">
-              <svg className="w-12 h-12 text-neutral-300 mx-auto mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
-              </svg>
-              <p className="text-sm text-neutral-400">{ui.emptyCart}</p>
+    <AnimatePresence>
+      {isOpen && (
+        <>
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-brand-text/20 z-50 backdrop-blur-sm"
+            onClick={() => setIsOpen(false)}
+          />
+          <motion.div
+            initial={{ x: '100%' }}
+            animate={{ x: 0 }}
+            exit={{ x: '100%' }}
+            transition={{ type: 'spring', damping: 25, stiffness: 200 }}
+            className="fixed top-0 right-0 h-full w-full sm:w-[420px] bg-white/95 backdrop-blur-xl border-l border-white sm:rounded-l-3xl z-50 shadow-2xl flex flex-col"
+            dir="ltr"
+          >
+            {/* Header */}
+            <div className="flex items-center justify-between px-6 py-5 border-b border-brand-100">
+              <h2 className="text-xl font-heading font-bold text-brand-text">{ui.yourCart}</h2>
+              <button onClick={() => setIsOpen(false)} className="w-8 h-8 flex flex-col items-center justify-center rounded-full bg-brand-50 hover:bg-white text-brand-700 hover:text-brand-primary transition-colors shadow-sm">
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
             </div>
-          ) : (
-            items.map((item) => (
-              <div key={item.productId} className="flex gap-3">
-                <div className="relative w-16 h-20 rounded-lg overflow-hidden bg-neutral-100 flex-shrink-0">
-                  {item.imageSnapshot ? (
-                    <Image src={item.imageSnapshot} alt="" fill className="object-cover" sizes="64px" />
-                  ) : (
-                    <div className="w-full h-full bg-neutral-100" />
-                  )}
-                </div>
-                <div className="flex-1 min-w-0">
-                  <p className="text-sm font-medium text-neutral-800 truncate">{item.productNameSnapshot}</p>
-                  <p className="text-sm text-neutral-500 mt-0.5">{item.priceSnapshot} {ui.egp}</p>
-                  <div className="flex items-center gap-2 mt-2">
-                    <button onClick={() => updateQty(item.productId, item.qty - 1)}
-                      className="w-6 h-6 rounded border border-neutral-200 text-neutral-500 flex items-center justify-center text-xs hover:border-neutral-400 transition-colors">-</button>
-                    <span className="text-sm font-medium w-5 text-center">{item.qty}</span>
-                    <button onClick={() => updateQty(item.productId, item.qty + 1)}
-                      className="w-6 h-6 rounded border border-neutral-200 text-neutral-500 flex items-center justify-center text-xs hover:border-neutral-400 transition-colors">+</button>
+
+            {/* Items */}
+            <div className="flex-1 overflow-y-auto px-6 py-6 space-y-4">
+              {items.length === 0 ? (
+                <div className="text-center py-20 flex flex-col items-center">
+                  <div className="w-20 h-20 bg-brand-50 rounded-full flex items-center justify-center mb-4 text-brand-primary">
+                    <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+                    </svg>
                   </div>
+                  <p className="text-brand-400 font-body font-medium">{ui.emptyCart}</p>
                 </div>
-                <button onClick={() => removeItem(item.productId)} className="text-neutral-300 hover:text-red-500 transition-colors self-start mt-1">
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M6 18L18 6M6 6l12 12" />
-                  </svg>
-                </button>
-              </div>
-            ))
-          )}
-        </div>
-
-        {/* Footer */}
-        {items.length > 0 && (
-          <div className="px-5 py-4 border-t border-neutral-100 space-y-3">
-            <div className="flex items-center justify-between">
-              <span className="text-sm text-neutral-500">{ui.total}</span>
-              <span className="text-lg font-semibold text-neutral-900">{total} {ui.egp}</span>
+              ) : (
+                <AnimatePresence>
+                  {items.map((item) => (
+                    <motion.div
+                      key={item.productId}
+                      layout
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, scale: 0.95 }}
+                      className="flex gap-4 bg-white p-3 border border-brand-50 rounded-2xl shadow-sm"
+                    >
+                      <div className="relative w-20 h-24 rounded-xl overflow-hidden bg-brand-50 flex-shrink-0 shadow-inner">
+                        {item.imageSnapshot ? (
+                          <Image src={item.imageSnapshot} alt="" fill className="object-cover" sizes="80px" />
+                        ) : (
+                          <div className="w-full h-full bg-brand-50" />
+                        )}
+                      </div>
+                      <div className="flex-1 min-w-0 py-1 flex flex-col justify-between">
+                        <div>
+                          <p className="font-heading font-bold text-brand-text truncate pr-6">{item.productNameSnapshot}</p>
+                          <p className="text-xs font-body font-semibold text-brand-400 mt-1 uppercase tracking-wide">{item.priceSnapshot} {ui.egp}</p>
+                        </div>
+                        <div className="flex items-center gap-2 mt-2">
+                          <button onClick={() => updateQty(item.productId, item.qty - 1)}
+                            className="w-7 h-7 rounded-sm bg-brand-50 text-brand-900 flex items-center justify-center hover:bg-brand-100 transition-colors shadow-sm">-</button>
+                          <span className="text-sm font-bold w-6 text-center text-brand-900">{item.qty}</span>
+                          <button onClick={() => updateQty(item.productId, item.qty + 1)}
+                            className="w-7 h-7 rounded-sm bg-brand-50 text-brand-900 flex items-center justify-center hover:bg-brand-100 transition-colors shadow-sm">+</button>
+                        </div>
+                      </div>
+                      <button onClick={() => removeItem(item.productId)} className="text-brand-300 hover:text-red-500 transition-colors self-start p-1 mt-1 -mr-1">
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                      </button>
+                    </motion.div>
+                  ))}
+                </AnimatePresence>
+              )}
             </div>
-            <a href="/checkout" onClick={() => setIsOpen(false)} className="btn-primary block text-center w-full !py-3">
-              {ui.proceedToCheckout}
-            </a>
-          </div>
-        )}
-      </div>
-    </>
+
+            {/* Footer */}
+            {items.length > 0 && (
+              <div className="px-6 py-6 border-t border-brand-100/50 bg-white/50 space-y-4 sm:rounded-bl-3xl">
+                <div className="flex items-center justify-between mb-2 border-b border-brand-100 pb-4">
+                  <span className="text-sm font-body font-bold text-brand-700 uppercase tracking-widest">{ui.total}</span>
+                  <span className="text-xl font-heading font-bold text-brand-primary">{total} <span className="text-sm tracking-widest text-brand-400 uppercase">{ui.egp}</span></span>
+                </div>
+                <a href="/checkout" onClick={() => setIsOpen(false)} className="w-full h-[56px] flex items-center justify-center bg-brand-primary text-white font-bold text-base md:text-lg tracking-wide rounded-xl shadow-[0_4px_14px_0_rgba(255,199,209,0.5)] hover:shadow-[0_6px_20px_rgba(255,199,209,0.7)] hover:-translate-y-1 transition-all duration-300">
+                  {ui.proceedToCheckout}
+                </a>
+              </div>
+            )}
+          </motion.div>
+        </>
+      )}
+    </AnimatePresence>
   );
 }
