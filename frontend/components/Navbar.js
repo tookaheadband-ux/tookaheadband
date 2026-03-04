@@ -27,10 +27,10 @@ export default function Navbar() {
   return (
     <nav className={`fixed w-full top-0 z-50 transition-all duration-300 ${scrolled ? 'bg-white/95 backdrop-blur-md shadow-sm py-4' : 'bg-transparent py-6'}`}>
       <div className="max-w-screen-2xl mx-auto px-4 md:px-5 lg:px-6">
-        <div className="relative flex items-center justify-between h-[60px] xl:h-[72px]">
+        <div className="relative grid grid-cols-3 md:flex md:items-center md:justify-between h-[60px] xl:h-[72px] items-center">
 
           {/* Mobile Menu Button - Left */}
-          <div className="flex-1 flex md:hidden">
+          <div className="flex md:hidden justify-start">
             <button
               onClick={() => setMobileOpen(!mobileOpen)}
               aria-label="Menu"
@@ -46,7 +46,7 @@ export default function Navbar() {
           </div>
 
           {/* Logo - Center on Mobile, Left on Desktop */}
-          <div className="flex-1 lg:flex-none flex justify-center lg:justify-start">
+          <div className="flex justify-center md:justify-start">
             <Link href="/" className="flex items-center">
               <span className="text-2xl md:text-3xl font-bold tracking-wide font-heading text-brand-text uppercase mt-1">
                 TOKA
@@ -68,7 +68,7 @@ export default function Navbar() {
           </div>
 
           {/* Right Actions - Right */}
-          <div className="flex-1 lg:flex-none flex items-center justify-end gap-3 md:gap-5">
+          <div className="flex justify-end md:items-center gap-3 md:gap-5">
             <div className="hidden sm:block">
               <LanguageSwitcher />
             </div>

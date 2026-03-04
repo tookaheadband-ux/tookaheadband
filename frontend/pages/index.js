@@ -42,7 +42,7 @@ export default function Home() {
     <div className="bg-brand-background">
 
       {/* 1. HERO SECTION */}
-      <section className="relative min-h-[auto] md:min-h-[60vh] xl:min-h-[70vh] pt-24 md:pt-32 pb-16 lg:pb-0 flex items-center overflow-hidden">
+      <section className="relative min-h-[auto] md:min-h-[60vh] xl:min-h-[70vh] pt-[120px] md:pt-32 pb-16 lg:pb-0 flex items-center overflow-hidden">
 
         <div className="max-w-screen-2xl mx-auto px-4 md:px-5 lg:px-6 w-full z-10 relative">
 
@@ -55,15 +55,15 @@ export default function Home() {
             <Sparkles size={36} fill="currentColor" />
           </motion.div>
 
-          <div className="flex flex-col lg:flex-row items-center gap-12 lg:gap-8">
+          <div className="flex flex-col lg:flex-row items-center gap-12 lg:gap-8 mt-[40px] md:mt-0">
 
             {/* Left Column: Text */}
-            <div className="lg:w-1/2 flex flex-col items-center lg:items-start text-center lg:text-left">
+            <div className="lg:w-1/2 flex flex-col items-center lg:items-start text-center lg:text-left pt-6 md:pt-0 w-full px-2 sm:px-0">
               <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }}>
                 <span className="inline-block py-1.5 px-3 bg-brand-surface text-teal-800 rounded-full text-sm font-bold tracking-wide mb-6">
                   ✨ NEW COLLECTION
                 </span>
-                <h1 className="text-[28px] md:text-[40px] xl:text-[48px] font-heading font-extrabold text-brand-text leading-[1.25] mb-6">
+                <h1 className="text-[32px] md:text-[40px] xl:text-[48px] font-heading font-extrabold text-brand-text leading-[1.25] mb-6">
                   Handmade Accessories for <br className="hidden md:block" />
                   <span className="relative inline-block mt-1">
                     <span className="relative z-10 px-2">Little Princesses</span>
@@ -149,9 +149,9 @@ export default function Home() {
             <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4 md:gap-5 xl:gap-6">
               {categories.map((cat, idx) => {
                 const bgImages = [
-                  'https://images.unsplash.com/photo-1599643477877-530eb83abc8e?auto=format&fit=crop&q=80&w=600',
-                  'https://images.unsplash.com/photo-1611591437281-460bfbe1220a?auto=format&fit=crop&q=80&w=600',
-                  'https://images.unsplash.com/photo-1535632787350-4e68ef0ac189?auto=format&fit=crop&q=80&w=600',
+                  'https://images.unsplash.com/photo-1515488042361-ee00e0ddd4e4?auto=format&fit=crop&q=80&w=600',
+                  'https://images.unsplash.com/photo-1471286174890-9c112ac6f1ad?auto=format&fit=crop&q=80&w=600',
+                  'https://images.unsplash.com/photo-1503944583220-79d8926ad5e2?auto=format&fit=crop&q=80&w=600',
                   'https://images.unsplash.com/photo-1622290291468-a28f7a7dc6a8?auto=format&fit=crop&q=80&w=600'
                 ];
                 return (
