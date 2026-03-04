@@ -42,7 +42,7 @@ export default function Home() {
     <div className="bg-brand-background">
 
       {/* 1. HERO SECTION */}
-      <section className="relative min-h-[auto] md:min-h-[60vh] xl:min-h-[70vh] pt-[120px] md:pt-32 pb-16 lg:pb-0 flex items-center overflow-hidden">
+      <section className="relative min-h-[auto] md:min-h-[60vh] xl:min-h-[70vh] pt-[160px] md:pt-32 pb-16 lg:pb-0 flex items-center overflow-hidden">
 
         <div className="max-w-screen-2xl mx-auto px-4 md:px-5 lg:px-6 w-full z-10 relative">
 
@@ -55,7 +55,7 @@ export default function Home() {
             <Sparkles size={36} fill="currentColor" />
           </motion.div>
 
-          <div className="flex flex-col lg:flex-row items-center gap-12 lg:gap-8 mt-[40px] md:mt-0">
+          <div className="flex flex-col lg:flex-row items-center gap-12 lg:gap-8 mt-[60px] md:mt-0">
 
             {/* Left Column: Text */}
             <div className="lg:w-1/2 flex flex-col items-center lg:items-start text-center lg:text-left pt-6 md:pt-0 w-full px-2 sm:px-0">
