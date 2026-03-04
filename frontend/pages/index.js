@@ -44,7 +44,17 @@ export default function Home() {
       {/* 1. HERO SECTION */}
       <section className="relative min-h-[auto] md:min-h-[60vh] xl:min-h-[70vh] pt-24 md:pt-32 pb-16 lg:pb-0 flex items-center overflow-hidden">
 
-        <div className="max-w-[1200px] mx-auto px-4 md:px-5 lg:px-6 w-full z-10">
+        <div className="max-w-[1200px] mx-auto px-4 md:px-5 lg:px-6 w-full z-10 relative">
+
+          {/* Floating decorative elements — safely bounded inside the 1200px wrapper */}
+          <motion.div animate={{ y: [0, -16, 0] }} transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }} className="absolute -top-6 left-0 xl:-left-12 text-brand-primary/60 pointer-events-none hidden md:block">
+            <Heart size={40} fill="currentColor" />
+          </motion.div>
+
+          <motion.div animate={{ y: [0, 16, 0], rotate: [0, 10, 0] }} transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }} className="absolute bottom-10 right-0 xl:-right-12 text-brand-accent pointer-events-none hidden md:block">
+            <Sparkles size={36} fill="currentColor" />
+          </motion.div>
+
           <div className="flex flex-col lg:flex-row items-center gap-12 lg:gap-8">
 
             {/* Left Column: Text */}
