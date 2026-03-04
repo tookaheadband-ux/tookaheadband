@@ -55,7 +55,12 @@ export default function Home() {
             <Sparkles size={36} fill="currentColor" />
           </motion.div>
 
-          <div className="flex flex-col lg:flex-row items-center gap-12 lg:gap-8 mt-[65px] md:mt-0">
+          {/* Dynamic Background Blobs */}
+          <div className="absolute top-0 right-1/4 w-72 h-72 bg-brand-primary/20 rounded-full mix-blend-multiply filter blur-3xl opacity-70 animate-blob pointer-events-none -z-10"></div>
+          <div className="absolute top-0 right-1/2 w-72 h-72 bg-brand-surface/30 rounded-full mix-blend-multiply filter blur-3xl opacity-70 animate-blob animation-delay-2000 pointer-events-none -z-10"></div>
+          <div className="absolute -bottom-8 right-1/3 w-72 h-72 bg-brand-secondary/30 rounded-full mix-blend-multiply filter blur-3xl opacity-70 animate-blob animation-delay-4000 pointer-events-none -z-10"></div>
+
+          <div className="flex flex-col lg:flex-row items-center gap-12 lg:gap-8 mt-[65px] md:mt-0 relative z-10">
 
             {/* Left Column: Text */}
             <div className="lg:w-1/2 flex flex-col items-center lg:items-start text-center lg:text-left pt-6 md:pt-0 w-full px-2 sm:px-0">
@@ -73,13 +78,26 @@ export default function Home() {
                 <p className="text-base md:text-lg text-brand-700 font-body mb-8 max-w-[480px]">
                   Beautiful handmade headbands made with love. Perfect unique accessories to celebrate your little one's everyday moments.
                 </p>
-                <div className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto">
-                  <Link href="/products" className="h-[48px] px-7 bg-brand-primary text-brand-text font-bold rounded-xl flex items-center justify-center hover:scale-105 transition-transform shadow-sm">
+                <div className="flex flex-col sm:flex-row items-center gap-4 w-full sm:w-auto mt-6">
+                  <Link href="/products" className="w-full sm:w-auto px-8 py-4 bg-brand-primary text-white font-bold rounded-xl shadow-[0_4px_14px_0_rgba(255,199,209,0.5)] hover:shadow-[0_6px_20px_rgba(255,199,209,0.7)] hover:-translate-y-1 transition-all duration-300 text-center">
                     Shop Collection
                   </Link>
-                  <Link href="/products?featured=true" className="h-[48px] px-7 bg-white text-brand-text border-2 border-brand-secondary font-bold rounded-xl flex items-center justify-center hover:bg-brand-secondary/30 transition-colors">
+                  <Link href="/about" className="w-full sm:w-auto px-8 py-4 bg-white text-brand-text border-2 border-brand-secondary/50 font-bold rounded-xl hover:bg-brand-secondary/10 hover:-translate-y-1 transition-all duration-300 text-center">
                     View Best Sellers
                   </Link>
+                </div>
+
+                {/* Trust Badges */}
+                <div className="flex items-center justify-center lg:justify-start gap-4 mt-8 opacity-70">
+                  <div className="flex items-center gap-1.5 text-xs font-bold text-brand-700 bg-white/50 px-3 py-1.5 rounded-full backdrop-blur-sm">
+                    <span className="text-green-500">✔</span> Handmade
+                  </div>
+                  <div className="flex items-center gap-1.5 text-xs font-bold text-brand-700 bg-white/50 px-3 py-1.5 rounded-full backdrop-blur-sm">
+                    <span className="text-blue-400">🛡️</span> Secure
+                  </div>
+                  <div className="flex items-center gap-1.5 text-xs font-bold text-brand-700 bg-white/50 px-3 py-1.5 rounded-full backdrop-blur-sm hidden sm:flex">
+                    <span className="text-brand-primary">🚚</span> Fast Delivery
+                  </div>
                 </div>
               </motion.div>
             </div>
@@ -103,6 +121,13 @@ export default function Home() {
           </div>
         </div>
       </section>
+
+      {/* Decorative Wave Divider */}
+      <div className="w-full overflow-hidden leading-none rotate-180 bg-white">
+        <svg data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 120" preserveAspectRatio="none" className="block w-full h-[40px] md:h-[60px]" style={{ fill: 'var(--color-brand-background)' }}>
+          <path d="M321.39,56.44c58-10.79,114.16-30.13,172-41.86,82.39-16.72,168.19-17.73,250.45-.39C823.78,31,906.67,72,985.66,92.83c70.05,18.48,146.53,26.09,214.34,3V0H0V27.35A600.21,600.21,0,0,0,321.39,56.44Z"></path>
+        </svg>
+      </div>
 
       {/* 2. FEATURES SECTION */}
       <section className="py-[40px] md:py-[60px] xl:py-[80px]">
@@ -142,10 +167,10 @@ export default function Home() {
       {/* 3. CATEGORIES SECTION */}
       {categories.length > 0 && (
         <motion.section
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
+          initial={{ opacity: 0, y: 30, filter: 'blur(10px)' }}
+          whileInView={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
           viewport={{ once: true, margin: "-100px" }}
-          transition={{ duration: 0.6 }}
+          transition={{ duration: 0.8 }}
           className="py-[40px] md:py-[60px] xl:py-[80px] bg-white"
         >
           <div className="max-w-screen-2xl mx-auto px-4 md:px-5 lg:px-6">
@@ -182,10 +207,10 @@ export default function Home() {
       {/* 4. BEST SELLERS SECTION */}
       {featured.length > 0 && (
         <motion.section
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
+          initial={{ opacity: 0, y: 30, filter: 'blur(10px)' }}
+          whileInView={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
           viewport={{ once: true, margin: "-100px" }}
-          transition={{ duration: 0.6 }}
+          transition={{ duration: 0.8 }}
           className="py-[40px] md:py-[60px] xl:py-[80px]"
         >
           <div className="max-w-screen-2xl mx-auto px-4 md:px-5 lg:px-6">
@@ -216,16 +241,28 @@ export default function Home() {
         </motion.section>
       )}
 
-      {/* 5. PROMO BANNER */}
-      <section className="w-full h-[160px] bg-gradient-to-r from-pink-300 via-brand-primary to-brand-secondary relative overflow-hidden flex flex-col justify-center">
-        <motion.div animate={{ rotate: 360 }} transition={{ duration: 20, repeat: Infinity, ease: "linear" }} className="absolute -top-10 -left-10 text-white/20 pointer-events-none">
-          <Sparkles size={120} />
-        </motion.div>
-        <div className="max-w-screen-2xl mx-auto px-4 text-center relative z-10 w-full">
-          <h2 className="text-[28px] md:text-[36px] font-heading font-extrabold text-white mb-2 drop-shadow-sm">
-            Free Gift with Orders Over 500 EGP 🎁
-          </h2>
-          <p className="text-white/90 font-medium text-lg">Use code: MAGIC2024 at checkout</p>
+      {/* Decorative Wave Divider */}
+      <div className="w-full overflow-hidden leading-none bg-brand-background relative z-10 -mb-1">
+        <svg data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 120" preserveAspectRatio="none" className="block w-full h-[40px] md:h-[60px]" style={{ fill: 'white' }}>
+          <path d="M321.39,56.44c58-10.79,114.16-30.13,172-41.86,82.39-16.72,168.19-17.73,250.45-.39C823.78,31,906.67,72,985.66,92.83c70.05,18.48,146.53,26.09,214.34,3V0H0V27.35A600.21,600.21,0,0,0,321.39,56.44Z"></path>
+        </svg>
+      </div>
+
+      {/* 5. PROMO BANNER (Ticket Style) */}
+      <section className="py-[60px] md:py-[80px] relative w-full overflow-hidden px-4 bg-white">
+        <div className="max-w-4xl mx-auto rounded-3xl promo-ticket bg-gradient-to-r from-pink-300 via-brand-primary to-brand-secondary p-1 relative overflow-hidden shadow-2xl hover:scale-[1.01] transition-transform duration-500 cursor-pointer">
+          <motion.div animate={{ rotate: 360 }} transition={{ duration: 20, repeat: Infinity, ease: "linear" }} className="absolute -top-10 -left-10 text-white/20 pointer-events-none">
+            <Sparkles size={120} />
+          </motion.div>
+
+          <div className="bg-white/20 backdrop-blur-sm rounded-[22px] py-12 px-6 flex flex-col justify-center items-center text-center relative z-10 w-full h-full border border-white/40">
+            <h2 className="text-[28px] md:text-[36px] font-heading font-extrabold text-white mb-2 drop-shadow-md">
+              Free Gift with Orders Over 500 EGP 🎁
+            </h2>
+            <div className="inline-block bg-white text-brand-primary font-bold px-6 py-2 rounded-full mt-2 shadow-sm uppercase tracking-widest text-sm">
+              Code: MAGIC2024
+            </div>
+          </div>
         </div>
       </section>
 
