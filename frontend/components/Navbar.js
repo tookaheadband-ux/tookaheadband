@@ -47,8 +47,9 @@ export default function Navbar() {
 
           {/* Logo - Center on Mobile, Left on Desktop */}
           <div className="flex justify-center md:justify-start">
-            <Link href="/" className="flex items-center">
-              <span className="text-2xl md:text-3xl font-bold tracking-wide font-heading text-brand-text uppercase mt-1">
+            <Link href="/" className="flex items-center gap-2">
+              <img src="/logo/logo.jpg" alt="TOKA Logo" className="h-[24px] md:h-[28px] max-w-[120px] object-contain" />
+              <span className="text-xl md:text-2xl font-bold tracking-wide font-heading text-brand-text uppercase mt-1">
                 TOKA
               </span>
             </Link>

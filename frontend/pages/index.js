@@ -42,7 +42,7 @@ export default function Home() {
     <div className="bg-brand-background">
 
       {/* 1. HERO SECTION */}
-      <section className="relative min-h-[auto] md:min-h-[60vh] xl:min-h-[70vh] pt-[160px] md:pt-32 pb-16 lg:pb-0 flex items-center overflow-hidden">
+      <section className="relative min-h-[auto] md:min-h-[60vh] xl:min-h-[70vh] pt-[140px] md:pt-[110px] pb-16 lg:pb-0 flex items-center overflow-hidden">
 
         <div className="max-w-screen-2xl mx-auto px-4 md:px-5 lg:px-6 w-full z-10 relative">
 
@@ -55,7 +55,7 @@ export default function Home() {
             <Sparkles size={36} fill="currentColor" />
           </motion.div>
 
-          <div className="flex flex-col lg:flex-row items-center gap-12 lg:gap-8 mt-[60px] md:mt-0">
+          <div className="flex flex-col lg:flex-row items-center gap-12 lg:gap-8 mt-[65px] md:mt-0">
 
             {/* Left Column: Text */}
             <div className="lg:w-1/2 flex flex-col items-center lg:items-start text-center lg:text-left pt-6 md:pt-0 w-full px-2 sm:px-0">
@@ -217,59 +217,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* 6. TOKA MOMENTS GALLERY */}
-      <section className="py-[40px] md:py-[60px] xl:py-[80px] bg-white">
-        <div className="max-w-screen-2xl mx-auto px-4 md:px-5 lg:px-6">
-          <div className="text-center mb-10">
-            <h2 className="text-[24px] xl:text-[32px] font-heading font-bold text-brand-text mb-2">
-              TOKA Moments
-            </h2>
-            <p className="text-brand-700 font-body">Tag @tooka_headbands to be featured!</p>
-          </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 md:gap-5 xl:gap-6">
-            {[
-              "https://images.unsplash.com/photo-1503944583220-79d8926ad5e2?auto=format&fit=crop&w=600&q=80",
-              "https://images.unsplash.com/photo-1471286174890-9c112ac6f1ad?auto=format&fit=crop&w=600&q=80",
-              "https://images.unsplash.com/photo-1596755389378-c31d21fd1273?auto=format&fit=crop&w=600&q=80"
-            ].map((img, i) => (
-              <div key={i} className="relative w-full h-[200px] xl:h-[240px] rounded-[16px] overflow-hidden group cursor-pointer">
-                <img src={img} alt="Gallery moment" className="w-full h-full object-cover" />
-                <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 backdrop-blur-sm transition-opacity duration-300 flex items-center justify-center">
-                  <Instagram size={40} className="text-white" />
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* 7. TESTIMONIALS */}
-      <section className="py-[40px] md:py-[60px] xl:py-[80px] overflow-hidden">
-        <div className="max-w-screen-2xl mx-auto px-4 md:px-5 lg:px-6">
-          <h2 className="text-[24px] xl:text-[32px] font-heading font-bold text-center text-brand-text mb-10">
-            Happy Moms Say...
-          </h2>
-
-          <div className="flex overflow-x-auto pb-8 -mx-4 px-4 snap-x hide-scrollbar gap-4 md:gap-6">
-            {[1, 2, 3].map((item) => (
-              <div key={item} className="shrink-0 w-[280px] md:w-[360px] snap-center bg-brand-secondary/30 p-6 rounded-[16px] border border-brand-secondary/50">
-                <Quote size={24} className="text-brand-primary mb-4" />
-                <p className="text-brand-text font-medium text-[15px] leading-relaxed mb-4">
-                  "Absolutely love these headbands! The quality is amazing, super soft against my baby's head, and they don't leave marks. Will definitely order more."
-                </p>
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-full bg-brand-text text-white flex items-center justify-center font-bold">SM</div>
-                  <div>
-                    <h4 className="font-bold text-sm text-brand-text">Sarah M.</h4>
-                    <span className="text-xs text-brand-700">Verified Buyer</span>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
 
       {/* 8. ABOUT PREVIEW */}
       <section className="py-[40px] md:py-[60px] xl:py-[80px] bg-white">
