@@ -63,11 +63,11 @@ export default function Home() {
                 <span className="inline-block py-1.5 px-3 bg-brand-surface text-teal-800 rounded-full text-sm font-bold tracking-wide mb-6">
                   ✨ NEW COLLECTION
                 </span>
-                <h1 className="text-[32px] md:text-[40px] xl:text-[48px] font-heading font-extrabold text-brand-text leading-[1.25] mb-6">
-                  Handmade Accessories for <br className="hidden md:block" />
+                <h1 className="text-[26px] sm:text-[30px] md:text-[36px] xl:text-[48px] font-heading font-extrabold text-brand-text leading-[1.3] mb-5 px-2">
+                  Handmade Accessories for{' '}
                   <span className="relative inline-block mt-1">
                     <span className="relative z-10 px-2">Little Princesses</span>
-                    <span className="absolute bottom-1 left-0 w-full h-[12px] md:h-[16px] bg-brand-primary/60 -z-10 rounded-sm"></span>
+                    <span className="absolute bottom-1 left-0 w-full h-[10px] md:h-[14px] bg-brand-primary/60 -z-10 rounded-sm"></span>
                   </span> 👑
                 </h1>
                 <p className="text-base md:text-lg text-brand-700 font-body mb-8 max-w-[480px]">
