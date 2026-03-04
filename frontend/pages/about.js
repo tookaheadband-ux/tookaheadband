@@ -29,7 +29,7 @@ export default function About() {
   return (
     <>
       <Head>
-        <title>{title} — TOKA</title>
+        <title>{title} — TOOKA</title>
       </Head>
       <div className="bg-white min-h-screen pt-32 pb-32">
         <div className="max-w-3xl mx-auto px-6 md:px-12 text-center">

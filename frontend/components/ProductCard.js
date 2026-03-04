@@ -8,7 +8,7 @@ export default function ProductCard({ product }) {
   const { addItem } = useCart();
 
   const name = t(product.nameAr, product.nameEn);
-  const image = product.images?.[0] || 'https://placehold.co/800x1000/F7F5F2/2C2621?text=TOKA';
+  const image = product.images?.[0] || 'https://placehold.co/800x1000/F7F5F2/2C2621?text=TOOKA';
 
   return (
     <div className="group relative flex flex-col h-full bg-transparent">

@@ -30,14 +30,12 @@ export default function ProductDetail() {
 
   const handleAddToCart = () => {
     addItem(product, qty);
-    setAdded(true);
-    setTimeout(() => setAdded(false), 2000);
   };
 
   const name = product ? t(product.nameAr, product.nameEn) : '';
   const description = product ? t(product.descriptionAr, product.descriptionEn) : '';
   const categoryName = product?.categoryId ? t(product.categoryId.nameAr, product.categoryId.nameEn) : '';
-  const whatsappMsg = encodeURIComponent(`Hello TOKA,\n\nI want to order:\n${name}\n\nMy name:\nMy address:`);
+  const whatsappMsg = encodeURIComponent(`Hello TOOKA,\n\nI want to order:\n${name}\n\nMy name:\nMy address:`);
 
   if (loading) {
     return <div className="flex items-center justify-center min-h-[80vh]">
@@ -52,7 +50,7 @@ export default function ProductDetail() {
   return (
     <>
       <Head>
-        <title>{name} — TOKA</title>
+        <title>{name} — TOOKA</title>
         <meta name="description" content={description} />
       </Head>
       <div className="bg-white min-h-screen pt-28 pb-32">
@@ -78,10 +76,10 @@ export default function ProductDetail() {
               )}
               {/* Main Image */}
               <div className="relative aspect-[4/5] w-full bg-brand-50 order-1 md:order-2 flex-grow">
-                {mainImage ? (
+                {product.images && product.images.length > 0 ? (
                   <img src={mainImage} alt={name} className="w-full h-full object-cover" />
                 ) : (
-                  <div className="w-full h-full flex items-center justify-center text-brand-300 font-[var(--font-family-heading)] text-2xl">TOKA</div>
+                  <div className="w-full h-full flex items-center justify-center text-brand-300 font-[var(--font-family-heading)] text-2xl">TOOKA</div>
                 )}
               </div>
             </div>

@@ -237,7 +237,7 @@ export default function Home() {
         <div className="max-w-screen-2xl mx-auto px-4 md:px-5 lg:px-6">
           <div className="flex flex-col md:flex-row items-center gap-8 lg:gap-16">
             <div className="w-full md:w-1/2 relative h-[260px] md:h-[380px] rounded-[16px] overflow-hidden">
-              <img src="https://images.unsplash.com/photo-1471286174890-9c112ac6f1ad?auto=format&fit=crop&w=800&q=80" alt="Making headbands" className="w-full h-full object-cover" />
+              <img src="https://images.unsplash.com/photo-1515488042361-ee00e0ddd4e4?auto=format&fit=crop&w=800&q=80" alt="Making headbands" className="w-full h-full object-cover" />
             </div>
             <div className="w-full md:w-1/2 flex flex-col items-center md:items-start text-center md:text-left">
               <h2 className="text-[24px] xl:text-[32px] font-heading font-bold text-brand-text mb-4">
@@ -267,7 +267,7 @@ export default function Home() {
             <Gift size={32} />
           </div>
           <h2 className="text-[24px] xl:text-[32px] font-heading font-bold text-brand-text mb-3">
-            Join the TOKA Family
+            Join the TOOKA Family
           </h2>
           <p className="text-brand-700 font-body mb-8">
             Subscribe to get special offers, free giveaways, and once-in-a-lifetime deals.

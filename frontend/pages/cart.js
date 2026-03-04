@@ -25,7 +25,7 @@ export default function Cart() {
           {items.map((item) => (
             <div key={item.productId} className="flex gap-6 items-start border-b border-brand-100 pb-8">
               <div className="relative w-24 h-32 md:w-32 md:h-40 bg-brand-50 flex-shrink-0">
-                {item.imageSnapshot ? <img src={item.imageSnapshot} alt="" className="w-full h-full object-cover" /> : <div className="w-full h-full flex items-center justify-center text-xs text-brand-300">TOKA</div>}
+                {item.imageSnapshot ? <img src={item.imageSnapshot} alt="" className="w-full h-full object-cover" /> : <div className="w-full h-full flex items-center justify-center text-xs text-brand-300">TOOKA</div>}
               </div>
 
               <div className="flex-1 flex flex-col justify-between h-full">

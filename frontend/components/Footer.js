@@ -12,7 +12,7 @@ export default function Footer() {
 
             {/* Section 1: Brand */}
             <div className="flex flex-col gap-4">
-              <h3 className="text-3xl font-extrabold font-heading text-brand-text uppercase">TOKA</h3>
+              <h3 className="text-3xl font-extrabold font-heading text-brand-text uppercase">TOOKA</h3>
               <p className="text-sm font-body text-brand-700 leading-relaxed">
                 Beautiful handmade headbands made with love. Perfect accessories for your little princesses.
               </p>
@@ -58,7 +58,7 @@ export default function Footer() {
           </div>
 
           <div className="mt-16 pt-8 border-t border-brand-200 flex flex-col md:flex-row items-center justify-between gap-4">
-            <p className="text-sm font-body text-brand-700">&copy; {new Date().getFullYear()} TOKA. All rights reserved.</p>
+            <p className="text-sm font-body text-brand-700">&copy; {new Date().getFullYear()} TOOKA. All rights reserved.</p>
           </div>
         </div>
       </footer>
