@@ -4,6 +4,7 @@ import { CartProvider } from '@/context/CartContext';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import CartDrawer from '@/components/CartDrawer';
+import FloatingWhatsApp from '@/components/FloatingWhatsApp';
 import { Toaster } from 'react-hot-toast';
 import Head from 'next/head';
 
@@ -49,6 +50,7 @@ export default function App({ Component, pageProps }) {
         </main>
 
         {!isAdmin && <Footer />}
+        {!isAdmin && <FloatingWhatsApp />}
       </CartProvider>
     </LanguageProvider>
   );
