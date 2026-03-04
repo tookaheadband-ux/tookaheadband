@@ -2,10 +2,17 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { X } from 'lucide-react';
 import { useLang } from '@/context/LanguageContext';
 import { useCart } from '@/context/CartContext';
+import { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 
 export default function QuickViewModal({ product, isOpen, onClose }) {
   const { t, ui } = useLang();
   const { addItem } = useCart();
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   if (!product) return null;
 
@@ -18,7 +25,9 @@ export default function QuickViewModal({ product, isOpen, onClose }) {
     onClose();
   };
 
-  return (
+  if (!mounted) return null;
+
+  return createPortal(
     <AnimatePresence>
       {isOpen && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6 pointer-events-auto">
@@ -96,6 +105,7 @@ export default function QuickViewModal({ product, isOpen, onClose }) {
           </motion.div>
         </div>
       )}
-    </AnimatePresence>
+    </AnimatePresence>,
+    document.body
   );
 }
