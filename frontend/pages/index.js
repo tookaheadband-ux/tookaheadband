@@ -39,17 +39,10 @@ export default function Home() {
   }
 
   return (
-    <div className="bg-brand-background overflow-hidden relative">
+    <div className="bg-brand-background">
 
       {/* 1. HERO SECTION */}
-      <section className="relative min-h-[auto] md:min-h-[60vh] xl:min-h-[70vh] pt-24 md:pt-32 pb-16 lg:pb-0 flex items-center">
-        {/* Floating decorative svg background elements */}
-        <motion.div animate={{ y: [0, -20, 0] }} transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }} className="absolute top-[20%] left-[5%] text-brand-primary/50">
-          <Heart size={48} fill="currentColor" />
-        </motion.div>
-        <motion.div animate={{ y: [0, 20, 0], rotate: [0, 10, 0] }} transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }} className="absolute top-[60%] left-[45%] text-brand-accent/60">
-          <Sparkles size={40} fill="currentColor" />
-        </motion.div>
+      <section className="relative min-h-[auto] md:min-h-[60vh] xl:min-h-[70vh] pt-24 md:pt-32 pb-16 lg:pb-0 flex items-center overflow-hidden">
 
         <div className="max-w-[1200px] mx-auto px-4 md:px-5 lg:px-6 w-full z-10">
           <div className="flex flex-col lg:flex-row items-center gap-12 lg:gap-8">
@@ -81,15 +74,15 @@ export default function Home() {
             <div className="lg:w-1/2 relative w-full flex justify-center lg:justify-end mt-12 lg:mt-0">
               <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.8 }} className="relative w-full max-w-[420px] aspect-square mx-auto lg:mr-0">
                 {/* Main Image */}
-                <div className="absolute top-0 right-0 left-auto w-[80%] h-[80%] bg-white rounded-2xl p-2 shadow-xl z-20">
-                  <img src="https://images.unsplash.com/photo-1515488042361-ee00e0ddd4e4?auto=format&fit=crop&q=80&w=600" alt="Cute kid with headband" className="w-full h-full object-cover rounded-[12px]" />
+                <div className="absolute top-0 right-0 left-auto w-[78%] h-[78%] bg-white rounded-2xl p-2 shadow-xl z-20">
+                  <img src="https://images.unsplash.com/photo-1503944583220-79d8926ad5e2?auto=format&fit=crop&q=80&w=600" alt="Kids accessories" className="w-full h-full object-cover rounded-[12px]" />
                 </div>
                 {/* Secondary Image */}
                 <div className="absolute bottom-0 left-0 right-auto w-[55%] h-[55%] bg-white rounded-2xl p-2 shadow-lg z-30">
                   <img src="https://images.unsplash.com/photo-1622290291468-a28f7a7dc6a8?auto=format&fit=crop&q=80&w=400" alt="Product detail" className="w-full h-full object-cover rounded-[12px]" />
                 </div>
-                {/* Decorative blob */}
-                <div className="absolute top-[10%] left-[5%] right-auto w-[60%] h-[60%] bg-brand-secondary/40 rounded-full blur-2xl -z-10"></div>
+                {/* Decorative blob — clipped by section overflow-hidden */}
+                <div className="absolute top-[10%] left-[5%] w-[55%] h-[55%] bg-brand-secondary/50 rounded-full blur-3xl -z-10 pointer-events-none"></div>
               </motion.div>
             </div>
 
@@ -222,9 +215,9 @@ export default function Home() {
 
           <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 md:gap-5 xl:gap-6">
             {[
-              "https://images.unsplash.com/photo-1625772299848-391b6a87d7b3?auto=format&fit=crop&w=600&q=80",
-              "https://images.unsplash.com/photo-1596755389378-c31d21fd1273?auto=format&fit=crop&w=600&q=80",
-              "https://images.unsplash.com/photo-1522337660859-02fbefca4702?auto=format&fit=crop&w=600&q=80"
+              "https://images.unsplash.com/photo-1503944583220-79d8926ad5e2?auto=format&fit=crop&w=600&q=80",
+              "https://images.unsplash.com/photo-1471286174890-9c112ac6f1ad?auto=format&fit=crop&w=600&q=80",
+              "https://images.unsplash.com/photo-1596755389378-c31d21fd1273?auto=format&fit=crop&w=600&q=80"
             ].map((img, i) => (
               <div key={i} className="relative w-full h-[200px] xl:h-[240px] rounded-[16px] overflow-hidden group cursor-pointer">
                 <img src={img} alt="Gallery moment" className="w-full h-full object-cover" />
