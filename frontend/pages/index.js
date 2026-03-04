@@ -44,7 +44,7 @@ export default function Home() {
       {/* 1. HERO SECTION */}
       <section className="relative min-h-[auto] md:min-h-[60vh] xl:min-h-[70vh] pt-24 md:pt-32 pb-16 lg:pb-0 flex items-center overflow-hidden">
 
-        <div className="max-w-[1200px] mx-auto px-4 md:px-5 lg:px-6 w-full z-10 relative">
+        <div className="max-w-screen-2xl mx-auto px-4 md:px-5 lg:px-6 w-full z-10 relative">
 
           {/* Floating decorative elements — safely bounded inside the 1200px wrapper */}
           <motion.div animate={{ y: [0, -16, 0] }} transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }} className="absolute -top-6 left-0 xl:-left-12 text-brand-primary/60 pointer-events-none hidden md:block">
@@ -102,7 +102,7 @@ export default function Home() {
 
       {/* 2. FEATURES SECTION */}
       <section className="py-[40px] md:py-[60px] xl:py-[80px]">
-        <div className="max-w-[1200px] mx-auto px-4 md:px-5 lg:px-6">
+        <div className="max-w-screen-2xl mx-auto px-4 md:px-5 lg:px-6">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-5 xl:gap-6">
             <div className="bg-white p-6 rounded-2xl shadow-[0_4px_20px_-4px_rgba(0,0,0,0.05)] flex items-start gap-4 hover:-translate-y-1 transition-transform">
               <div className="w-12 h-12 rounded-full bg-brand-primary/20 flex items-center justify-center text-pink-500 shrink-0">
@@ -138,7 +138,7 @@ export default function Home() {
       {/* 3. CATEGORIES SECTION */}
       {categories.length > 0 && (
         <section className="py-[40px] md:py-[60px] xl:py-[80px] bg-white">
-          <div className="max-w-[1200px] mx-auto px-4 md:px-5 lg:px-6">
+          <div className="max-w-screen-2xl mx-auto px-4 md:px-5 lg:px-6">
             <h2 className="text-[24px] xl:text-[32px] font-heading font-bold text-brand-text mb-8 text-center md:text-left">
               Shop by Category
             </h2>
@@ -172,7 +172,7 @@ export default function Home() {
       {/* 4. BEST SELLERS SECTION */}
       {featured.length > 0 && (
         <section className="py-[40px] md:py-[60px] xl:py-[80px]">
-          <div className="max-w-[1200px] mx-auto px-4 md:px-5 lg:px-6">
+          <div className="max-w-screen-2xl mx-auto px-4 md:px-5 lg:px-6">
             <div className="flex justify-between items-end mb-8">
               <h2 className="text-[24px] xl:text-[32px] font-heading font-bold text-brand-text">
                 Best Sellers 💕
@@ -205,7 +205,7 @@ export default function Home() {
         <motion.div animate={{ rotate: 360 }} transition={{ duration: 20, repeat: Infinity, ease: "linear" }} className="absolute -top-10 -left-10 text-white/20">
           <Sparkles size={120} />
         </motion.div>
-        <div className="max-w-[1200px] mx-auto px-4 text-center relative z-10">
+        <div className="max-w-screen-2xl mx-auto px-4 text-center relative z-10">
           <h2 className="text-[28px] md:text-[36px] font-heading font-extrabold text-white mb-2 drop-shadow-sm">
             Free Gift with Orders Over 500 EGP 🎁
           </h2>
@@ -215,7 +215,7 @@ export default function Home() {
 
       {/* 6. TOKA MOMENTS GALLERY */}
       <section className="py-[40px] md:py-[60px] xl:py-[80px] bg-white">
-        <div className="max-w-[1200px] mx-auto px-4 md:px-5 lg:px-6">
+        <div className="max-w-screen-2xl mx-auto px-4 md:px-5 lg:px-6">
           <div className="text-center mb-10">
             <h2 className="text-[24px] xl:text-[32px] font-heading font-bold text-brand-text mb-2">
               TOKA Moments
@@ -242,7 +242,7 @@ export default function Home() {
 
       {/* 7. TESTIMONIALS */}
       <section className="py-[40px] md:py-[60px] xl:py-[80px] overflow-hidden">
-        <div className="max-w-[1200px] mx-auto px-4 md:px-5 lg:px-6">
+        <div className="max-w-screen-2xl mx-auto px-4 md:px-5 lg:px-6">
           <h2 className="text-[24px] xl:text-[32px] font-heading font-bold text-center text-brand-text mb-10">
             Happy Moms Say...
           </h2>
@@ -269,7 +269,7 @@ export default function Home() {
 
       {/* 8. ABOUT PREVIEW */}
       <section className="py-[40px] md:py-[60px] xl:py-[80px] bg-white">
-        <div className="max-w-[1200px] mx-auto px-4 md:px-5 lg:px-6">
+        <div className="max-w-screen-2xl mx-auto px-4 md:px-5 lg:px-6">
           <div className="flex flex-col md:flex-row items-center gap-8 lg:gap-16">
             <div className="w-full md:w-1/2 relative h-[260px] md:h-[380px] rounded-[16px] overflow-hidden">
               <img src="https://images.unsplash.com/photo-1607525384119-9dc490de9f41?auto=format&fit=crop&w=800&q=80" alt="Making headbands" className="w-full h-full object-cover" />

@@ -26,7 +26,7 @@ export default function Navbar() {
 
   return (
     <nav className={`fixed w-full top-0 z-50 transition-all duration-300 ${scrolled ? 'bg-white/95 backdrop-blur-md shadow-sm py-4' : 'bg-transparent py-6'}`}>
-      <div className="max-w-[1200px] mx-auto px-4 md:px-5 lg:px-6">
+      <div className="max-w-screen-2xl mx-auto px-4 md:px-5 lg:px-6">
         <div className="relative flex items-center justify-between h-[60px] xl:h-[72px]">
 
           {/* Mobile Menu Button */}
