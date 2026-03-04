@@ -4,6 +4,7 @@ import { useLang } from '@/context/LanguageContext';
 import ProductCard from '@/components/ProductCard';
 import Pagination from '@/components/Pagination';
 import { fetchProducts, fetchCategories } from '@/lib/api';
+import { motion } from 'framer-motion';
 
 export default function Products() {
   const { t, ui } = useLang();
@@ -48,27 +49,29 @@ export default function Products() {
     <div className="bg-white min-h-screen pt-28 pb-32">
       <div className="w-full mx-auto px-6 md:px-16 lg:px-24">
         {/* Header */}
-        <div className="flex flex-col md:flex-row md:items-end justify-between mb-16 gap-8 border-b border-brand-200 pb-8">
-          <div>
-            <h1 className="text-4xl sm:text-5xl font-bold font-[var(--font-family-heading)] text-brand-900 uppercase tracking-widest">{ui.allProducts}</h1>
-            {!loading && <p className="text-sm font-medium tracking-[0.1em] text-brand-400 uppercase mt-4">{total} items</p>}
+        <div className="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-6 border-b border-brand-200 pb-8 relative">
+          <div className="relative">
+            {/* Decorative Blob */}
+            <div className="absolute -top-10 -left-10 w-32 h-32 bg-brand-primary/20 rounded-full blur-3xl pointer-events-none"></div>
+            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold font-heading text-brand-text mb-2 relative z-10">{ui.allProducts}</h1>
+            {!loading && <p className="text-sm font-body font-bold text-brand-400 relative z-10">{total} items found</p>}
           </div>
 
           {/* Filters */}
-          <div className="flex flex-col sm:flex-row gap-4 w-full md:w-auto">
+          <div className="flex flex-col sm:flex-row gap-3 w-full md:w-auto relative z-10">
             <div className="relative w-full sm:w-64">
               <input
                 type="text" value={search}
                 onChange={(e) => { setSearch(e.target.value); setPage(1); }}
                 placeholder={ui.search}
-                className="input-field !pl-10 text-sm font-medium tracking-wide bg-brand-50"
+                className="w-full h-[48px] pl-11 pr-4 rounded-xl border-2 border-white focus:border-brand-primary outline-none text-brand-text font-body transition-colors bg-white/60 backdrop-blur-md shadow-sm"
               />
               <svg className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-brand-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="square" strokeLinejoin="miter" strokeWidth={1.5} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
               </svg>
             </div>
             <select value={selectedCategory} onChange={(e) => { setSelectedCategory(e.target.value); setPage(1); }}
-              className="input-field !w-full sm:!w-48 text-sm font-medium tracking-wide bg-brand-50 appearance-none">
+              className="w-full sm:w-48 h-[48px] px-4 rounded-xl border-2 border-white focus:border-brand-primary outline-none text-brand-text font-body transition-colors bg-white/60 backdrop-blur-md shadow-sm appearance-none cursor-pointer">
               <option value="">{ui.allCategories}</option>
               {categories.map((cat) => (
                 <option key={cat._id} value={cat._id}>{t(cat.nameAr, cat.nameEn)}</option>
@@ -79,30 +82,41 @@ export default function Products() {
 
         {/* Grid */}
         {loading ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-x-8 gap-y-16">
+          <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 md:gap-5 xl:gap-6">
             {[...Array(8)].map((_, i) => (
-              <div key={i} className="flex flex-col">
-                <div className="aspect-[3/4] shimmer mb-4" />
+              <div key={i} className="flex flex-col bg-white rounded-2xl p-4 shadow-sm h-[300px] md:h-[400px]">
+                <div className="w-full h-full bg-brand-50 rounded-xl shimmer mb-4" />
                 <div className="space-y-3 px-2 flex flex-col items-center">
-                  <div className="h-4 shimmer w-2/3" />
-                  <div className="h-4 shimmer w-1/3" />
+                  <div className="h-4 shimmer w-2/3 rounded-full bg-brand-100" />
+                  <div className="h-4 shimmer w-1/3 rounded-full bg-brand-100" />
                 </div>
               </div>
             ))}
           </div>
         ) : products.length === 0 ? (
-          <div className="text-center py-32">
-            <h3 className="text-2xl font-[var(--font-family-heading)] text-brand-400 mb-2">No products found</h3>
-            <p className="text-sm text-brand-300 tracking-widest uppercase">Try adjusting your filters</p>
+          <div className="text-center py-32 bg-white/50 backdrop-blur-sm rounded-3xl border border-white">
+            <h3 className="text-2xl font-heading font-bold text-brand-400 mb-2">No products found 🌸</h3>
+            <p className="text-sm text-brand-300 font-body">Try adjusting your search or filters</p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-x-8 gap-y-16">
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 md:gap-5 xl:gap-6"
+          >
             {products.map((product, idx) => (
-              <div key={product._id} className="animate-fade-in" style={{ animationDelay: `${idx * 0.05}s` }}>
-                <ProductCard product={product} />
-              </div>
+              <motion.div
+                key={product._id}
+                initial={{ opacity: 0, y: 30, filter: 'blur(10px)' }}
+                animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
+                transition={{ duration: 0.6, delay: idx * 0.05 }}
+              >
+                <div className="group hover:-translate-y-2 transition-transform duration-300 h-full">
+                  <ProductCard product={product} />
+                </div>
+              </motion.div>
             ))}
-          </div>
+          </motion.div>
         )}
 
         {totalPages > 1 && (

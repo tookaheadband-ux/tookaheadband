@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import Head from 'next/head';
 import Image from 'next/image';
+import { motion } from 'framer-motion';
 import { useLang } from '@/context/LanguageContext';
 import { useCart } from '@/context/CartContext';
 import { fetchProduct } from '@/lib/api';
@@ -53,7 +54,7 @@ export default function ProductDetail() {
         <title>{name} — TOOKA</title>
         <meta name="description" content={description} />
       </Head>
-      <div className="bg-white min-h-screen pt-28 pb-32">
+      <div className="bg-brand-background min-h-screen pt-28 pb-32">
         <div className="w-full mx-auto px-6 md:px-16 lg:px-24">
 
           <div className="grid grid-cols-1 md:grid-cols-12 gap-12 lg:gap-24">
@@ -75,13 +76,18 @@ export default function ProductDetail() {
                 </div>
               )}
               {/* Main Image */}
-              <div className="relative aspect-[4/5] w-full bg-brand-50 order-1 md:order-2 flex-grow">
+              <motion.div
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 0.5 }}
+                className="relative aspect-[4/5] w-full bg-white rounded-3xl overflow-hidden shadow-sm order-1 md:order-2 flex-grow border border-white"
+              >
                 {product.images && product.images.length > 0 ? (
                   <img src={mainImage} alt={name} className="w-full h-full object-cover" />
                 ) : (
                   <div className="w-full h-full flex items-center justify-center text-brand-300 font-[var(--font-family-heading)] text-2xl">TOOKA</div>
                 )}
-              </div>
+              </motion.div>
             </div>
 
             {/* Details Section */}
@@ -120,12 +126,16 @@ export default function ProductDetail() {
 
                   <div className="flex flex-col gap-4">
                     <button onClick={handleAddToCart}
-                      className={`btn-primary w-full ${added ? '!bg-brand-500 !text-white !border-brand-500' : ''}`}>
+                      className={`w-full h-[56px] text-white font-bold text-base md:text-lg tracking-wide rounded-xl transition-all duration-300 ${
+                        added
+                          ? 'bg-brand-500 shadow-sm'
+                          : 'bg-brand-primary shadow-[0_4px_14px_0_rgba(255,199,209,0.5)] hover:shadow-[0_6px_20px_rgba(255,199,209,0.7)] hover:-translate-y-1'
+                      }`}>
                       {added ? 'Added to bag' : ui.addToCart}
                     </button>
 
                     <a href={`https://wa.me/?text=${whatsappMsg}`} target="_blank" rel="noopener noreferrer"
-                      className="btn-secondary w-full text-center">
+                      className="w-full h-[56px] bg-white border-2 border-[#25D366] text-[#25D366] font-bold text-base md:text-lg tracking-wide rounded-xl hover:bg-[#25D366]/5 hover:-translate-y-1 transition-all duration-300 flex items-center justify-center">
                       {ui.orderViaWhatsApp}
                     </a>
                   </div>
