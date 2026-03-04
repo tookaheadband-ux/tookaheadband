@@ -4,6 +4,7 @@ import { CartProvider } from '@/context/CartContext';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import CartDrawer from '@/components/CartDrawer';
+import { Toaster } from 'react-hot-toast';
 import Head from 'next/head';
 
 export default function App({ Component, pageProps }) {
@@ -24,6 +25,27 @@ export default function App({ Component, pageProps }) {
 
         <main className={isAdmin ? '' : 'min-h-screen overflow-x-hidden w-full relative'}>
           <Component {...pageProps} />
+          <Toaster
+            position="top-center"
+            reverseOrder={false}
+            toastOptions={{
+              className: 'font-body font-bold text-sm shadow-lg',
+              duration: 3000,
+              style: {
+                background: '#FFF9FB',
+                color: '#333',
+                border: '1px solid #FFC7D1',
+                borderRadius: '16px',
+                padding: '16px 24px',
+              },
+              success: {
+                iconTheme: {
+                  primary: '#FFC7D1',
+                  secondary: '#FFF',
+                },
+              },
+            }}
+          />
         </main>
 
         {!isAdmin && <Footer />}

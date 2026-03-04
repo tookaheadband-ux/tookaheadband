@@ -2,10 +2,14 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { useLang } from '@/context/LanguageContext';
 import { useCart } from '@/context/CartContext';
+import { useState } from 'react';
+import { Eye } from 'lucide-react';
+import QuickViewModal from './QuickViewModal';
 
 export default function ProductCard({ product }) {
   const { t, ui } = useLang();
   const { addItem } = useCart();
+  const [isQuickViewOpen, setIsQuickViewOpen] = useState(false);
 
   const name = t(product.nameAr, product.nameEn);
   const image = product.images?.[0] || 'https://placehold.co/800x1000/F7F5F2/2C2621?text=TOOKA';
@@ -20,8 +24,20 @@ export default function ProductCard({ product }) {
             className="w-full h-full object-cover transition-transform duration-1000 ease-out group-hover:scale-105"
             loading="lazy"
           />
+          {/* Quick View Button (Visible on Hover) */}
+          <button
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              setIsQuickViewOpen(true);
+            }}
+            className="absolute top-4 right-4 z-20 w-8 h-8 md:w-10 md:h-10 bg-white/80 backdrop-blur-md rounded-full flex items-center justify-center text-brand-text opacity-100 md:opacity-0 group-hover:opacity-100 hover:bg-white hover:scale-110 transition-all shadow-sm"
+          >
+            <Eye size={18} />
+          </button>
+
           {product.isFeatured && (
-            <span className="absolute top-4 left-4 badge badge-brand">Featured</span>
+            <span className="absolute top-4 left-4 badge badge-brand shadow-sm">Featured</span>
           )}
           {product.stock <= 0 && (
             <div className="absolute inset-0 bg-white/50 backdrop-blur-sm flex items-center justify-center">
@@ -49,6 +65,12 @@ export default function ProductCard({ product }) {
           {ui.addToCart}
         </button>
       </div>
+
+      <QuickViewModal
+        product={product}
+        isOpen={isQuickViewOpen}
+        onClose={() => setIsQuickViewOpen(false)}
+      />
     </div>
   );
 }
