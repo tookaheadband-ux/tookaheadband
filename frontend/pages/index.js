@@ -141,12 +141,18 @@ export default function Home() {
 
       {/* 3. CATEGORIES SECTION */}
       {categories.length > 0 && (
-        <section className="py-[40px] md:py-[60px] xl:py-[80px] bg-white">
+        <motion.section
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-100px" }}
+          transition={{ duration: 0.6 }}
+          className="py-[40px] md:py-[60px] xl:py-[80px] bg-white"
+        >
           <div className="max-w-screen-2xl mx-auto px-4 md:px-5 lg:px-6">
             <h2 className="text-[24px] xl:text-[32px] font-heading font-bold text-brand-text mb-8 text-center md:text-left">
               Shop by Category
             </h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4 md:gap-5 xl:gap-6">
+            <div className="grid grid-cols-2 xl:grid-cols-4 gap-3 md:gap-5 xl:gap-6">
               {categories.map((cat, idx) => {
                 const bgImages = [
                   'https://images.unsplash.com/photo-1515488042361-ee00e0ddd4e4?auto=format&fit=crop&q=80&w=600',
@@ -170,12 +176,18 @@ export default function Home() {
               })}
             </div>
           </div>
-        </section>
+        </motion.section>
       )}
 
       {/* 4. BEST SELLERS SECTION */}
       {featured.length > 0 && (
-        <section className="py-[40px] md:py-[60px] xl:py-[80px]">
+        <motion.section
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-100px" }}
+          transition={{ duration: 0.6 }}
+          className="py-[40px] md:py-[60px] xl:py-[80px]"
+        >
           <div className="max-w-screen-2xl mx-auto px-4 md:px-5 lg:px-6">
             <div className="flex justify-between items-end mb-8">
               <h2 className="text-[24px] xl:text-[32px] font-heading font-bold text-brand-text">
@@ -186,7 +198,7 @@ export default function Home() {
               </Link>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-5 xl:gap-6">
+            <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 md:gap-5 xl:gap-6">
               {featured.map((product) => (
                 <div key={product._id} className="group hover:-translate-y-2 transition-transform duration-300">
                   <ProductCard product={product} />
@@ -201,7 +213,7 @@ export default function Home() {
               </Link>
             </div>
           </div>
-        </section>
+        </motion.section>
       )}
 
       {/* 5. PROMO BANNER */}
@@ -220,7 +232,13 @@ export default function Home() {
 
 
       {/* 8. ABOUT PREVIEW */}
-      <section className="py-[40px] md:py-[60px] xl:py-[80px] bg-white">
+      <motion.section
+        initial={{ opacity: 0, y: 30 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, margin: "-100px" }}
+        transition={{ duration: 0.6 }}
+        className="py-[40px] md:py-[60px] xl:py-[80px] bg-white"
+      >
         <div className="max-w-screen-2xl mx-auto px-4 md:px-5 lg:px-6">
           <div className="flex flex-col md:flex-row items-center gap-8 lg:gap-16">
             <div className="w-full md:w-1/2 relative h-[260px] md:h-[380px] rounded-[16px] overflow-hidden">
@@ -239,10 +257,16 @@ export default function Home() {
             </div>
           </div>
         </div>
-      </section>
+      </motion.section>
 
       {/* 9. NEWSLETTER */}
-      <section className="py-[40px] md:py-[80px] bg-brand-secondary/40 border-t border-brand-secondary/60 text-center">
+      <motion.section
+        initial={{ opacity: 0, y: 30 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, margin: "-100px" }}
+        transition={{ duration: 0.6 }}
+        className="py-[40px] md:py-[80px] bg-brand-secondary/40 border-t border-brand-secondary/60 text-center"
+      >
         <div className="max-w-[600px] mx-auto px-4">
           <div className="w-16 h-16 bg-white rounded-full flex items-center justify-center mx-auto mb-6 shadow-sm text-brand-primary">
             <Gift size={32} />
@@ -264,7 +288,7 @@ export default function Home() {
             </button>
           </form>
         </div>
-      </section>
+      </motion.section>
 
     </div>
   );
