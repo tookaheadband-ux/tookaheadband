@@ -53,8 +53,8 @@ export default function ProductCard({ product }) {
         <h3 className="font-heading font-bold text-brand-text text-[14px] sm:text-[15px] md:text-[18px] tracking-wide line-clamp-1 transition-colors group-hover:text-brand-primary">
           {name}
         </h3>
-        <p className="text-brand-700 text-[13px] md:text-[16px] font-body font-semibold mt-1">
-          {product.price} <span className="text-[10px] md:text-xs uppercase tracking-wider text-brand-400 font-bold ml-1">{ui.egp}</span>
+        <p className="text-gray-900 text-[14px] md:text-[17px] font-body font-black mt-1">
+          {product.price} <span className="text-[11px] md:text-xs uppercase tracking-wider text-gray-600 font-black ml-1">{ui.egp}</span>
         </p>
       </Link>
 

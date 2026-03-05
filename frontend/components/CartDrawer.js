@@ -70,7 +70,7 @@ export default function CartDrawer() {
                       <div className="flex-1 min-w-0 py-1 flex flex-col justify-between">
                         <div>
                           <p className="font-heading font-bold text-brand-text truncate pr-6">{item.productNameSnapshot}</p>
-                          <p className="text-xs font-body font-semibold text-brand-400 mt-1 uppercase tracking-wide">{item.priceSnapshot} {ui.egp}</p>
+                          <p className="text-sm font-body font-black text-gray-700 mt-1 uppercase tracking-wide">{item.priceSnapshot} {ui.egp}</p>
                         </div>
                         <div className="flex items-center gap-2 mt-2">
                           <button onClick={() => updateQty(item.productId, item.qty - 1)}
@@ -96,7 +96,7 @@ export default function CartDrawer() {
               <div className="px-6 py-6 border-t border-brand-100/50 bg-white/50 space-y-4 sm:rounded-bl-3xl">
                 <div className="flex items-center justify-between mb-2 border-b border-brand-100 pb-4">
                   <span className="text-sm font-body font-bold text-brand-700 uppercase tracking-widest">{ui.total}</span>
-                  <span className="text-xl font-heading font-bold text-brand-primary">{total} <span className="text-sm tracking-widest text-brand-400 uppercase">{ui.egp}</span></span>
+                  <span className="text-xl font-heading font-black text-gray-900">{total} <span className="text-sm tracking-widest text-gray-600 font-black uppercase">{ui.egp}</span></span>
                 </div>
                 <a href="/checkout" onClick={() => setIsOpen(false)} className="w-full h-[56px] flex items-center justify-center bg-brand-primary text-white font-bold text-base md:text-lg tracking-wide rounded-xl shadow-[0_4px_14px_0_rgba(255,199,209,0.5)] hover:shadow-[0_6px_20px_rgba(255,199,209,0.7)] hover:-translate-y-1 transition-all duration-300">
                   {ui.proceedToCheckout}

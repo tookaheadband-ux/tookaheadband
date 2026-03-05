@@ -141,7 +141,7 @@ export default function ProductDetail() {
                       {added ? 'Added to bag' : ui.addToCart}
                     </button>
 
-                    <a href={`https://wa.me/?text=${whatsappMsg}`} target="_blank" rel="noopener noreferrer"
+                    <a href={`https://wa.me/20100204496?text=${whatsappMsg}`} target="_blank" rel="noopener noreferrer"
                       className="w-full h-[56px] bg-white border-2 border-[#25D366] text-[#25D366] font-bold text-base md:text-lg tracking-wide rounded-xl hover:bg-[#25D366]/5 hover:-translate-y-1 transition-all duration-300 flex items-center justify-center">
                       {ui.orderViaWhatsApp}
                     </a>

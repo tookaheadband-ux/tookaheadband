@@ -6,7 +6,7 @@ const { upload } = require('../config/cloudinary');
 const { login, getMe, getDashboard } = require('../controllers/adminController');
 const { createProduct, updateProduct, deleteProduct, getProducts } = require('../controllers/productController');
 const { createCategory, updateCategory, deleteCategory, getCategories } = require('../controllers/categoryController');
-const { getOrders, updateOrderStatus } = require('../controllers/orderController');
+const { getOrders, updateOrderStatus, exportOrdersPdf } = require('../controllers/orderController');
 const { updatePage } = require('../controllers/pageController');
 
 // Auth
