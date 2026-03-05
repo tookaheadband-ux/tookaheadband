@@ -36,7 +36,7 @@ export default function ProductDetail() {
   const name = product ? t(product.nameAr, product.nameEn) : '';
   const description = product ? t(product.descriptionAr, product.descriptionEn) : '';
   const categoryName = product?.categoryId ? t(product.categoryId.nameAr, product.categoryId.nameEn) : '';
-  const whatsappMsg = encodeURIComponent(`Hello TOOKA,\n\nI want to order:\n${name}\n\nMy name:\nMy address:`);
+  const whatsappMsg = encodeURIComponent(`Hello TOOKA,\n\nI want to order:\n[${product?.sku || ''}] ${name}\n\nMy name:\nMy address:`);
 
   if (loading) {
     return <div className="flex items-center justify-center min-h-[80vh]">
@@ -94,11 +94,18 @@ export default function ProductDetail() {
             <div className="md:col-span-5 animate-fade-in flex flex-col pt-8 md:pt-12" style={{ animationDelay: '0.1s' }}>
 
               <div className="mb-8 border-b border-brand-100 pb-8">
-                {categoryName && (
-                  <p className="text-xs font-semibold tracking-[0.2em] uppercase text-brand-400 mb-4">
-                    {categoryName}
-                  </p>
-                )}
+                <div className="flex items-center gap-3 mb-4">
+                  {categoryName && (
+                    <p className="text-xs font-semibold tracking-[0.2em] uppercase text-brand-400">
+                      {categoryName}
+                    </p>
+                  )}
+                  {product.sku && (
+                    <span className="text-[10px] font-bold tracking-widest uppercase text-brand-primary bg-brand-primary/10 px-2 py-0.5 rounded-full">
+                      {product.sku}
+                    </span>
+                  )}
+                </div>
                 <h1 className="text-3xl sm:text-4xl font-bold font-[var(--font-family-heading)] text-brand-900 mb-6 uppercase tracking-wider">{name}</h1>
                 <p className="text-2xl font-medium text-brand-900">
                   {product.price} <span className="text-sm font-normal text-brand-400 tracking-widest uppercase">{ui.egp}</span>

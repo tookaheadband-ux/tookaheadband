@@ -2,7 +2,7 @@ const { sendTelegramMessage, sendTelegramDocument } = require('../config/telegra
 
 const sendNewOrderNotification = async (order) => {
   const itemsList = order.items
-    .map((i) => `${i.productNameSnapshot} x${i.qty}`)
+    .map((i) => `[${i.skuSnapshot || '—'}] ${i.productNameSnapshot} x${i.qty}`)
     .join('\n');
 
   const message = `🚨 <b>NEW ORDER</b>
@@ -25,7 +25,7 @@ const sendLowStockAlert = async (product) => {
   const name = product.nameEn || product.nameAr || 'Unknown';
   const message = `🚨 <b>LOW STOCK</b>
 
-<b>Product:</b> ${name}
+<b>Product:</b> [${product.sku || '—'}] ${name}
 <b>Remaining:</b> ${product.stock}`;
 
   await sendTelegramMessage(message);
@@ -33,7 +33,7 @@ const sendLowStockAlert = async (product) => {
 
 const sendDailyReportToTelegram = async (pdfBuffer) => {
   const today = new Date().toISOString().split('T')[0];
-  await sendTelegramDocument(pdfBuffer, `TOKA_Report_${today}.pdf`, `📊 Daily Report — ${today}`);
+  await sendTelegramDocument(pdfBuffer, `TOOKA_Report_${today}.pdf`, `📊 Daily Report — ${today}`);
 };
 
 module.exports = { sendNewOrderNotification, sendLowStockAlert, sendDailyReportToTelegram };

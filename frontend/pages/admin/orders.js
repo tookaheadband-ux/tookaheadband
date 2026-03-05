@@ -36,7 +36,7 @@ export default function AdminOrders() {
               <tr key={o._id} className="border-b border-neutral-50 hover:bg-neutral-50">
                 <td className="p-3"><p className="font-medium text-neutral-800 text-sm">{o.name}</p><p className="text-xs text-neutral-400 truncate max-w-[180px]">{o.address}</p></td>
                 <td className="p-3 text-neutral-600 text-xs">{o.phone}</td>
-                <td className="p-3"><div className="text-xs text-neutral-500">{o.items.map((i, idx) => <p key={idx}>{i.productNameSnapshot} x{i.qty}</p>)}</div></td>
+                <td className="p-3"><div className="text-xs text-neutral-500">{o.items.map((i, idx) => <p key={idx}><span className="font-bold text-brand-primary">[{i.skuSnapshot || '—'}]</span> {i.productNameSnapshot} x{i.qty}</p>)}</div></td>
                 <td className="p-3 font-semibold text-neutral-800">{o.total} EGP</td>
                 <td className="p-3"><span className={`badge ${statusBadge[o.status]}`}>{ui[o.status]}</span></td>
                 <td className="p-3 text-xs text-neutral-400">{new Date(o.createdAt).toLocaleDateString()}</td>

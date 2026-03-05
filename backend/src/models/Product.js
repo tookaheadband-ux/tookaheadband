@@ -2,6 +2,7 @@ const mongoose = require('mongoose');
 
 const productSchema = new mongoose.Schema(
   {
+    sku: { type: String, unique: true, index: true },
     nameAr: { type: String, default: '' },
     nameEn: { type: String, default: '' },
     descriptionAr: { type: String, default: '' },
@@ -19,6 +20,26 @@ const productSchema = new mongoose.Schema(
   },
   { timestamps: true }
 );
+
+// Auto-generate SKU on first save
+const generateSku = () => {
+  const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'; // No 0/O/1/I confusion
+  let code = '';
+  for (let i = 0; i < 4; i++) code += chars.charAt(Math.floor(Math.random() * chars.length));
+  return `TK-${code}`;
+};
+
+productSchema.pre('save', async function (next) {
+  if (this.sku) return next();
+  let sku;
+  let exists = true;
+  while (exists) {
+    sku = generateSku();
+    exists = await mongoose.model('Product').findOne({ sku });
+  }
+  this.sku = sku;
+  next();
+});
 
 // Validate at least one language name exists
 productSchema.pre('validate', function (next) {

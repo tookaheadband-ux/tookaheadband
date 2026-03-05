@@ -51,7 +51,7 @@ export default function AdminProducts() {
         <div className="card !rounded-xl overflow-x-auto">
           <table className="w-full text-sm">
             <thead><tr className="border-b border-neutral-100 text-neutral-400 text-left text-xs uppercase tracking-wider">
-              <th className="p-3">{ui.images}</th><th className="p-3">{ui.name}</th><th className="p-3">{ui.price}</th>
+              <th className="p-3">{ui.images}</th><th className="p-3">SKU</th><th className="p-3">{ui.name}</th><th className="p-3">{ui.price}</th>
               <th className="p-3">{ui.stock}</th><th className="p-3">{ui.category}</th><th className="p-3">{ui.actions}</th>
             </tr></thead>
             <tbody>{products.map((p) => (
@@ -59,6 +59,7 @@ export default function AdminProducts() {
                 <td className="p-3"><div className="w-10 h-10 rounded-lg overflow-hidden bg-neutral-100 relative">
                   {p.images?.[0] ? <Image src={p.images[0]} alt="" fill className="object-cover" sizes="40px" /> : <div className="w-full h-full" />}
                 </div></td>
+                <td className="p-3"><span className="text-xs font-bold text-brand-primary bg-brand-primary/10 px-2 py-0.5 rounded-full tracking-wider">{p.sku || '—'}</span></td>
                 <td className="p-3 font-medium text-neutral-800">{t(p.nameAr, p.nameEn)}</td>
                 <td className="p-3 text-neutral-600">{p.price} EGP</td>
                 <td className="p-3"><span className={`badge ${p.stock <= 3 ? 'badge-red' : 'badge-green'}`}>{p.stock}</span></td>

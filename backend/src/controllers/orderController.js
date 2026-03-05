@@ -33,6 +33,7 @@ const createOrder = async (req, res, next) => {
 
       orderItems.push({
         productId: product._id,
+        skuSnapshot: product.sku || '',
         productNameSnapshot: product.nameEn || product.nameAr,
         priceSnapshot: product.price,
         qty: item.qty,

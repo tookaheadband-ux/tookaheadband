@@ -17,7 +17,7 @@ function AdminNav({ ui, active, onLogout }) {
     <>
       <header className="glass sticky top-0 z-40 border-b border-neutral-200/60">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between h-14">
-          <Link href="/admin/dashboard" className="font-bold text-neutral-900 text-base font-[var(--font-family-heading)]">TOKA Admin</Link>
+          <Link href="/admin/dashboard" className="font-bold text-neutral-900 text-base font-[var(--font-family-heading)]">TOOKA Admin</Link>
           <button onClick={onLogout} className="btn-secondary text-xs !py-1.5 !px-4">{ui.logout}</button>
         </div>
       </header>
