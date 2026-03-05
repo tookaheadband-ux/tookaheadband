@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/router';
 import { useLang } from '@/context/LanguageContext';
 import { useCart } from '@/context/CartContext';
-import { createOrder } from '@/lib/api';
+import { createOrder, validateCoupon } from '@/lib/api';
 
 export default function Checkout() {
   const { ui } = useLang();
@@ -11,8 +11,25 @@ export default function Checkout() {
   const [form, setForm] = useState({ name: '', phone: '', address: '', email: '', notes: '' });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [couponCode, setCouponCode] = useState('');
+  const [couponResult, setCouponResult] = useState(null);
+  const [couponError, setCouponError] = useState('');
+  const [applyingCoupon, setApplyingCoupon] = useState(false);
 
   const handleChange = (e) => setForm({ ...form, [e.target.name]: e.target.value });
+
+  const handleApplyCoupon = async () => {
+    if (!couponCode.trim()) return;
+    setApplyingCoupon(true); setCouponError(''); setCouponResult(null);
+    try {
+      const res = await validateCoupon({ code: couponCode, orderTotal: total });
+      setCouponResult(res.data);
+    } catch (err) {
+      setCouponError(err.response?.data?.message || 'Invalid coupon');
+    } finally { setApplyingCoupon(false); }
+  };
+
+  const finalTotal = couponResult ? Math.max(0, total - couponResult.discount) : total;
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -21,7 +38,7 @@ export default function Checkout() {
     if (items.length === 0) { setError('Cart is empty'); return; }
     setLoading(true);
     try {
-      await createOrder({ ...form, items: items.map((i) => ({ productId: i.productId, qty: i.qty })) });
+      await createOrder({ ...form, couponCode: couponResult ? couponResult.code : '', items: items.map((i) => ({ productId: i.productId, qty: i.qty })) });
       clearCart();
       router.push('/order-success');
     } catch (err) { setError(err.response?.data?.message || 'Something went wrong'); }
@@ -101,9 +118,40 @@ export default function Checkout() {
               </div>
 
               <div className="border-t border-brand-200/60 pt-6">
+                {/* Coupon Input */}
+                <div className="mb-4">
+                  <label className="block text-xs font-black uppercase tracking-widest text-gray-600 mb-2">🏷️ Coupon Code</label>
+                  <div className="flex gap-2">
+                    <input value={couponCode} onChange={(e) => setCouponCode(e.target.value.toUpperCase())} placeholder="e.g. TOOKA20"
+                      className="flex-1 h-10 px-4 rounded-xl border-2 border-gray-200 focus:border-pink-400 outline-none text-gray-900 font-black tracking-wider text-sm bg-gray-50 uppercase" />
+                    <button type="button" onClick={handleApplyCoupon} disabled={applyingCoupon}
+                      className="h-10 px-5 bg-gray-900 text-white font-bold text-sm rounded-xl hover:-translate-y-0.5 transition-all disabled:opacity-50">
+                      {applyingCoupon ? '...' : 'Apply'}
+                    </button>
+                  </div>
+                  {couponError && <p className="text-xs text-red-500 font-bold mt-1">{couponError}</p>}
+                  {couponResult && (
+                    <div className="mt-2 p-3 bg-green-50 border border-green-200 rounded-xl">
+                      <p className="text-xs text-green-700 font-black">✅ {couponResult.code} applied! -{couponResult.discount} EGP</p>
+                    </div>
+                  )}
+                </div>
+
+                {couponResult && (
+                  <div className="flex justify-between items-center text-sm mb-3">
+                    <span className="text-gray-500 font-bold">Subtotal</span>
+                    <span className="text-gray-500 font-bold">{total} EGP</span>
+                  </div>
+                )}
+                {couponResult && (
+                  <div className="flex justify-between items-center text-sm mb-3">
+                    <span className="text-green-600 font-bold">Discount</span>
+                    <span className="text-green-600 font-bold">-{couponResult.discount} EGP</span>
+                  </div>
+                )}
                 <div className="flex justify-between items-center font-bold text-lg">
                   <span className="text-brand-700 uppercase tracking-widest text-sm font-body">{ui.total}</span>
-                  <span className="text-2xl font-heading font-bold text-gray-900">{total} <span className="text-sm tracking-wider text-gray-600">EGP</span></span>
+                  <span className="text-2xl font-heading font-bold text-gray-900">{finalTotal} <span className="text-sm tracking-wider text-gray-600">EGP</span></span>
                 </div>
               </div>
             </div>

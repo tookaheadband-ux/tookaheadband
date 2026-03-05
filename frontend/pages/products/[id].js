@@ -5,7 +5,8 @@ import Image from 'next/image';
 import { motion } from 'framer-motion';
 import { useLang } from '@/context/LanguageContext';
 import { useCart } from '@/context/CartContext';
-import { fetchProduct } from '@/lib/api';
+import { fetchProduct, getProductReviews, createProductReview, subscribeNotifyMe } from '@/lib/api';
+import { Star } from 'lucide-react';
 
 export default function ProductDetail() {
   const router = useRouter();
@@ -18,6 +19,17 @@ export default function ProductDetail() {
   const [added, setAdded] = useState(false);
   const [mainImage, setMainImage] = useState('');
 
+  // Reviews
+  const [reviews, setReviews] = useState([]);
+  const [avgRating, setAvgRating] = useState(0);
+  const [reviewCount, setReviewCount] = useState(0);
+  const [reviewForm, setReviewForm] = useState({ name: '', rating: 5, comment: '' });
+  const [submittingReview, setSubmittingReview] = useState(false);
+
+  // Notify Me
+  const [notifyEmail, setNotifyEmail] = useState('');
+  const [notifyMsg, setNotifyMsg] = useState('');
+
   useEffect(() => {
     if (!id) return;
     fetchProduct(id)
@@ -27,6 +39,9 @@ export default function ProductDetail() {
       })
       .catch(console.error)
       .finally(() => setLoading(false));
+    getProductReviews(id)
+      .then((res) => { setReviews(res.data.reviews); setAvgRating(res.data.avgRating); setReviewCount(res.data.count); })
+      .catch(console.error);
   }, [id]);
 
   const handleAddToCart = () => {
@@ -150,12 +165,73 @@ export default function ProductDetail() {
               ) : (
                 <div className="mt-auto pt-8 border-t border-brand-100">
                   <p className="text-red-800 font-medium uppercase tracking-widest text-sm mb-4">{ui.outOfStock}</p>
+                  <div className="bg-gray-50 rounded-xl p-4">
+                    <p className="text-sm font-bold text-gray-700 mb-2">🔔 Notify me when back in stock</p>
+                    <div className="flex gap-2">
+                      <input type="email" value={notifyEmail} onChange={(e) => setNotifyEmail(e.target.value)} placeholder="your@email.com"
+                        className="flex-1 h-10 px-4 rounded-lg border-2 border-gray-200 focus:border-pink-400 outline-none text-sm text-gray-900 font-bold" />
+                      <button onClick={async () => { if (!notifyEmail) return; try { const r = await subscribeNotifyMe(id, notifyEmail); setNotifyMsg(r.data.message); setNotifyEmail(''); } catch { setNotifyMsg('Error'); } }}
+                        className="h-10 px-5 bg-pink-500 text-white font-bold text-sm rounded-lg hover:-translate-y-0.5 transition-all">Notify Me</button>
+                    </div>
+                    {notifyMsg && <p className="text-xs text-green-600 font-bold mt-2">{notifyMsg}</p>}
+                  </div>
                 </div>
               )}
 
             </div>
           </div>
 
+        </div>
+
+        {/* Reviews Section */}
+        <div className="max-w-screen-xl mx-auto px-4 md:px-6 pb-16">
+          <div className="border-t border-brand-100 pt-12">
+            <h2 className="text-2xl font-bold text-gray-900 mb-2">⭐ Reviews ({reviewCount})</h2>
+            {avgRating > 0 && <p className="text-sm text-gray-600 font-bold mb-6">Average: {avgRating}/5 stars</p>}
+
+            {/* Leave Review Form */}
+            <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5 mb-8">
+              <h3 className="text-sm font-black text-gray-700 mb-4">Leave a Review</h3>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-3">
+                <input value={reviewForm.name} onChange={(e) => setReviewForm({...reviewForm, name: e.target.value})} placeholder="Your name"
+                  className="h-10 px-4 rounded-xl border-2 border-gray-200 focus:border-pink-400 outline-none text-sm text-gray-900 font-bold bg-gray-50" />
+                <div className="flex items-center gap-1">
+                  {[1,2,3,4,5].map((s) => (
+                    <button key={s} onClick={() => setReviewForm({...reviewForm, rating: s})}
+                      className={`text-2xl transition-colors ${s <= reviewForm.rating ? 'text-amber-400' : 'text-gray-300'}`}>★</button>
+                  ))}
+                </div>
+              </div>
+              <textarea value={reviewForm.comment} onChange={(e) => setReviewForm({...reviewForm, comment: e.target.value})} placeholder="Your review (optional)"
+                rows={2} className="w-full p-3 rounded-xl border-2 border-gray-200 focus:border-pink-400 outline-none text-sm text-gray-900 font-bold bg-gray-50 resize-none mb-3" />
+              <button onClick={async () => {
+                if (!reviewForm.name) return;
+                setSubmittingReview(true);
+                try {
+                  await createProductReview(id, reviewForm);
+                  setReviewForm({ name: '', rating: 5, comment: '' });
+                  const r = await getProductReviews(id);
+                  setReviews(r.data.reviews); setAvgRating(r.data.avgRating); setReviewCount(r.data.count);
+                } catch {} finally { setSubmittingReview(false); }
+              }} disabled={submittingReview}
+                className="h-10 px-6 bg-gray-900 text-white font-bold text-sm rounded-xl hover:-translate-y-0.5 transition-all disabled:opacity-50">Submit Review</button>
+            </div>
+
+            {/* Review List */}
+            <div className="space-y-4">
+              {reviews.map((r) => (
+                <div key={r._id} className="bg-white rounded-xl border border-gray-100 p-4">
+                  <div className="flex items-center justify-between mb-2">
+                    <p className="font-black text-gray-900 text-sm">{r.name}</p>
+                    <div className="flex gap-0.5">{[1,2,3,4,5].map((s) => <span key={s} className={`text-sm ${s <= r.rating ? 'text-amber-400' : 'text-gray-200'}`}>★</span>)}</div>
+                  </div>
+                  {r.comment && <p className="text-sm text-gray-600">{r.comment}</p>}
+                  <p className="text-[10px] text-gray-400 font-bold mt-2">{new Date(r.createdAt).toLocaleDateString()}</p>
+                </div>
+              ))}
+              {reviews.length === 0 && <p className="text-sm text-gray-400 text-center py-6">No reviews yet. Be the first!</p>}
+            </div>
+          </div>
         </div>
       </div>
     </>

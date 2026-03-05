@@ -1,5 +1,7 @@
 const Product = require('../models/Product');
+const StockSubscription = require('../models/StockSubscription');
 const { cloudinary } = require('../config/cloudinary');
+const transporter = require('../config/mailer');
 
 // Public: get products with pagination, filtering, search
 const getProducts = async (req, res, next) => {
@@ -110,6 +112,7 @@ const updateProduct = async (req, res, next) => {
     if (descriptionEn !== undefined) product.descriptionEn = descriptionEn;
     if (price !== undefined) product.price = price;
     if (categoryId !== undefined) product.categoryId = categoryId;
+    const oldStock = product.stock;
     if (stock !== undefined) product.stock = stock;
     if (isFeatured !== undefined) product.isFeatured = isFeatured === 'true' || isFeatured === true;
 
@@ -126,6 +129,24 @@ const updateProduct = async (req, res, next) => {
     }
 
     await product.save();
+
+    // Back-in-stock email trigger
+    if (oldStock <= 0 && product.stock > 0) {
+      const subs = await StockSubscription.find({ productId: product._id, notified: false });
+      for (const sub of subs) {
+        try {
+          await transporter.sendMail({
+            from: `"TOOKA Store" <${process.env.SMTP_USER}>`,
+            to: sub.email,
+            subject: `🎉 ${product.nameEn || product.nameAr} is back in stock!`,
+            html: `<div style="font-family:Arial;max-width:600px;margin:0 auto;padding:20px;"><h2>Great news! 🎉</h2><p><strong>${product.nameEn || product.nameAr}</strong> is back in stock at TOOKA!</p><p>Hurry before it sells out again.</p><hr/><p style="color:#999;font-size:12px;">TOOKA 💕</p></div>`,
+          });
+          sub.notified = true;
+          await sub.save();
+        } catch (e) { console.error('Back-in-stock email error:', e.message); }
+      }
+    }
+
     res.json(product);
   } catch (err) {
     next(err);

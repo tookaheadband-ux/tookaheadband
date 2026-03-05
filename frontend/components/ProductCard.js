@@ -2,14 +2,17 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { useLang } from '@/context/LanguageContext';
 import { useCart } from '@/context/CartContext';
+import { useWishlist } from '@/context/WishlistContext';
 import { useState } from 'react';
-import { Eye } from 'lucide-react';
+import { Eye, Heart } from 'lucide-react';
 import QuickViewModal from './QuickViewModal';
 
 export default function ProductCard({ product }) {
   const { t, ui } = useLang();
   const { addItem } = useCart();
+  const { toggleItem, isInWishlist } = useWishlist();
   const [isQuickViewOpen, setIsQuickViewOpen] = useState(false);
+  const wishlisted = isInWishlist(product._id);
 
   const name = t(product.nameAr, product.nameEn);
   const image = product.images?.[0] || 'https://placehold.co/800x1000/F7F5F2/2C2621?text=TOOKA';
@@ -27,19 +30,26 @@ export default function ProductCard({ product }) {
           />
         </Link>
 
-        {/* Quick View Button (Visible on Hover) */}
+        {/* Heart (Wishlist) Button */}
         <button
-          onClick={(e) => {
-            e.preventDefault();
-            setIsQuickViewOpen(true);
-          }}
+          onClick={(e) => { e.preventDefault(); toggleItem(product); }}
+          className={`absolute top-4 left-4 z-20 w-8 h-8 md:w-10 md:h-10 rounded-full flex items-center justify-center transition-all shadow-sm ${
+            wishlisted ? 'bg-pink-500 text-white scale-110' : 'bg-white/80 backdrop-blur-md text-gray-500 opacity-100 md:opacity-0 group-hover:opacity-100 hover:bg-white hover:scale-110'
+          }`}
+        >
+          <Heart size={16} fill={wishlisted ? 'currentColor' : 'none'} />
+        </button>
+
+        {/* Quick View Button */}
+        <button
+          onClick={(e) => { e.preventDefault(); setIsQuickViewOpen(true); }}
           className="absolute top-4 right-4 z-20 w-8 h-8 md:w-10 md:h-10 bg-white/80 backdrop-blur-md rounded-full flex items-center justify-center text-brand-text opacity-100 md:opacity-0 group-hover:opacity-100 hover:bg-white hover:scale-110 transition-all shadow-sm"
         >
           <Eye size={18} />
         </button>
 
         {product.isFeatured && (
-          <span className="absolute top-4 left-4 badge badge-brand shadow-sm pointer-events-none">Featured</span>
+          <span className="absolute bottom-4 left-4 badge badge-brand shadow-sm pointer-events-none">Featured</span>
         )}
         {product.stock <= 0 && (
           <div className="absolute inset-0 bg-white/50 backdrop-blur-sm flex items-center justify-center pointer-events-none">
@@ -48,7 +58,7 @@ export default function ProductCard({ product }) {
         )}
       </div>
 
-      {/* Details Container */}
+      {/* Details */}
       <Link href={`/products/${product._id}`} className="flex flex-col gap-1 items-center text-center px-2 md:px-4 cursor-pointer flex-1">
         <h3 className="font-heading font-bold text-brand-text text-[14px] sm:text-[15px] md:text-[18px] tracking-wide line-clamp-1 transition-colors group-hover:text-brand-primary">
           {name}

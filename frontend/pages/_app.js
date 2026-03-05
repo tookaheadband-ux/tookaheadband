@@ -1,6 +1,7 @@
 import '@/styles/globals.css';
 import { LanguageProvider } from '@/context/LanguageContext';
 import { CartProvider } from '@/context/CartContext';
+import { WishlistProvider } from '@/context/WishlistContext';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import CartDrawer from '@/components/CartDrawer';
@@ -14,6 +15,7 @@ export default function App({ Component, pageProps }) {
   return (
     <LanguageProvider>
       <CartProvider>
+        <WishlistProvider>
         <Head>
           <title>TOOKA — Handmade Accessories</title>
           <meta name="description" content="TOOKA — Beautiful handmade accessories from Egypt. Hair clips, bracelets, necklaces, earrings and more." />
@@ -51,6 +53,7 @@ export default function App({ Component, pageProps }) {
 
         {!isAdmin && <Footer />}
         {!isAdmin && <FloatingWhatsApp />}
+        </WishlistProvider>
       </CartProvider>
     </LanguageProvider>
   );
