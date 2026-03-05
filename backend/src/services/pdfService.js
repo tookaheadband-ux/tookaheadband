@@ -13,7 +13,7 @@ const generateDailyReport = (orders) => {
     const today = moment().tz('Africa/Cairo').format('YYYY-MM-DD');
 
     // Header
-    doc.fontSize(22).font('Helvetica-Bold').text('TOKA — Daily Order Report', { align: 'center' });
+    doc.fontSize(22).font('Helvetica-Bold').text('TOOKA — Order Report', { align: 'center' });
     doc.moveDown(0.3);
     doc.fontSize(12).font('Helvetica').text(`Date: ${today}`, { align: 'center' });
     doc.moveDown(1);

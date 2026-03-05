@@ -28,6 +28,7 @@ router.delete('/categories/:id', auth, deleteCategory);
 
 // Orders (admin)
 router.get('/orders', auth, getOrders);
+router.get('/orders/export-pdf', auth, exportOrdersPdf);
 router.patch('/orders/:id/status', auth, updateOrderStatus);
 
 // Pages (admin)

@@ -1,7 +1,8 @@
 const Order = require('../models/Order');
 const Product = require('../models/Product');
-const { sendOrderConfirmationToAdmin, sendOrderConfirmationToCustomer } = require('../services/emailService');
+const { sendOrderConfirmationToAdmin, sendOrderConfirmationToCustomer, sendOrderStatusUpdateToCustomer } = require('../services/emailService');
 const { sendNewOrderNotification, sendLowStockAlert } = require('../services/telegramService');
+const { generateDailyReport } = require('../services/pdfService');
 
 // Public: create order
 const createOrder = async (req, res, next) => {
@@ -74,7 +75,7 @@ const createOrder = async (req, res, next) => {
   }
 };
 
-// Admin: get orders with pagination
+// Admin: get orders with pagination, search, date filters
 const getOrders = async (req, res, next) => {
   try {
     const page = parseInt(req.query.page) || 1;
@@ -82,8 +83,34 @@ const getOrders = async (req, res, next) => {
     const skip = (page - 1) * limit;
 
     const filter = {};
+
+    // Status filter
     if (req.query.status) {
       filter.status = req.query.status;
+    }
+
+    // Search by name, phone, or SKU
+    if (req.query.search) {
+      const searchRegex = new RegExp(req.query.search, 'i');
+      filter.$or = [
+        { name: searchRegex },
+        { phone: searchRegex },
+        { 'items.skuSnapshot': searchRegex },
+        { 'items.productNameSnapshot': searchRegex },
+      ];
+    }
+
+    // Date range filters
+    if (req.query.dateFrom || req.query.dateTo) {
+      filter.createdAt = {};
+      if (req.query.dateFrom) {
+        filter.createdAt.$gte = new Date(req.query.dateFrom);
+      }
+      if (req.query.dateTo) {
+        const endDate = new Date(req.query.dateTo);
+        endDate.setHours(23, 59, 59, 999);
+        filter.createdAt.$lte = endDate;
+      }
     }
 
     const [orders, total] = await Promise.all([
@@ -102,7 +129,7 @@ const getOrders = async (req, res, next) => {
   }
 };
 
-// Admin: update order status
+// Admin: update order status + send email notification
 const updateOrderStatus = async (req, res, next) => {
   try {
     const { status } = req.body;
@@ -120,10 +147,50 @@ const updateOrderStatus = async (req, res, next) => {
 
     if (!order) return res.status(404).json({ message: 'Order not found' });
 
+    // Send status update email to customer (non-blocking)
+    sendOrderStatusUpdateToCustomer(order, status).catch((e) => console.error('Status email error:', e));
+
     res.json(order);
   } catch (err) {
     next(err);
   }
 };
 
-module.exports = { createOrder, getOrders, updateOrderStatus };
+// Admin: export orders as PDF
+const exportOrdersPdf = async (req, res, next) => {
+  try {
+    const filter = {};
+
+    if (req.query.status) filter.status = req.query.status;
+
+    if (req.query.search) {
+      const searchRegex = new RegExp(req.query.search, 'i');
+      filter.$or = [
+        { name: searchRegex },
+        { phone: searchRegex },
+        { 'items.skuSnapshot': searchRegex },
+      ];
+    }
+
+    if (req.query.dateFrom || req.query.dateTo) {
+      filter.createdAt = {};
+      if (req.query.dateFrom) filter.createdAt.$gte = new Date(req.query.dateFrom);
+      if (req.query.dateTo) {
+        const endDate = new Date(req.query.dateTo);
+        endDate.setHours(23, 59, 59, 999);
+        filter.createdAt.$lte = endDate;
+      }
+    }
+
+    const orders = await Order.find(filter).sort({ createdAt: -1 }).limit(500);
+    const pdfBuffer = await generateDailyReport(orders);
+
+    res.setHeader('Content-Type', 'application/pdf');
+    res.setHeader('Content-Disposition', `attachment; filename=TOOKA_Orders_${new Date().toISOString().split('T')[0]}.pdf`);
+    res.send(pdfBuffer);
+  } catch (err) {
+    next(err);
+  }
+};
+
+module.exports = { createOrder, getOrders, updateOrderStatus, exportOrdersPdf };

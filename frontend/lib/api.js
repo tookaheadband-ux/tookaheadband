@@ -48,6 +48,8 @@ export const adminDeleteCategory = (id) => api.delete(`/admin/categories/${id}`)
 export const adminGetOrders = (params) => api.get('/admin/orders', { params });
 export const adminUpdateOrderStatus = (id, status) =>
   api.patch(`/admin/orders/${id}/status`, { status });
+export const adminExportOrdersPdf = (params) =>
+  api.get('/admin/orders/export-pdf', { params, responseType: 'blob' });
 
 export const adminUpdatePage = (slug, formData) =>
   api.put(`/admin/pages/${slug}`, formData, { headers: { 'Content-Type': 'multipart/form-data' } });
