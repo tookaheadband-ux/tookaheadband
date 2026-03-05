@@ -41,32 +41,36 @@ export default function AdminProducts() {
   const handleLogout = () => { localStorage.removeItem('toka-admin-token'); router.push('/admin/login'); };
 
   return (
-    <div className="min-h-screen bg-neutral-50">
+    <div className="min-h-screen bg-brand-background">
       <AdminNav ui={ui} active="products" onLogout={handleLogout} />
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-12">
         <div className="flex items-center justify-between mb-6">
-          <h1 className="text-xl font-bold text-neutral-900">{ui.manageProducts}</h1>
-          <button onClick={openCreate} className="btn-primary text-sm">+ {ui.addProduct}</button>
+          <h1 className="text-xl font-heading font-bold text-brand-text">{ui.manageProducts}</h1>
+          <button onClick={openCreate}
+            className="h-10 px-5 bg-brand-primary text-white font-bold text-sm rounded-xl shadow-[0_4px_14px_0_rgba(255,199,209,0.5)] hover:-translate-y-0.5 transition-all">
+            + {ui.addProduct}
+          </button>
         </div>
-        <div className="card !rounded-xl overflow-x-auto">
+
+        <div className="bg-white/60 backdrop-blur-md rounded-2xl border border-white shadow-sm overflow-x-auto">
           <table className="w-full text-sm">
-            <thead><tr className="border-b border-neutral-100 text-neutral-400 text-left text-xs uppercase tracking-wider">
-              <th className="p-3">{ui.images}</th><th className="p-3">SKU</th><th className="p-3">{ui.name}</th><th className="p-3">{ui.price}</th>
-              <th className="p-3">{ui.stock}</th><th className="p-3">{ui.category}</th><th className="p-3">{ui.actions}</th>
+            <thead><tr className="border-b border-brand-100 text-brand-400 text-left text-xs uppercase tracking-wider font-bold">
+              <th className="p-4">{ui.images}</th><th className="p-4">SKU</th><th className="p-4">{ui.name}</th><th className="p-4">{ui.price}</th>
+              <th className="p-4">{ui.stock}</th><th className="p-4">{ui.category}</th><th className="p-4">{ui.actions}</th>
             </tr></thead>
             <tbody>{products.map((p) => (
-              <tr key={p._id} className="border-b border-neutral-50 hover:bg-neutral-50">
-                <td className="p-3"><div className="w-10 h-10 rounded-lg overflow-hidden bg-neutral-100 relative">
-                  {p.images?.[0] ? <Image src={p.images[0]} alt="" fill className="object-cover" sizes="40px" /> : <div className="w-full h-full" />}
+              <tr key={p._id} className="border-b border-brand-50 hover:bg-brand-50/50 transition-colors">
+                <td className="p-4"><div className="w-12 h-12 rounded-xl overflow-hidden bg-brand-50 relative shadow-inner">
+                  {p.images?.[0] ? <Image src={p.images[0]} alt="" fill className="object-cover" sizes="48px" /> : <div className="w-full h-full flex items-center justify-center text-[8px] text-brand-300">IMG</div>}
                 </div></td>
-                <td className="p-3"><span className="text-xs font-bold text-brand-primary bg-brand-primary/10 px-2 py-0.5 rounded-full tracking-wider">{p.sku || '—'}</span></td>
-                <td className="p-3 font-medium text-neutral-800">{t(p.nameAr, p.nameEn)}</td>
-                <td className="p-3 text-neutral-600">{p.price} EGP</td>
-                <td className="p-3"><span className={`badge ${p.stock <= 3 ? 'badge-red' : 'badge-green'}`}>{p.stock}</span></td>
-                <td className="p-3 text-neutral-500 text-xs">{p.categoryId ? t(p.categoryId.nameAr, p.categoryId.nameEn) : '-'}</td>
-                <td className="p-3"><div className="flex gap-3">
-                  <button onClick={() => openEdit(p)} className="text-blue-500 hover:text-blue-700 text-xs font-medium">{ui.edit}</button>
-                  <button onClick={() => handleDelete(p._id)} className="text-red-400 hover:text-red-600 text-xs font-medium">{ui.delete}</button>
+                <td className="p-4"><span className="text-xs font-bold text-brand-primary bg-brand-primary/10 px-2.5 py-1 rounded-full tracking-wider">{p.sku || '—'}</span></td>
+                <td className="p-4 font-heading font-bold text-brand-text">{t(p.nameAr, p.nameEn)}</td>
+                <td className="p-4 text-brand-700 font-body font-semibold">{p.price} EGP</td>
+                <td className="p-4"><span className={`text-xs font-bold px-2.5 py-1 rounded-full ${p.stock <= 3 ? 'bg-red-50 text-red-500' : 'bg-green-50 text-green-600'}`}>{p.stock}</span></td>
+                <td className="p-4 text-brand-400 text-xs font-bold">{p.categoryId ? t(p.categoryId.nameAr, p.categoryId.nameEn) : '-'}</td>
+                <td className="p-4"><div className="flex gap-2">
+                  <button onClick={() => openEdit(p)} className="h-8 px-3 rounded-lg bg-blue-50 text-blue-500 text-xs font-bold hover:bg-blue-100 transition-colors">{ui.edit}</button>
+                  <button onClick={() => handleDelete(p._id)} className="h-8 px-3 rounded-lg bg-red-50 text-red-400 text-xs font-bold hover:bg-red-100 transition-colors">{ui.delete}</button>
                 </div></td>
               </tr>
             ))}</tbody>
@@ -77,37 +81,49 @@ export default function AdminProducts() {
 
       {showModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-          <div className="fixed inset-0 bg-black/20 backdrop-blur-sm" onClick={() => setShowModal(false)} />
-          <div className="relative card !rounded-2xl p-6 w-full max-w-lg max-h-[90vh] overflow-y-auto animate-scale-in">
-            <h2 className="text-base font-bold text-neutral-900 mb-4">{editProduct ? ui.edit : ui.create} Product</h2>
-            <form onSubmit={handleSave} className="space-y-3">
-              <div className="grid grid-cols-2 gap-3">
-                <div><label className="block text-xs text-neutral-400 mb-1">Name (EN)</label><input value={form.nameEn} onChange={(e) => setForm({ ...form, nameEn: e.target.value })} className="input-field" /></div>
-                <div><label className="block text-xs text-neutral-400 mb-1">Name (AR)</label><input value={form.nameAr} onChange={(e) => setForm({ ...form, nameAr: e.target.value })} className="input-field" dir="rtl" /></div>
+          <div className="fixed inset-0 bg-brand-text/20 backdrop-blur-sm" onClick={() => setShowModal(false)} />
+          <div className="relative bg-white/90 backdrop-blur-xl rounded-3xl p-6 w-full max-w-lg max-h-[90vh] overflow-y-auto border border-white shadow-xl">
+            <h2 className="text-lg font-heading font-bold text-brand-text mb-5">{editProduct ? ui.edit : ui.create} Product</h2>
+            {editProduct && editProduct.sku && (
+              <div className="mb-4 flex items-center gap-2">
+                <span className="text-xs font-bold text-brand-400 uppercase tracking-wider">SKU:</span>
+                <span className="text-sm font-bold text-brand-primary bg-brand-primary/10 px-3 py-1 rounded-full">{editProduct.sku}</span>
               </div>
-              <div className="grid grid-cols-2 gap-3">
-                <div><label className="block text-xs text-neutral-400 mb-1">Desc (EN)</label><textarea value={form.descriptionEn} onChange={(e) => setForm({ ...form, descriptionEn: e.target.value })} rows={2} className="input-field resize-none" /></div>
-                <div><label className="block text-xs text-neutral-400 mb-1">Desc (AR)</label><textarea value={form.descriptionAr} onChange={(e) => setForm({ ...form, descriptionAr: e.target.value })} rows={2} className="input-field resize-none" dir="rtl" /></div>
+            )}
+            <form onSubmit={handleSave} className="space-y-4">
+              <div className="grid grid-cols-2 gap-4">
+                <div><label className="block text-xs font-bold text-brand-700 mb-1.5 pl-1">Name (EN)</label><input value={form.nameEn} onChange={(e) => setForm({ ...form, nameEn: e.target.value })} className="w-full h-[44px] px-4 rounded-xl border-2 border-brand-100 focus:border-brand-primary outline-none text-brand-text font-body transition-colors bg-white" /></div>
+                <div><label className="block text-xs font-bold text-brand-700 mb-1.5 pl-1">Name (AR)</label><input value={form.nameAr} onChange={(e) => setForm({ ...form, nameAr: e.target.value })} className="w-full h-[44px] px-4 rounded-xl border-2 border-brand-100 focus:border-brand-primary outline-none text-brand-text font-body transition-colors bg-white" dir="rtl" /></div>
               </div>
-              <div className="grid grid-cols-3 gap-3">
-                <div><label className="block text-xs text-neutral-400 mb-1">{ui.price}</label><input type="number" value={form.price} onChange={(e) => setForm({ ...form, price: e.target.value })} className="input-field" required /></div>
-                <div><label className="block text-xs text-neutral-400 mb-1">{ui.stock}</label><input type="number" value={form.stock} onChange={(e) => setForm({ ...form, stock: e.target.value })} className="input-field" /></div>
-                <div><label className="block text-xs text-neutral-400 mb-1">{ui.category}</label>
-                  <select value={form.categoryId} onChange={(e) => setForm({ ...form, categoryId: e.target.value })} className="input-field">
+              <div className="grid grid-cols-2 gap-4">
+                <div><label className="block text-xs font-bold text-brand-700 mb-1.5 pl-1">Desc (EN)</label><textarea value={form.descriptionEn} onChange={(e) => setForm({ ...form, descriptionEn: e.target.value })} rows={2} className="w-full p-4 rounded-xl border-2 border-brand-100 focus:border-brand-primary outline-none text-brand-text font-body transition-colors resize-none bg-white" /></div>
+                <div><label className="block text-xs font-bold text-brand-700 mb-1.5 pl-1">Desc (AR)</label><textarea value={form.descriptionAr} onChange={(e) => setForm({ ...form, descriptionAr: e.target.value })} rows={2} className="w-full p-4 rounded-xl border-2 border-brand-100 focus:border-brand-primary outline-none text-brand-text font-body transition-colors resize-none bg-white" dir="rtl" /></div>
+              </div>
+              <div className="grid grid-cols-3 gap-4">
+                <div><label className="block text-xs font-bold text-brand-700 mb-1.5 pl-1">{ui.price}</label><input type="number" value={form.price} onChange={(e) => setForm({ ...form, price: e.target.value })} className="w-full h-[44px] px-4 rounded-xl border-2 border-brand-100 focus:border-brand-primary outline-none text-brand-text font-body transition-colors bg-white" required /></div>
+                <div><label className="block text-xs font-bold text-brand-700 mb-1.5 pl-1">{ui.stock}</label><input type="number" value={form.stock} onChange={(e) => setForm({ ...form, stock: e.target.value })} className="w-full h-[44px] px-4 rounded-xl border-2 border-brand-100 focus:border-brand-primary outline-none text-brand-text font-body transition-colors bg-white" /></div>
+                <div><label className="block text-xs font-bold text-brand-700 mb-1.5 pl-1">{ui.category}</label>
+                  <select value={form.categoryId} onChange={(e) => setForm({ ...form, categoryId: e.target.value })} className="w-full h-[44px] px-4 rounded-xl border-2 border-brand-100 focus:border-brand-primary outline-none text-brand-text font-body transition-colors bg-white">
                     {categories.map((c) => <option key={c._id} value={c._id}>{t(c.nameAr, c.nameEn)}</option>)}
                   </select>
                 </div>
               </div>
-              <label className="flex items-center gap-2 text-sm text-neutral-600 cursor-pointer">
-                <input type="checkbox" checked={form.isFeatured} onChange={(e) => setForm({ ...form, isFeatured: e.target.checked })} className="rounded border-neutral-300" /> {ui.featured}
+              <label className="flex items-center gap-2 text-sm text-brand-700 cursor-pointer font-bold">
+                <input type="checkbox" checked={form.isFeatured} onChange={(e) => setForm({ ...form, isFeatured: e.target.checked })} className="rounded border-brand-300 text-brand-primary focus:ring-brand-primary" /> {ui.featured}
               </label>
-              <div><label className="block text-xs text-neutral-400 mb-1">{ui.images}</label>
+              <div><label className="block text-xs font-bold text-brand-700 mb-1.5 pl-1">{ui.images}</label>
                 <input type="file" multiple accept="image/*" onChange={(e) => setFiles([...e.target.files])}
-                  className="w-full text-sm text-neutral-500 file:mr-2 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-xs file:bg-neutral-100 file:text-neutral-700 file:font-medium" />
+                  className="w-full text-sm text-brand-500 file:mr-2 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:bg-brand-50 file:text-brand-700 file:font-bold cursor-pointer" />
               </div>
-              <div className="flex gap-2 pt-2">
-                <button type="submit" disabled={saving} className="btn-primary flex-1">{saving ? '...' : ui.save}</button>
-                <button type="button" onClick={() => setShowModal(false)} className="btn-secondary flex-1">{ui.cancel}</button>
+              <div className="flex gap-3 pt-2">
+                <button type="submit" disabled={saving}
+                  className="flex-1 h-11 flex items-center justify-center bg-brand-primary text-white font-bold text-sm rounded-xl shadow-[0_4px_14px_0_rgba(255,199,209,0.5)] hover:-translate-y-0.5 transition-all disabled:opacity-50">
+                  {saving ? '...' : ui.save}
+                </button>
+                <button type="button" onClick={() => setShowModal(false)}
+                  className="flex-1 h-11 flex items-center justify-center bg-brand-50 text-brand-700 font-bold text-sm rounded-xl hover:bg-brand-100 transition-colors">
+                  {ui.cancel}
+                </button>
               </div>
             </form>
           </div>
