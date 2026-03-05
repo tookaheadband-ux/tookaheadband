@@ -20,6 +20,9 @@ const orderSchema = new mongoose.Schema(
     email: { type: String, default: '' },
     notes: { type: String, default: '' },
     items: [orderItemSchema],
+    subtotal: { type: Number, default: 0 },
+    couponCode: { type: String, default: '' },
+    discount: { type: Number, default: 0 },
     total: { type: Number, required: true },
     status: {
       type: String,

@@ -10,6 +10,7 @@ const navItems = (ui, active) => [
   { href: '/admin/categories', label: ui.manageCategories, icon: '📂', active: active === 'categories' },
   { href: '/admin/orders', label: ui.manageOrders, icon: '📦', active: active === 'orders' },
   { href: '/admin/pages', label: ui.pages, icon: '📄', active: active === 'pages' },
+  { href: '/admin/coupons', label: 'Coupons', icon: '🏷️', active: active === 'coupons' },
 ];
 
 function AdminNav({ ui, active, onLogout }) {

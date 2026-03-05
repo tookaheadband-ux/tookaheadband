@@ -40,14 +40,14 @@ export default function Cart() {
                   className="flex gap-4 sm:gap-6 items-center sm:items-start bg-white p-4 sm:p-6 rounded-3xl shadow-sm border border-white"
                 >
                   <div className="relative w-20 h-24 sm:w-28 sm:h-32 bg-brand-50 flex-shrink-0 rounded-2xl overflow-hidden shadow-inner">
-                    {item.imageSnapshot ? <img src={item.imageSnapshot} alt="" className="w-full h-full object-cover" /> : <div className="w-full h-full flex items-center justify-center text-xs text-brand-300">TOOKA</div>}
+                    {item.imageSnapshot ? <img src={item.imageSnapshot} alt="" className="w-full h-full object-cover" /> : <div className="w-full h-full flex items-center justify-center text-xs text-gray-400">TOOKA</div>}
                   </div>
 
                   <div className="flex-1 flex flex-col justify-between h-full min-h-[6rem] sm:min-h-[8rem]">
                     <div className="flex justify-between items-start gap-2">
                       <div>
                         <h3 className="font-heading font-bold text-brand-text text-sm sm:text-lg mb-1 line-clamp-2">{item.productNameSnapshot}</h3>
-                        <p className="text-brand-700 font-body font-semibold text-xs sm:text-sm">{item.priceSnapshot} <span className="text-[10px] sm:text-xs uppercase tracking-wider text-brand-400 font-bold ml-1">{ui.egp}</span></p>
+                        <p className="text-gray-700 font-body font-semibold text-xs sm:text-sm">{item.priceSnapshot} <span className="text-[10px] sm:text-xs uppercase tracking-wider text-gray-600 font-bold ml-1">{ui.egp}</span></p>
                       </div>
                       <button onClick={() => removeItem(item.productId)} className="w-8 h-8 flex items-center justify-center rounded-full bg-red-50 text-red-400 hover:bg-red-100 hover:text-red-600 transition-colors flex-shrink-0" title="Remove Item">
                         <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
@@ -62,7 +62,7 @@ export default function Cart() {
                         <button onClick={() => updateQty(item.productId, item.qty + 1)} className="w-6 h-6 sm:w-8 sm:h-8 flex items-center justify-center text-brand-900 text-lg hover:bg-white rounded-full transition-colors shadow-sm">+</button>
                       </div>
 
-                      <p className="font-heading font-bold text-base sm:text-lg text-brand-primary">{item.priceSnapshot * item.qty} <span className="text-[10px] sm:text-xs uppercase tracking-wider text-brand-400 font-bold">{ui.egp}</span></p>
+                      <p className="font-heading font-bold text-base sm:text-lg text-gray-900">{item.priceSnapshot * item.qty} <span className="text-[10px] sm:text-xs uppercase tracking-wider text-gray-600 font-bold">{ui.egp}</span></p>
                     </div>
                   </div>
                 </motion.div>
@@ -77,7 +77,7 @@ export default function Cart() {
 
               <div className="flex justify-between items-center mb-6 pb-6 border-b border-brand-200/60">
                 <span className="text-brand-700 font-body font-medium">{ui.total}</span>
-                <span className="text-2xl font-heading font-bold text-brand-primary">{total} <span className="text-sm uppercase tracking-wider text-brand-400">{ui.egp}</span></span>
+                <span className="text-2xl font-heading font-bold text-gray-900">{total} <span className="text-sm uppercase tracking-wider text-gray-600">{ui.egp}</span></span>
               </div>
 
               <div className="flex flex-col gap-3">

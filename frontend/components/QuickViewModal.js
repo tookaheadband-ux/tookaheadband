@@ -74,7 +74,7 @@ export default function QuickViewModal({ product, isOpen, onClose }) {
               </h2>
               <div className="flex items-center gap-2 mb-6">
                 <span className="text-2xl font-body font-bold text-brand-text">{product.price}</span>
-                <span className="text-sm font-bold text-brand-400 uppercase tracking-widest">{ui.egp}</span>
+                <span className="text-sm font-bold text-gray-600 uppercase tracking-widest">{ui.egp}</span>
               </div>
 
               <div className="bg-brand-background rounded-2xl p-5 mb-8">

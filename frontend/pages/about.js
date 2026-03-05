@@ -52,7 +52,7 @@ export default function About() {
           <div className="relative">
             {/* Top SVG Wave Divider */}
             <div className="flex justify-center mb-10">
-              <svg className="w-24 text-brand-300" viewBox="0 0 100 20" fill="none">
+              <svg className="w-24 text-gray-400" viewBox="0 0 100 20" fill="none">
                 <path d="M0,10 Q25,20 50,10 T100,10" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
               </svg>
             </div>
@@ -69,12 +69,12 @@ export default function About() {
                 ))}
               </motion.div>
             ) : (
-              <p className="text-brand-400 italic font-body">No content available.</p>
+              <p className="text-gray-500 italic font-body">No content available.</p>
             )}
 
             {/* Bottom SVG Wave Divider */}
             <div className="flex justify-center mt-10">
-              <svg className="w-24 text-brand-300" viewBox="0 0 100 20" fill="none">
+              <svg className="w-24 text-gray-400" viewBox="0 0 100 20" fill="none">
                 <path d="M0,10 Q25,0 50,10 T100,10" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
               </svg>
             </div>

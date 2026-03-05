@@ -54,7 +54,7 @@ export default function Products() {
             {/* Decorative Blob */}
             <div className="absolute -top-10 -left-10 w-32 h-32 bg-brand-primary/20 rounded-full blur-3xl pointer-events-none"></div>
             <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold font-heading text-brand-text mb-2 relative z-10">{ui.allProducts}</h1>
-            {!loading && <p className="text-sm font-body font-bold text-brand-400 relative z-10">{total} items found</p>}
+            {!loading && <p className="text-sm font-body font-bold text-gray-500 relative z-10">{total} items found</p>}
           </div>
 
           {/* Filters */}
@@ -66,7 +66,7 @@ export default function Products() {
                 placeholder={ui.search}
                 className="w-full h-[48px] pl-11 pr-4 rounded-xl border-2 border-white focus:border-brand-primary outline-none text-brand-text font-body transition-colors bg-white/60 backdrop-blur-md shadow-sm"
               />
-              <svg className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-brand-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="square" strokeLinejoin="miter" strokeWidth={1.5} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
               </svg>
             </div>
@@ -95,8 +95,8 @@ export default function Products() {
           </div>
         ) : products.length === 0 ? (
           <div className="text-center py-32 bg-white/50 backdrop-blur-sm rounded-3xl border border-white">
-            <h3 className="text-2xl font-heading font-bold text-brand-400 mb-2">No products found 🌸</h3>
-            <p className="text-sm text-brand-300 font-body">Try adjusting your search or filters</p>
+            <h3 className="text-2xl font-heading font-bold text-gray-500 mb-2">No products found 🌸</h3>
+            <p className="text-sm text-gray-400 font-body">Try adjusting your search or filters</p>
           </div>
         ) : (
           <motion.div

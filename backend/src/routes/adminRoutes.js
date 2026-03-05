@@ -8,6 +8,7 @@ const { createProduct, updateProduct, deleteProduct, getProducts } = require('..
 const { createCategory, updateCategory, deleteCategory, getCategories } = require('../controllers/categoryController');
 const { getOrders, updateOrderStatus, exportOrdersPdf } = require('../controllers/orderController');
 const { updatePage } = require('../controllers/pageController');
+const { getCoupons, createCoupon, updateCoupon, deleteCoupon } = require('../controllers/couponController');
 
 // Auth
 router.post('/login', login);
@@ -33,5 +34,11 @@ router.patch('/orders/:id/status', auth, updateOrderStatus);
 
 // Pages (admin)
 router.put('/pages/:slug', auth, upload.array('images', 10), updatePage);
+
+// Coupons (admin)
+router.get('/coupons', auth, getCoupons);
+router.post('/coupons', auth, createCoupon);
+router.put('/coupons/:id', auth, updateCoupon);
+router.delete('/coupons/:id', auth, deleteCoupon);
 
 module.exports = router;

@@ -1,5 +1,6 @@
 const Order = require('../models/Order');
 const Product = require('../models/Product');
+const Coupon = require('../models/Coupon');
 const { sendOrderConfirmationToAdmin, sendOrderConfirmationToCustomer, sendOrderStatusUpdateToCustomer } = require('../services/emailService');
 const { sendNewOrderNotification, sendLowStockAlert } = require('../services/telegramService');
 const { generateDailyReport } = require('../services/pdfService');
@@ -7,7 +8,7 @@ const { generateDailyReport } = require('../services/pdfService');
 // Public: create order
 const createOrder = async (req, res, next) => {
   try {
-    const { name, phone, address, email, notes, items } = req.body;
+    const { name, phone, address, email, notes, items, couponCode } = req.body;
 
     if (!name || !phone || !address) {
       return res.status(400).json({ message: 'Name, phone, and address are required' });
@@ -19,7 +20,7 @@ const createOrder = async (req, res, next) => {
 
     // Build order items with snapshots and calculate total
     const orderItems = [];
-    let total = 0;
+    let subtotal = 0;
 
     for (const item of items) {
       const product = await Product.findById(item.productId);
@@ -41,7 +42,7 @@ const createOrder = async (req, res, next) => {
         imageSnapshot: product.images[0] || '',
       });
 
-      total += product.price * item.qty;
+      subtotal += product.price * item.qty;
 
       // Decrease stock and increment sold count
       product.stock -= item.qty;
@@ -54,6 +55,24 @@ const createOrder = async (req, res, next) => {
       }
     }
 
+    // Apply coupon if provided
+    let discount = 0;
+    let appliedCouponCode = '';
+    if (couponCode) {
+      const coupon = await Coupon.findOne({ code: couponCode.toUpperCase() });
+      if (coupon) {
+        const check = coupon.isValid(subtotal);
+        if (check.valid) {
+          discount = coupon.calculateDiscount(subtotal);
+          appliedCouponCode = coupon.code;
+          coupon.usedCount += 1;
+          await coupon.save();
+        }
+      }
+    }
+
+    const total = subtotal - discount;
+
     const order = await Order.create({
       name,
       phone,
@@ -61,6 +80,9 @@ const createOrder = async (req, res, next) => {
       email: email || '',
       notes: notes || '',
       items: orderItems,
+      subtotal,
+      couponCode: appliedCouponCode,
+      discount,
       total,
     });
 

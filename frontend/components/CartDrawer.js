@@ -47,7 +47,7 @@ export default function CartDrawer() {
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
                     </svg>
                   </div>
-                  <p className="text-brand-400 font-body font-medium">{ui.emptyCart}</p>
+                  <p className="text-gray-500 font-body font-medium">{ui.emptyCart}</p>
                 </div>
               ) : (
                 <AnimatePresence>
@@ -80,7 +80,7 @@ export default function CartDrawer() {
                             className="w-7 h-7 rounded-sm bg-brand-50 text-brand-900 flex items-center justify-center hover:bg-brand-100 transition-colors shadow-sm">+</button>
                         </div>
                       </div>
-                      <button onClick={() => removeItem(item.productId)} className="text-brand-300 hover:text-red-500 transition-colors self-start p-1 mt-1 -mr-1">
+                      <button onClick={() => removeItem(item.productId)} className="text-gray-400 hover:text-red-500 transition-colors self-start p-1 mt-1 -mr-1">
                         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                         </svg>

@@ -45,7 +45,7 @@ export default function ProductDetail() {
   }
 
   if (!product) {
-    return <div className="text-center py-32"><p className="text-brand-400">Product not found</p></div>;
+    return <div className="text-center py-32"><p className="text-gray-500">Product not found</p></div>;
   }
 
   return (
@@ -85,7 +85,7 @@ export default function ProductDetail() {
                 {product.images && product.images.length > 0 ? (
                   <img src={mainImage} alt={name} className="w-full h-full object-cover" />
                 ) : (
-                  <div className="w-full h-full flex items-center justify-center text-brand-300 font-[var(--font-family-heading)] text-2xl">TOOKA</div>
+                  <div className="w-full h-full flex items-center justify-center text-gray-400 font-[var(--font-family-heading)] text-2xl">TOOKA</div>
                 )}
               </motion.div>
             </div>
@@ -96,7 +96,7 @@ export default function ProductDetail() {
               <div className="mb-8 border-b border-brand-100 pb-8">
                 <div className="flex items-center gap-3 mb-4">
                   {categoryName && (
-                    <p className="text-xs font-semibold tracking-[0.2em] uppercase text-brand-400">
+                    <p className="text-xs font-semibold tracking-[0.2em] uppercase text-gray-500">
                       {categoryName}
                     </p>
                   )}
@@ -108,7 +108,7 @@ export default function ProductDetail() {
                 </div>
                 <h1 className="text-3xl sm:text-4xl font-bold font-[var(--font-family-heading)] text-brand-900 mb-6 uppercase tracking-wider">{name}</h1>
                 <p className="text-2xl font-medium text-brand-900">
-                  {product.price} <span className="text-sm font-normal text-brand-400 tracking-widest uppercase">{ui.egp}</span>
+                  {product.price} <span className="text-sm font-normal text-gray-600 tracking-widest uppercase">{ui.egp}</span>
                 </p>
               </div>
 

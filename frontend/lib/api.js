@@ -56,4 +56,11 @@ export const adminUpdatePage = (slug, formData) =>
 
 export const adminSendDailyReport = () => api.post('/admin/reports/daily');
 
+// Coupons
+export const validateCoupon = (data) => api.post('/coupons/validate', data);
+export const adminGetCoupons = () => api.get('/admin/coupons');
+export const adminCreateCoupon = (data) => api.post('/admin/coupons', data);
+export const adminUpdateCoupon = (id, data) => api.put(`/admin/coupons/${id}`, data);
+export const adminDeleteCoupon = (id) => api.delete(`/admin/coupons/${id}`);
+
 export default api;

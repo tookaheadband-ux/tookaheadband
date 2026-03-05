@@ -29,7 +29,7 @@ export default function Checkout() {
   };
 
   if (items.length === 0) {
-    return <div className="min-h-[70vh] flex items-center justify-center"><p className="text-brand-400 tracking-widest uppercase">{ui.emptyCart}</p></div>;
+    return <div className="min-h-[70vh] flex items-center justify-center"><p className="text-gray-500 tracking-widest uppercase">{ui.emptyCart}</p></div>;
   }
 
   return (
@@ -94,7 +94,7 @@ export default function Checkout() {
               <div className="space-y-4 mb-6">
                 {items.map((item) => (
                   <div key={item.productId} className="flex justify-between items-center text-sm">
-                    <span className="text-brand-700 font-body font-medium pr-4 leading-relaxed line-clamp-1">{item.productNameSnapshot} <span className="text-brand-400 font-bold ml-1">×{item.qty}</span></span>
+                    <span className="text-gray-700 font-body font-medium pr-4 leading-relaxed line-clamp-1">{item.productNameSnapshot} <span className="text-gray-500 font-bold ml-1">×{item.qty}</span></span>
                     <span className="font-heading font-bold text-brand-900 flex-shrink-0">{item.priceSnapshot * item.qty} EGP</span>
                   </div>
                 ))}
@@ -103,7 +103,7 @@ export default function Checkout() {
               <div className="border-t border-brand-200/60 pt-6">
                 <div className="flex justify-between items-center font-bold text-lg">
                   <span className="text-brand-700 uppercase tracking-widest text-sm font-body">{ui.total}</span>
-                  <span className="text-2xl font-heading font-bold text-brand-primary">{total} <span className="text-sm tracking-wider text-brand-400">EGP</span></span>
+                  <span className="text-2xl font-heading font-bold text-gray-900">{total} <span className="text-sm tracking-wider text-gray-600">EGP</span></span>
                 </div>
               </div>
             </div>
