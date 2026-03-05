@@ -18,6 +18,10 @@ export default function ProductDetail() {
   const [qty, setQty] = useState(1);
   const [added, setAdded] = useState(false);
   const [mainImage, setMainImage] = useState('');
+  const [lightboxOpen, setLightboxOpen] = useState(false);
+  const [lightboxIdx, setLightboxIdx] = useState(0);
+  const [zoomPos, setZoomPos] = useState({ x: 50, y: 50 });
+  const [isZooming, setIsZooming] = useState(false);
 
   // Reviews
   const [reviews, setReviews] = useState([]);
@@ -75,35 +79,121 @@ export default function ProductDetail() {
           <div className="grid grid-cols-1 md:grid-cols-12 gap-12 lg:gap-24">
 
             {/* Gallery Section */}
-            <div className="md:col-span-7 animate-fade-in flex flex-col md:flex-row gap-4">
+            <div className="md:col-span-7 animate-fade-in flex flex-col md:flex-row gap-3">
               {/* Thumbnails */}
               {product.images?.length > 1 && (
-                <div className="flex md:flex-col gap-4 overflow-x-auto md:overflow-visible order-2 md:order-1 hide-scrollbar">
+                <div className="flex md:flex-col gap-2.5 overflow-x-auto md:overflow-y-auto md:max-h-[600px] order-2 md:order-1 hide-scrollbar py-1 md:py-0 md:pr-1">
                   {product.images.map((img, idx) => (
                     <button
                       key={idx}
                       onClick={() => setMainImage(img)}
-                      className={`relative w-24 h-32 flex-shrink-0 border-2 transition-all ${mainImage === img ? 'border-brand-900' : 'border-transparent opacity-60 hover:opacity-100 object-cover'}`}
+                      className={`relative w-[72px] h-[90px] flex-shrink-0 rounded-xl overflow-hidden transition-all duration-300 border-2 ${
+                        mainImage === img
+                          ? 'border-gray-900 shadow-md scale-105'
+                          : 'border-transparent opacity-50 hover:opacity-90 hover:border-gray-300'
+                      }`}
                     >
-                      <img src={img} alt="" className="w-full h-full object-cover" />
+                      <img src={img} alt="" className="w-full h-full object-cover" loading="lazy" />
                     </button>
                   ))}
                 </div>
               )}
-              {/* Main Image */}
-              <motion.div
-                initial={{ opacity: 0, scale: 0.95 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ duration: 0.5 }}
-                className="relative aspect-[4/5] w-full bg-white rounded-3xl overflow-hidden shadow-sm order-1 md:order-2 flex-grow border border-white"
-              >
-                {product.images && product.images.length > 0 ? (
-                  <img src={mainImage} alt={name} className="w-full h-full object-cover" />
-                ) : (
-                  <div className="w-full h-full flex items-center justify-center text-gray-400 font-[var(--font-family-heading)] text-2xl">TOOKA</div>
+              {/* Main Image with Zoom */}
+              <div className="relative w-full order-1 md:order-2 flex-grow">
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.95 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ duration: 0.5 }}
+                  className="relative aspect-[4/5] w-full bg-white rounded-2xl overflow-hidden shadow-sm cursor-zoom-in border border-gray-100"
+                  onClick={() => {
+                    const idx = product.images?.indexOf(mainImage);
+                    setLightboxIdx(idx >= 0 ? idx : 0);
+                    setLightboxOpen(true);
+                  }}
+                  onMouseEnter={() => setIsZooming(true)}
+                  onMouseLeave={() => setIsZooming(false)}
+                  onMouseMove={(e) => {
+                    const rect = e.currentTarget.getBoundingClientRect();
+                    const x = ((e.clientX - rect.left) / rect.width) * 100;
+                    const y = ((e.clientY - rect.top) / rect.height) * 100;
+                    setZoomPos({ x, y });
+                  }}
+                >
+                  {product.images && product.images.length > 0 ? (
+                    <img
+                      src={mainImage}
+                      alt={name}
+                      className="w-full h-full object-cover transition-transform duration-500 ease-out"
+                      style={isZooming ? {
+                        transform: 'scale(2)',
+                        transformOrigin: `${zoomPos.x}% ${zoomPos.y}%`,
+                      } : {}}
+                      draggable={false}
+                    />
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center text-gray-400 font-[var(--font-family-heading)] text-2xl">TOOKA</div>
+                  )}
+                </motion.div>
+                {/* Image counter badge */}
+                {product.images?.length > 1 && (
+                  <div className="absolute bottom-4 right-4 bg-black/60 text-white text-xs font-bold px-3 py-1.5 rounded-full backdrop-blur-md">
+                    {(product.images.indexOf(mainImage) + 1)} / {product.images.length}
+                  </div>
                 )}
-              </motion.div>
+                {/* Zoom hint */}
+                <div className="absolute top-4 right-4 bg-white/80 backdrop-blur-md text-gray-600 text-[10px] font-bold px-3 py-1.5 rounded-full opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none hidden md:flex items-center gap-1">
+                  <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v3m0 0v3m0-3h3m-3 0H7" /></svg>
+                  Hover to zoom
+                </div>
+              </div>
             </div>
+
+            {/* Lightbox */}
+            {lightboxOpen && product.images?.length > 0 && (
+              <div className="fixed inset-0 z-[100] bg-black/95 flex items-center justify-center" onClick={() => setLightboxOpen(false)}>
+                {/* Close */}
+                <button onClick={() => setLightboxOpen(false)} className="absolute top-6 right-6 w-10 h-10 flex items-center justify-center bg-white/10 hover:bg-white/20 rounded-full text-white transition-colors z-10">
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
+                </button>
+                {/* Counter */}
+                <div className="absolute top-6 left-6 text-white/70 text-sm font-bold">
+                  {lightboxIdx + 1} / {product.images.length}
+                </div>
+                {/* Prev */}
+                {product.images.length > 1 && (
+                  <button onClick={(e) => { e.stopPropagation(); setLightboxIdx((lightboxIdx - 1 + product.images.length) % product.images.length); }}
+                    className="absolute left-4 md:left-8 w-12 h-12 flex items-center justify-center bg-white/10 hover:bg-white/20 rounded-full text-white transition-colors z-10">
+                    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" /></svg>
+                  </button>
+                )}
+                {/* Image */}
+                <img
+                  src={product.images[lightboxIdx]}
+                  alt={name}
+                  className="max-w-[90vw] max-h-[85vh] object-contain rounded-lg shadow-2xl"
+                  onClick={(e) => e.stopPropagation()}
+                  draggable={false}
+                />
+                {/* Next */}
+                {product.images.length > 1 && (
+                  <button onClick={(e) => { e.stopPropagation(); setLightboxIdx((lightboxIdx + 1) % product.images.length); }}
+                    className="absolute right-4 md:right-8 w-12 h-12 flex items-center justify-center bg-white/10 hover:bg-white/20 rounded-full text-white transition-colors z-10">
+                    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" /></svg>
+                  </button>
+                )}
+                {/* Thumbnail strip */}
+                {product.images.length > 1 && (
+                  <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex gap-2">
+                    {product.images.map((img, idx) => (
+                      <button key={idx} onClick={(e) => { e.stopPropagation(); setLightboxIdx(idx); }}
+                        className={`w-14 h-14 rounded-lg overflow-hidden border-2 transition-all ${lightboxIdx === idx ? 'border-white scale-110' : 'border-white/30 opacity-50 hover:opacity-80'}`}>
+                        <img src={img} alt="" className="w-full h-full object-cover" />
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
 
             {/* Details Section */}
             <div className="md:col-span-5 animate-fade-in flex flex-col pt-8 md:pt-12" style={{ animationDelay: '0.1s' }}>
