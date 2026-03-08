@@ -51,7 +51,7 @@ export default function Home() {
     <div className="bg-brand-background">
 
       {/* 1. HERO SECTION */}
-      <section className="relative min-h-[auto] md:min-h-[60vh] xl:min-h-[70vh] pt-[140px] md:pt-[110px] pb-16 lg:pb-0 flex items-center overflow-hidden">
+      <section className="relative min-h-[auto] md:min-h-[60vh] xl:min-h-[70vh] pt-[100px] md:pt-[110px] pb-16 lg:pb-0 flex items-center overflow-hidden">
 
         <div className="max-w-screen-2xl mx-auto px-4 md:px-5 lg:px-6 w-full z-10 relative">
 
@@ -69,15 +69,15 @@ export default function Home() {
           <div className="absolute top-0 right-1/2 w-72 h-72 bg-brand-surface/30 rounded-full mix-blend-multiply filter blur-3xl opacity-70 animate-blob animation-delay-2000 pointer-events-none -z-10"></div>
           <div className="absolute -bottom-8 right-1/3 w-72 h-72 bg-brand-secondary/30 rounded-full mix-blend-multiply filter blur-3xl opacity-70 animate-blob animation-delay-4000 pointer-events-none -z-10"></div>
 
-          <div className="flex flex-col lg:flex-row items-center gap-12 lg:gap-8 mt-[65px] md:mt-0 relative z-10">
+          <div className="flex flex-col lg:flex-row items-center gap-12 lg:gap-8 mt-[20px] md:mt-[65px] lg:mt-0 relative z-10">
 
             {/* Left Column: Text */}
-            <div className="lg:w-1/2 flex flex-col items-center lg:items-start text-center lg:text-left pt-6 md:pt-0 w-full px-2 sm:px-0">
+            <div className="lg:w-1/2 flex flex-col items-center lg:items-start text-center lg:text-left pt-0 md:pt-6 lg:pt-0 w-full px-2 sm:px-0">
               <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }}>
                 <span className="inline-block py-1.5 px-3 bg-brand-surface text-teal-800 rounded-full text-sm font-bold tracking-wide mb-6">
                   ✨ NEW COLLECTION
                 </span>
-                <h1 className="text-[26px] sm:text-[30px] md:text-[36px] xl:text-[48px] font-heading font-extrabold text-brand-text leading-[1.3] mb-5 px-2">
+                <h1 className="text-[28px] sm:text-[32px] md:text-[36px] xl:text-[48px] font-heading font-extrabold text-brand-text leading-[1.3] mb-5 px-2">
                   Handmade Accessories for{' '}
                   <span className="relative inline-block mt-1">
                     <span className="relative z-10 px-2">Little Princesses</span>

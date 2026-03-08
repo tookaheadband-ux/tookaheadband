@@ -11,8 +11,8 @@ export default function WishlistPage() {
   const { addItem } = useCart();
 
   return (
-    <div className="min-h-screen bg-brand-background">
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16">
+    <div className="min-h-screen bg-brand-background pt-22 sm:pt-32 pb-20">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-10">
           <h1 className="text-3xl sm:text-4xl font-bold font-heading text-brand-text mb-2">
             💖 {ui.wishlist || 'My Wishlist'}

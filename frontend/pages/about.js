@@ -3,6 +3,7 @@ import Head from 'next/head';
 import { motion } from 'framer-motion';
 import { useLang } from '@/context/LanguageContext';
 import { fetchPage } from '@/lib/api';
+import { Heart, Star, Sparkles } from 'lucide-react';
 
 export default function About() {
   const { t, ui } = useLang();
@@ -32,54 +33,78 @@ export default function About() {
       <Head>
         <title>{title} — TOOKA</title>
       </Head>
-      <div className="bg-brand-background min-h-screen pt-32 pb-32 relative overflow-hidden">
+      <div className="bg-brand-background min-h-[100dvh] pt-24 md:pt-36 pb-20 relative overflow-hidden flex items-center">
+        
+        {/* Background Blobs */}
+        <div className="absolute top-0 right-1/4 w-[500px] h-[500px] bg-brand-primary/20 rounded-full blur-[120px] pointer-events-none -z-10 animate-blob"></div>
+        <div className="absolute top-40 -left-20 w-[400px] h-[400px] bg-brand-300/20 rounded-full blur-[100px] pointer-events-none -z-10 animate-blob animation-delay-2000"></div>
 
-        {/* Decorative Blurred Blobs */}
-        <div className="absolute top-20 -left-40 w-[500px] h-[500px] bg-brand-primary/20 rounded-full blur-[120px] pointer-events-none"></div>
-        <div className="absolute bottom-20 -right-40 w-[400px] h-[400px] bg-brand-300/20 rounded-full blur-[100px] pointer-events-none"></div>
-
-        <div className="max-w-3xl mx-auto px-6 md:px-12 text-center relative z-10">
-
-          <motion.h1
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
-            className="text-4xl sm:text-5xl lg:text-7xl font-bold font-heading text-brand-text mb-12 capitalize tracking-wide"
-          >
-            {title}
-          </motion.h1>
-
-          <div className="relative">
-            {/* Top SVG Wave Divider */}
-            <div className="flex justify-center mb-10">
-              <svg className="w-24 text-gray-400" viewBox="0 0 100 20" fill="none">
-                <path d="M0,10 Q25,20 50,10 T100,10" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-              </svg>
-            </div>
-
-            {content ? (
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.8, delay: 0.2 }}
-                className="text-center text-sm sm:text-lg text-brand-700 leading-relaxed mx-auto max-w-2xl font-body"
-              >
-                {content.split('\n').map((paragraph, index) => (
-                  <p key={index} className="mb-6">{paragraph}</p>
-                ))}
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 w-full">
+          <div className="flex flex-col lg:flex-row items-center gap-16 lg:gap-24">
+            
+            {/* Left Content */}
+            <div className="w-full lg:w-1/2 pt-10 lg:pt-0 text-center lg:text-left">
+              <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }}>
+                <span className="inline-block py-1.5 px-4 bg-white text-teal-800 rounded-full text-xs font-black tracking-widest mb-6 shadow-sm border border-brand-50 uppercase shadow-[0_2px_10px_rgba(20,184,166,0.1)]">
+                  ✨ Our Story
+                </span>
+                
+                <h1 className="text-[32px] sm:text-5xl lg:text-6xl font-black font-heading text-brand-text mb-8 capitalize leading-[1.2]">
+                  {title}
+                </h1>
+                
+                <div className="relative">
+                  {content ? (
+                    <div className="text-base sm:text-lg text-brand-700 leading-relaxed font-body space-y-5 text-left bg-white/40 p-6 sm:p-8 rounded-3xl border border-white/50 shadow-[0_8px_30px_rgb(0,0,0,0.02)] backdrop-blur-sm">
+                      {content.split('\n').filter(p => p.trim() !== '').map((paragraph, index) => (
+                        <p key={index} className={index === 0 ? "text-lg sm:text-xl font-bold text-gray-900 leading-snug" : "text-gray-600 font-medium"}>
+                          {paragraph}
+                        </p>
+                      ))}
+                    </div>
+                  ) : (
+                    <p className="text-gray-500 italic font-body">No content available.</p>
+                  )}
+                  
+                  {/* Decorative spark on text box */}
+                  <div className="absolute -top-4 -right-4 text-yellow-400 rotate-12">
+                    <Sparkles size={32} />
+                  </div>
+                </div>
               </motion.div>
-            ) : (
-              <p className="text-gray-500 italic font-body">No content available.</p>
-            )}
-
-            {/* Bottom SVG Wave Divider */}
-            <div className="flex justify-center mt-10">
-              <svg className="w-24 text-gray-400" viewBox="0 0 100 20" fill="none">
-                <path d="M0,10 Q25,0 50,10 T100,10" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-              </svg>
             </div>
-          </div>
 
+            {/* Right Image */}
+            <div className="w-full lg:w-1/2 relative mt-8 lg:mt-0 px-4 sm:px-10 lg:px-0">
+              <motion.div 
+                initial={{ opacity: 0, scale: 0.9, rotate: -2 }} 
+                animate={{ opacity: 1, scale: 1, rotate: 2 }} 
+                transition={{ duration: 0.8, delay: 0.2 }}
+                className="relative z-10 rounded-[2rem] overflow-hidden shadow-[0_20px_60px_rgba(255,199,209,0.4)] border-[6px] border-white aspect-[4/5] sm:aspect-square lg:aspect-[4/5] max-w-md mx-auto"
+              >
+                <img src="/images/photo_2026-03-08_15-24-03.jpg" alt="About TOOKA" className="w-full h-full object-cover origin-center hover:scale-105 transition-transform duration-700" loading="lazy" />
+              </motion.div>
+
+              {/* Floating Card */}
+              <motion.div 
+                initial={{ opacity: 0, x: -20, y: 20 }} 
+                animate={{ opacity: 1, x: 0, y: 0 }} 
+                transition={{ duration: 0.8, delay: 0.5 }}
+                className="absolute -bottom-6 -left-2 sm:left-4 lg:-left-12 bg-white p-4 sm:p-5 rounded-2xl shadow-xl border border-pink-50 max-w-[180px] sm:max-w-[220px] z-20"
+              >
+                <div className="flex gap-1 mb-2.5">
+                  {[1,2,3,4,5].map(i => <Star key={i} size={14} className="text-yellow-400 fill-yellow-400" />)}
+                </div>
+                <p className="font-black text-gray-900 text-xs sm:text-sm leading-tight">Handcrafted with precise details & love.</p>
+              </motion.div>
+              
+              {/* Decorative Heart */}
+              <div className="absolute -top-6 -right-2 sm:-top-8 sm:-right-6 text-brand-primary/50 animate-bounce" style={{ animationDuration: '3s' }}>
+                <Heart size={64} fill="currentColor" />
+              </div>
+            </div>
+
+          </div>
         </div>
       </div>
     </>
