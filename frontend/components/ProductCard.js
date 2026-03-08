@@ -12,6 +12,7 @@ export default function ProductCard({ product }) {
   const { addItem } = useCart();
   const { toggleItem, isInWishlist } = useWishlist();
   const [isQuickViewOpen, setIsQuickViewOpen] = useState(false);
+  const [imgLoaded, setImgLoaded] = useState(false);
   const wishlisted = isInWishlist(product._id);
 
   const name = t(product.nameAr, product.nameEn);
@@ -21,11 +22,12 @@ export default function ProductCard({ product }) {
     <div className="group relative flex flex-col h-full bg-transparent">
       {/* Image Container */}
       <div className="relative aspect-[3/4] overflow-hidden rounded-[16px] bg-white shadow-sm mb-4">
-        <Link href={`/products/${product._id}`} className="block w-full h-full cursor-pointer">
+        <Link href={`/products/${product._id}`} className="block w-full h-full cursor-pointer bg-brand-50 relative overflow-hidden">
           <img
             src={image}
             alt={name}
-            className="w-full h-full object-cover transition-transform duration-1000 ease-out group-hover:scale-105"
+            onLoad={() => setImgLoaded(true)}
+            className={`w-full h-full object-cover transition-all duration-1000 ease-out group-hover:scale-105 ${imgLoaded ? 'opacity-100 blur-0' : 'opacity-0 blur-md scale-110'}`}
             loading="lazy"
           />
         </Link>

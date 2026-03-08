@@ -17,13 +17,15 @@ const productSchema = new mongoose.Schema(
     stock: { type: Number, default: 0, min: 0 },
     isFeatured: { type: Boolean, default: false },
     soldCount: { type: Number, default: 0 },
+    colors: [{ type: String }],
+    sizes: [{ type: String }],
+    relatedProducts: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Product' }],
   },
   { timestamps: true }
 );
 
-// Auto-generate SKU on first save
 const generateSku = () => {
-  const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'; // No 0/O/1/I confusion
+  const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
   let code = '';
   for (let i = 0; i < 4; i++) code += chars.charAt(Math.floor(Math.random() * chars.length));
   return `TK-${code}`;
@@ -41,7 +43,6 @@ productSchema.pre('save', async function (next) {
   next();
 });
 
-// Validate at least one language name exists
 productSchema.pre('validate', function (next) {
   if (!this.nameAr && !this.nameEn) {
     return next(new Error('At least one language name (nameAr or nameEn) is required'));
@@ -49,7 +50,6 @@ productSchema.pre('validate', function (next) {
   next();
 });
 
-// Text index for search
 productSchema.index({ nameAr: 'text', nameEn: 'text' });
 
 module.exports = mongoose.model('Product', productSchema);

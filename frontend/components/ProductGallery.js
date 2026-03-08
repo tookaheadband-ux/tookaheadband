@@ -3,6 +3,7 @@ import Image from 'next/image';
 
 export default function ProductGallery({ images = [] }) {
   const [activeIndex, setActiveIndex] = useState(0);
+  const [imgLoaded, setImgLoaded] = useState(false);
 
   if (images.length === 0) {
     return (
@@ -14,13 +15,13 @@ export default function ProductGallery({ images = [] }) {
 
   return (
     <div className="space-y-3">
-      {/* Main image */}
-      <div className="relative aspect-square rounded-2xl overflow-hidden card-cute !p-0">
+      <div className="relative aspect-square rounded-2xl overflow-hidden card-cute !p-0 bg-brand-50">
         <Image
           src={images[activeIndex]}
           alt="Product"
           fill
-          className="object-cover"
+          onLoadingComplete={() => setImgLoaded(true)}
+          className={`object-cover transition-all duration-500 ${imgLoaded ? 'blur-0 opacity-100' : 'blur-md opacity-0 scale-105'}`}
           sizes="(max-width: 768px) 100vw, 50vw"
           priority
         />
@@ -32,7 +33,7 @@ export default function ProductGallery({ images = [] }) {
           {images.map((img, idx) => (
             <button
               key={idx}
-              onClick={() => setActiveIndex(idx)}
+              onClick={() => { setActiveIndex(idx); setImgLoaded(false); }}
               className={`relative w-16 h-16 rounded-xl overflow-hidden flex-shrink-0 border-2 transition-all ${
                 idx === activeIndex
                   ? 'border-pink-400 shadow-md'

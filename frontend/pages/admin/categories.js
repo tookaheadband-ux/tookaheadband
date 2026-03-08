@@ -73,6 +73,12 @@ export default function AdminCategories() {
               <div><label className="block text-xs font-black text-gray-700 mb-2">Name (AR)</label><input value={form.nameAr} onChange={(e) => setForm({ ...form, nameAr: e.target.value })} className="w-full h-[44px] px-4 rounded-xl border-2 border-gray-200 focus:border-pink-400 outline-none text-gray-900 font-bold transition-colors bg-gray-50" dir="rtl" /></div>
               <div><label className="block text-xs font-black text-gray-700 mb-2">Slug</label><input value={form.slug} onChange={(e) => setForm({ ...form, slug: e.target.value })} className="w-full h-[44px] px-4 rounded-xl border-2 border-gray-200 focus:border-pink-400 outline-none text-gray-900 font-bold transition-colors bg-gray-50" required /></div>
               <div><label className="block text-xs font-black text-gray-700 mb-2">Cover Image</label>
+                {editCat?.coverImage && !file && (
+                  <div className="mb-2">
+                    <img src={editCat.coverImage} alt="" className="w-full h-24 rounded-xl object-cover border-2 border-gray-200" />
+                    <p className="text-[10px] text-gray-400 font-bold mt-1">Upload a new image to replace</p>
+                  </div>
+                )}
                 <input type="file" accept="image/*" onChange={(e) => setFile(e.target.files[0])} className="w-full text-sm text-gray-600 font-bold file:mr-2 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:bg-pink-50 file:text-pink-600 file:font-black cursor-pointer" /></div>
               <div className="flex gap-3 pt-2">
                 <button type="submit" disabled={saving}

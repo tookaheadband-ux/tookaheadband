@@ -215,4 +215,44 @@ const exportOrdersPdf = async (req, res, next) => {
   }
 };
 
-module.exports = { createOrder, getOrders, updateOrderStatus, exportOrdersPdf };
+
+// Public: track order by orderId + phone
+const trackOrder = async (req, res, next) => {
+  try {
+    const { orderId, phone } = req.query;
+    if (!orderId || !phone) {
+      return res.status(400).json({ message: 'orderId and phone are required' });
+    }
+
+    const order = await Order.findById(orderId).lean();
+    if (!order) return res.status(404).json({ message: 'Order not found' });
+
+    // Verify phone matches (last 8 digits to handle formatting differences)
+    const cleanQueryPhone = phone.replace(/\D/g, '').slice(-8);
+    const cleanOrderPhone = order.phone.replace(/\D/g, '').slice(-8);
+    if (cleanQueryPhone !== cleanOrderPhone) {
+      return res.status(404).json({ message: 'Order not found' });
+    }
+
+    res.json({
+      _id: order._id,
+      status: order.status,
+      createdAt: order.createdAt,
+      name: order.name,
+      items: order.items.map(item => ({
+        productNameSnapshot: item.productNameSnapshot,
+        priceSnapshot: item.priceSnapshot,
+        qty: item.qty,
+        imageSnapshot: item.imageSnapshot,
+      })),
+      subtotal: order.subtotal,
+      discount: order.discount,
+      total: order.total,
+      couponCode: order.couponCode,
+    });
+  } catch (err) {
+    next(err);
+  }
+};
+
+module.exports = { createOrder, getOrders, updateOrderStatus, exportOrdersPdf, trackOrder };

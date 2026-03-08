@@ -69,4 +69,21 @@ const getDashboard = async (req, res, next) => {
   }
 };
 
-module.exports = { login, getMe, getDashboard };
+
+// Admin: update related products for a product
+const updateRelatedProducts = async (req, res, next) => {
+  try {
+    const { relatedProducts } = req.body;
+    const product = await Product.findByIdAndUpdate(
+      req.params.id,
+      { relatedProducts: relatedProducts || [] },
+      { new: true }
+    ).populate('relatedProducts', 'nameAr nameEn price images');
+    if (!product) return res.status(404).json({ message: 'Product not found' });
+    res.json(product);
+  } catch (err) {
+    next(err);
+  }
+};
+
+module.exports = { login, getMe, getDashboard, updateRelatedProducts };

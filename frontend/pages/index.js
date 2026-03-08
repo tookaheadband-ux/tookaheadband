@@ -5,6 +5,7 @@ import ProductCard from '@/components/ProductCard';
 import { fetchProducts, fetchCategories } from '@/lib/api';
 import { motion, useInView } from 'framer-motion';
 import { Sparkles, Heart, Gift, Truck, ShieldCheck, Instagram, ArrowRight, Quote } from 'lucide-react';
+import SkeletonCard from '@/components/SkeletonCard';
 
 export default function Home() {
   const { t, ui } = useLang();
@@ -32,8 +33,16 @@ export default function Home() {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-[70vh]">
-        <div className="w-10 h-10 border-[4px] border-brand-surface border-t-brand-primary rounded-full animate-spin" />
+      <div className="bg-brand-background min-h-screen pt-28 pb-32">
+        <div className="max-w-screen-2xl mx-auto px-4 md:px-5 lg:px-6">
+          <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 md:gap-5 xl:gap-6 pt-12">
+            {[...Array(8)].map((_, i) => (
+              <div key={i} className="h-[300px] md:h-[400px]">
+                <SkeletonCard />
+              </div>
+            ))}
+          </div>
+        </div>
       </div>
     );
   }
@@ -107,11 +116,11 @@ export default function Home() {
               <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.8 }} className="relative w-full max-w-[280px] sm:max-w-[340px] md:max-w-[420px] aspect-square mx-auto lg:mr-0">
                 {/* Main Image */}
                 <div className="absolute top-0 right-0 left-auto w-[78%] h-[78%] bg-white rounded-2xl p-2 shadow-xl z-20">
-                  <img src="https://images.unsplash.com/photo-1503944583220-79d8926ad5e2?auto=format&fit=crop&q=80&w=600" alt="Kids accessories" className="w-full h-full object-cover rounded-[12px]" />
+                  <img src="/images/photo_2026-03-08_15-18-52.jpg" alt="Kids accessories" className="w-full h-full object-cover rounded-[12px]" />
                 </div>
                 {/* Secondary Image */}
                 <div className="absolute bottom-0 left-0 right-auto w-[55%] h-[55%] bg-white rounded-2xl p-2 shadow-lg z-30">
-                  <img src="https://images.unsplash.com/photo-1622290291468-a28f7a7dc6a8?auto=format&fit=crop&q=80&w=400" alt="Product detail" className="w-full h-full object-cover rounded-[12px]" />
+                  <img src="/images/photo_2026-03-08_15-18-47.jpg" alt="Product detail" className="w-full h-full object-cover rounded-[12px]" />
                 </div>
                 {/* Decorative blob — clipped by section overflow-hidden */}
                 <div className="absolute top-[10%] left-[5%] w-[55%] h-[55%] bg-brand-secondary/50 rounded-full blur-3xl -z-10 pointer-events-none"></div>
@@ -136,16 +145,11 @@ export default function Home() {
               Shop by Category
             </h2>
             <div className="grid grid-cols-2 xl:grid-cols-4 gap-3 md:gap-5 xl:gap-6">
-              {categories.map((cat, idx) => {
-                const bgImages = [
-                  'https://images.unsplash.com/photo-1515488042361-ee00e0ddd4e4?auto=format&fit=crop&q=80&w=600',
-                  'https://images.unsplash.com/photo-1471286174890-9c112ac6f1ad?auto=format&fit=crop&q=80&w=600',
-                  'https://images.unsplash.com/photo-1503944583220-79d8926ad5e2?auto=format&fit=crop&q=80&w=600',
-                  'https://images.unsplash.com/photo-1622290291468-a28f7a7dc6a8?auto=format&fit=crop&q=80&w=600'
-                ];
+              {categories.map((cat) => {
+                const bgImage = cat.coverImage || '/images/placeholder-category.jpg';
                 return (
                   <Link key={cat._id} href={`/products?category=${cat._id}`} className="group relative w-full h-[180px] xl:h-[220px] rounded-[16px] overflow-hidden shadow-sm hover:shadow-xl transition-shadow cursor-pointer">
-                    <img src={bgImages[idx % bgImages.length]} alt={t(cat.nameAr, cat.nameEn)} className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" />
+                    <img src={bgImage} alt={t(cat.nameAr, cat.nameEn)} className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent flex items-end p-5">
                       <div className="flex items-center justify-between w-full">
                         <h3 className="text-white font-heading font-bold text-xl">{t(cat.nameAr, cat.nameEn)}</h3>

@@ -38,9 +38,9 @@ export default function Checkout() {
     if (items.length === 0) { setError('Cart is empty'); return; }
     setLoading(true);
     try {
-      await createOrder({ ...form, couponCode: couponResult ? couponResult.code : '', items: items.map((i) => ({ productId: i.productId, qty: i.qty })) });
+      const orderRes = await createOrder({ ...form, couponCode: couponResult ? couponResult.code : '', items: items.map((i) => ({ productId: i.productId, qty: i.qty })) });
       clearCart();
-      router.push('/order-success');
+      router.push(`/order-success?orderId=${orderRes.data._id}`);
     } catch (err) { setError(err.response?.data?.message || 'Something went wrong'); }
     finally { setLoading(false); }
   };

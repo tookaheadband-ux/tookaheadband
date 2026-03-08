@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/router';
 import Head from 'next/head';
 import Image from 'next/image';
@@ -7,6 +7,9 @@ import { useLang } from '@/context/LanguageContext';
 import { useCart } from '@/context/CartContext';
 import { fetchProduct, getProductReviews, createProductReview, subscribeNotifyMe } from '@/lib/api';
 import { Star } from 'lucide-react';
+import Breadcrumb from '@/components/Breadcrumb';
+import SkeletonProductDetail from '@/components/SkeletonProductDetail';
+import RelatedProducts from '@/components/RelatedProducts';
 
 export default function ProductDetail() {
   const router = useRouter();
@@ -18,10 +21,15 @@ export default function ProductDetail() {
   const [qty, setQty] = useState(1);
   const [added, setAdded] = useState(false);
   const [mainImage, setMainImage] = useState('');
+  const [imgLoaded, setImgLoaded] = useState(false);
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const [lightboxIdx, setLightboxIdx] = useState(0);
   const [zoomPos, setZoomPos] = useState({ x: 50, y: 50 });
   const [isZooming, setIsZooming] = useState(false);
+
+  // Sticky add to cart
+  const addToCartRef = useRef(null);
+  const [showSticky, setShowSticky] = useState(false);
 
   // Reviews
   const [reviews, setReviews] = useState([]);
@@ -48,6 +56,18 @@ export default function ProductDetail() {
       .catch(console.error);
   }, [id]);
 
+  useEffect(() => {
+    if (!addToCartRef.current) return;
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        setShowSticky(!entry.isIntersecting && entry.boundingClientRect.top < 0);
+      },
+      { threshold: 0 }
+    );
+    observer.observe(addToCartRef.current);
+    return () => observer.disconnect();
+  }, [product, loading]);
+
   const handleAddToCart = () => {
     addItem(product, qty);
   };
@@ -58,9 +78,7 @@ export default function ProductDetail() {
   const whatsappMsg = encodeURIComponent(`Hello TOOKA,\n\nI want to order:\n[${product?.sku || ''}] ${name}\n\nMy name:\nMy address:`);
 
   if (loading) {
-    return <div className="flex items-center justify-center min-h-[80vh]">
-      <div className="w-8 h-8 border-[3px] border-brand-200 border-t-brand-900 rounded-full animate-spin" />
-    </div>;
+    return <SkeletonProductDetail />;
   }
 
   if (!product) {
@@ -76,17 +94,23 @@ export default function ProductDetail() {
       <div className="bg-brand-background min-h-screen pt-28 pb-32">
         <div className="w-full mx-auto px-6 md:px-16 lg:px-24">
 
-          <div className="grid grid-cols-1 md:grid-cols-12 gap-12 lg:gap-24">
+          <Breadcrumb items={[
+            { label: 'Home', href: '/' },
+            { label: ui.allProducts || 'All Products', href: '/products' },
+            { label: name, href: `/products/${id}` }
+          ]} />
+
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-16 items-start">
 
             {/* Gallery Section */}
-            <div className="md:col-span-7 animate-fade-in flex flex-col md:flex-row gap-3">
+            <div className="lg:col-span-6 xl:col-span-5 animate-fade-in flex flex-col md:flex-row gap-3 md:gap-4 md:sticky md:top-32">
               {/* Thumbnails */}
               {product.images?.length > 1 && (
-                <div className="flex md:flex-col gap-2.5 overflow-x-auto md:overflow-y-auto md:max-h-[600px] order-2 md:order-1 hide-scrollbar py-1 md:py-0 md:pr-1">
+                <div className="flex md:flex-col gap-2 md:gap-3 overflow-x-auto md:overflow-y-auto md:max-h-[550px] order-2 md:order-1 hide-scrollbar py-2 md:py-0 md:pr-1">
                   {product.images.map((img, idx) => (
                     <button
                       key={idx}
-                      onClick={() => setMainImage(img)}
+                      onClick={() => { setMainImage(img); setImgLoaded(false); }}
                       className={`relative w-[72px] h-[90px] flex-shrink-0 rounded-xl overflow-hidden transition-all duration-300 border-2 ${
                         mainImage === img
                           ? 'border-gray-900 shadow-md scale-105'
@@ -99,12 +123,12 @@ export default function ProductDetail() {
                 </div>
               )}
               {/* Main Image with Zoom */}
-              <div className="relative w-full order-1 md:order-2 flex-grow">
+              <div className="relative w-full order-1 md:order-2 flex-grow max-w-2xl mx-auto">
                 <motion.div
                   initial={{ opacity: 0, scale: 0.95 }}
                   animate={{ opacity: 1, scale: 1 }}
                   transition={{ duration: 0.5 }}
-                  className="relative aspect-[4/5] w-full bg-white rounded-2xl overflow-hidden shadow-sm cursor-zoom-in border border-gray-100"
+                  className="relative aspect-[4/5] sm:aspect-square md:aspect-[4/5] w-full bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-shadow cursor-zoom-in border border-gray-100"
                   onClick={() => {
                     const idx = product.images?.indexOf(mainImage);
                     setLightboxIdx(idx >= 0 ? idx : 0);
@@ -123,7 +147,8 @@ export default function ProductDetail() {
                     <img
                       src={mainImage}
                       alt={name}
-                      className="w-full h-full object-cover transition-transform duration-500 ease-out"
+                      onLoad={() => setImgLoaded(true)}
+                      className={`w-full h-full object-cover transition-all duration-500 ease-out ${imgLoaded ? 'opacity-100 blur-0' : 'opacity-0 blur-md scale-105'}`}
                       style={isZooming ? {
                         transform: 'scale(2)',
                         transformOrigin: `${zoomPos.x}% ${zoomPos.y}%`,
@@ -196,9 +221,9 @@ export default function ProductDetail() {
             )}
 
             {/* Details Section */}
-            <div className="md:col-span-5 animate-fade-in flex flex-col pt-8 md:pt-12" style={{ animationDelay: '0.1s' }}>
+            <div className="lg:col-span-6 xl:col-span-6 xl:col-start-7 animate-fade-in flex flex-col pt-4 md:pt-0" style={{ animationDelay: '0.1s' }}>
 
-              <div className="mb-8 border-b border-brand-100 pb-8">
+              <div className="mb-8 pb-8">
                 <div className="flex items-center gap-3 mb-4">
                   {categoryName && (
                     <p className="text-xs font-semibold tracking-[0.2em] uppercase text-gray-500">
@@ -237,14 +262,16 @@ export default function ProductDetail() {
                   </div>
 
                   <div className="flex flex-col gap-4">
-                    <button onClick={handleAddToCart}
-                      className={`w-full h-[56px] text-white font-bold text-base md:text-lg tracking-wide rounded-xl transition-all duration-300 ${
-                        added
-                          ? 'bg-brand-500 shadow-sm'
-                          : 'bg-brand-primary shadow-[0_4px_14px_0_rgba(255,199,209,0.5)] hover:shadow-[0_6px_20px_rgba(255,199,209,0.7)] hover:-translate-y-1'
-                      }`}>
-                      {added ? 'Added to bag' : ui.addToCart}
-                    </button>
+                    <div ref={addToCartRef} className="w-full">
+                      <button onClick={handleAddToCart}
+                        className={`w-full h-[56px] text-white font-bold text-base md:text-lg tracking-wide rounded-xl transition-all duration-300 ${
+                          added
+                            ? 'bg-brand-500 shadow-sm'
+                            : 'bg-brand-primary shadow-[0_4px_14px_0_rgba(255,199,209,0.5)] hover:shadow-[0_6px_20px_rgba(255,199,209,0.7)] hover:-translate-y-1'
+                        }`}>
+                        {added ? 'Added to bag' : ui.addToCart}
+                      </button>
+                    </div>
 
                     <a href={`https://wa.me/20100204496?text=${whatsappMsg}`} target="_blank" rel="noopener noreferrer"
                       className="w-full h-[56px] bg-white border-2 border-[#25D366] text-[#25D366] font-bold text-base md:text-lg tracking-wide rounded-xl hover:bg-[#25D366]/5 hover:-translate-y-1 transition-all duration-300 flex items-center justify-center">
@@ -272,6 +299,11 @@ export default function ProductDetail() {
           </div>
 
         </div>
+
+        {/* Related Products */}
+        {product.relatedProducts?.length > 0 && (
+          <RelatedProducts products={product.relatedProducts} />
+        )}
 
         {/* Reviews Section */}
         <div className="max-w-screen-xl mx-auto px-4 md:px-6 pb-16">
@@ -323,6 +355,23 @@ export default function ProductDetail() {
             </div>
           </div>
         </div>
+      </div>
+
+      {/* Sticky Add to Cart for Mobile */}
+      <div 
+        className={`fixed bottom-0 left-0 right-0 z-50 bg-white border-t border-gray-100 shadow-[0_-4px_20px_rgba(0,0,0,0.05)] p-4 pt-3 pb-safe transform transition-transform duration-300 md:hidden flex items-center justify-between gap-4 ${showSticky ? 'translate-y-0' : 'translate-y-full'}`}
+      >
+        <div className="flex flex-col min-w-0 flex-1">
+          <p className="font-bold text-sm text-gray-900 truncate">{name}</p>
+          <p className="font-bold text-brand-primary text-sm">{product.price} {ui.egp}</p>
+        </div>
+        <button 
+          onClick={handleAddToCart}
+          disabled={product.stock <= 0}
+          className="h-11 px-6 bg-brand-primary text-white font-[var(--font-family-body)] font-bold text-sm rounded-xl shrink-0 shadow-sm disabled:opacity-50"
+        >
+          {product.stock <= 0 ? ui.outOfStock : (added ? 'Added' : ui.addToCart)}
+        </button>
       </div>
     </>
   );

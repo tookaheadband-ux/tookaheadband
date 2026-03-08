@@ -6,6 +6,7 @@ import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import CartDrawer from '@/components/CartDrawer';
 import FloatingWhatsApp from '@/components/FloatingWhatsApp';
+import BackToTop from '@/components/BackToTop';
 import { Toaster } from 'react-hot-toast';
 import Head from 'next/head';
 
@@ -53,6 +54,7 @@ export default function App({ Component, pageProps }) {
 
         {!isAdmin && <Footer />}
         {!isAdmin && <FloatingWhatsApp />}
+        {!isAdmin && <BackToTop />}
         </WishlistProvider>
       </CartProvider>
     </LanguageProvider>

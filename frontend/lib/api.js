@@ -70,4 +70,10 @@ export const createProductReview = (productId, data) => api.post(`/products/${pr
 // Back in Stock
 export const subscribeNotifyMe = (productId, email) => api.post(`/products/${productId}/notify-me`, { email });
 
+// Order Tracking (public)
+export const trackOrder = (orderId, phone) => api.get("/orders/track", { params: { orderId, phone } });
+
+// Related Products (admin)
+export const adminUpdateRelatedProducts = (id, relatedProducts) => api.put(`/admin/products/${id}/related`, { relatedProducts });
+
 export default api;

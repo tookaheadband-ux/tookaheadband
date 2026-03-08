@@ -3,7 +3,7 @@ const router = express.Router();
 const auth = require('../middlewares/auth');
 const { upload } = require('../config/cloudinary');
 
-const { login, getMe, getDashboard } = require('../controllers/adminController');
+const { login, getMe, getDashboard, updateRelatedProducts } = require('../controllers/adminController');
 const { createProduct, updateProduct, deleteProduct, getProducts } = require('../controllers/productController');
 const { createCategory, updateCategory, deleteCategory, getCategories } = require('../controllers/categoryController');
 const { getOrders, updateOrderStatus, exportOrdersPdf } = require('../controllers/orderController');
@@ -40,5 +40,8 @@ router.get('/coupons', auth, getCoupons);
 router.post('/coupons', auth, createCoupon);
 router.put('/coupons/:id', auth, updateCoupon);
 router.delete('/coupons/:id', auth, deleteCoupon);
+
+// Related Products (admin)
+router.put('/products/:id/related', auth, updateRelatedProducts);
 
 module.exports = router;

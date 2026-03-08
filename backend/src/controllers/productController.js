@@ -12,26 +12,39 @@ const getProducts = async (req, res, next) => {
 
     const filter = {};
 
-    // Category filter
-    if (req.query.category) {
-      filter.categoryId = req.query.category;
-    }
+    if (req.query.category) filter.categoryId = req.query.category;
 
-    // Search
     if (req.query.search) {
       const searchRegex = new RegExp(req.query.search, 'i');
       filter.$or = [{ nameAr: searchRegex }, { nameEn: searchRegex }];
     }
 
-    // Featured filter
-    if (req.query.featured === 'true') {
-      filter.isFeatured = true;
+    if (req.query.featured === 'true') filter.isFeatured = true;
+
+    // Price range filter
+    if (req.query.minPrice || req.query.maxPrice) {
+      filter.price = {};
+      if (req.query.minPrice) filter.price.$gte = parseFloat(req.query.minPrice);
+      if (req.query.maxPrice) filter.price.$lte = parseFloat(req.query.maxPrice);
     }
+
+    // Color filter
+    if (req.query.color) filter.colors = req.query.color;
+
+    // Size filter
+    if (req.query.size) filter.sizes = req.query.size;
+
+    // Sort
+    let sort = { createdAt: -1 };
+    if (req.query.sort === 'price_asc') sort = { price: 1 };
+    else if (req.query.sort === 'price_desc') sort = { price: -1 };
+    else if (req.query.sort === 'best_selling') sort = { soldCount: -1 };
+    else if (req.query.sort === 'newest') sort = { createdAt: -1 };
 
     const [products, total] = await Promise.all([
       Product.find(filter)
         .populate('categoryId', 'nameAr nameEn slug')
-        .sort({ createdAt: -1 })
+        .sort(sort)
         .skip(skip)
         .limit(limit),
       Product.countDocuments(filter),
@@ -48,10 +61,12 @@ const getProducts = async (req, res, next) => {
   }
 };
 
-// Public: get single product
+// Public: get single product with related products
 const getProduct = async (req, res, next) => {
   try {
-    const product = await Product.findById(req.params.id).populate('categoryId', 'nameAr nameEn slug');
+    const product = await Product.findById(req.params.id)
+      .populate('categoryId', 'nameAr nameEn slug')
+      .populate('relatedProducts', 'nameAr nameEn price images stock soldCount isFeatured');
     if (!product) return res.status(404).json({ message: 'Product not found' });
     res.json(product);
   } catch (err) {
@@ -76,8 +91,7 @@ const getBestSellers = async (req, res, next) => {
 // Admin: create product
 const createProduct = async (req, res, next) => {
   try {
-    const { nameAr, nameEn, descriptionAr, descriptionEn, price, categoryId, stock, isFeatured } = req.body;
-
+    const { nameAr, nameEn, descriptionAr, descriptionEn, price, categoryId, stock, isFeatured, colors, sizes } = req.body;
     const images = req.files ? req.files.map((f) => f.path) : [];
 
     const product = await Product.create({
@@ -90,6 +104,8 @@ const createProduct = async (req, res, next) => {
       categoryId,
       stock: stock || 0,
       isFeatured: isFeatured === 'true' || isFeatured === true,
+      colors: colors ? (Array.isArray(colors) ? colors : colors.split(',').map(c => c.trim()).filter(Boolean)) : [],
+      sizes: sizes ? (Array.isArray(sizes) ? sizes : sizes.split(',').map(s => s.trim()).filter(Boolean)) : [],
     });
 
     res.status(201).json(product);
@@ -104,7 +120,7 @@ const updateProduct = async (req, res, next) => {
     const product = await Product.findById(req.params.id);
     if (!product) return res.status(404).json({ message: 'Product not found' });
 
-    const { nameAr, nameEn, descriptionAr, descriptionEn, price, categoryId, stock, isFeatured, existingImages } = req.body;
+    const { nameAr, nameEn, descriptionAr, descriptionEn, price, categoryId, stock, isFeatured, existingImages, colors, sizes } = req.body;
 
     if (nameAr !== undefined) product.nameAr = nameAr;
     if (nameEn !== undefined) product.nameEn = nameEn;
@@ -115,11 +131,12 @@ const updateProduct = async (req, res, next) => {
     const oldStock = product.stock;
     if (stock !== undefined) product.stock = stock;
     if (isFeatured !== undefined) product.isFeatured = isFeatured === 'true' || isFeatured === true;
+    if (colors !== undefined) product.colors = Array.isArray(colors) ? colors : colors.split(',').map(c => c.trim()).filter(Boolean);
+    if (sizes !== undefined) product.sizes = Array.isArray(sizes) ? sizes : sizes.split(',').map(s => s.trim()).filter(Boolean);
 
-    // Handle images: keep existing + add new uploads
     let images = [];
     if (existingImages) {
-      images = Array.isArray(existingImages) ? existingImages : [existingImages];
+      images = Array.isArray(existingImages) ? existingImages.filter(Boolean) : (existingImages ? [existingImages].filter(Boolean) : []);
     }
     if (req.files && req.files.length > 0) {
       images = [...images, ...req.files.map((f) => f.path)];
@@ -159,7 +176,6 @@ const deleteProduct = async (req, res, next) => {
     const product = await Product.findById(req.params.id);
     if (!product) return res.status(404).json({ message: 'Product not found' });
 
-    // Delete images from cloudinary
     for (const imageUrl of product.images) {
       try {
         const publicId = imageUrl.split('/').slice(-2).join('/').split('.')[0];
