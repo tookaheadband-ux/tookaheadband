@@ -273,7 +273,7 @@ export default function ProductDetail() {
                       </button>
                     </div>
 
-                    <a href={`https://wa.me/20100204496?text=${whatsappMsg}`} target="_blank" rel="noopener noreferrer"
+                    <a href={`https://wa.me/201002084496?text=${whatsappMsg}`} target="_blank" rel="noopener noreferrer"
                       className="w-full h-[56px] bg-white border-2 border-[#25D366] text-[#25D366] font-bold text-base md:text-lg tracking-wide rounded-xl hover:bg-[#25D366]/5 hover:-translate-y-1 transition-all duration-300 flex items-center justify-center">
                       {ui.orderViaWhatsApp}
                     </a>
@@ -358,14 +358,14 @@ export default function ProductDetail() {
       </div>
 
       {/* Sticky Add to Cart for Mobile */}
-      <div 
+      <div
         className={`fixed bottom-0 left-0 right-0 z-50 bg-white border-t border-gray-100 shadow-[0_-4px_20px_rgba(0,0,0,0.05)] p-4 pt-3 pb-safe transform transition-transform duration-300 md:hidden flex items-center justify-between gap-4 ${showSticky ? 'translate-y-0' : 'translate-y-full'}`}
       >
         <div className="flex flex-col min-w-0 flex-1">
           <p className="font-bold text-sm text-gray-900 truncate">{name}</p>
           <p className="font-bold text-brand-primary text-sm">{product.price} {ui.egp}</p>
         </div>
-        <button 
+        <button
           onClick={handleAddToCart}
           disabled={product.stock <= 0}
           className="h-11 px-6 bg-brand-primary text-white font-[var(--font-family-body)] font-bold text-sm rounded-xl shrink-0 shadow-sm disabled:opacity-50"
