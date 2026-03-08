@@ -87,7 +87,14 @@ const sendTelegramDocument = (buffer, filename, caption) => {
     const req = https.request(options, (res) => {
       let responseBody = '';
       res.on('data', (chunk) => (responseBody += chunk));
-      res.on('end', () => resolve(JSON.parse(responseBody)));
+      res.on('end', () => {
+        try {
+          resolve(JSON.parse(responseBody));
+        } catch (e) {
+          console.error('Telegram document parse error:', responseBody);
+          resolve();
+        }
+      });
     });
 
     req.on('error', (err) => {
@@ -95,8 +102,7 @@ const sendTelegramDocument = (buffer, filename, caption) => {
       resolve();
     });
 
-    req.write(payload);
-    req.end();
+    req.end(payload);
   });
 };
 

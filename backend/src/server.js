@@ -1,6 +1,7 @@
 require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
+const cron = require('node-cron');
 const connectDB = require('./config/db');
 const errorHandler = require('./middlewares/errorHandler');
 
@@ -44,9 +45,43 @@ app.get('/api/health', (req, res) => {
 // Error handler
 app.use(errorHandler);
 
+// Daily report cron job — runs every day at 11:00 PM Cairo time
+const scheduleDailyReport = () => {
+  const Order = require('./models/Order');
+  const moment = require('moment-timezone');
+  const { generateDailyReport } = require('./services/pdfService');
+  const { sendDailyReportToTelegram } = require('./services/telegramService');
+
+  cron.schedule('0 23 * * *', async () => {
+    try {
+      const todayStart = moment().tz('Africa/Cairo').startOf('day').toDate();
+      const todayEnd = moment().tz('Africa/Cairo').endOf('day').toDate();
+
+      const orders = await Order.find({
+        createdAt: { $gte: todayStart, $lte: todayEnd },
+      }).sort({ createdAt: 1 });
+
+      if (orders.length === 0) {
+        const { sendTelegramMessage } = require('./config/telegram');
+        await sendTelegramMessage('📊 <b>Daily Report</b>\n\nNo orders today.');
+        return;
+      }
+
+      const pdfBuffer = await generateDailyReport(orders);
+      await sendDailyReportToTelegram(pdfBuffer);
+      console.log(`📊 Daily report sent: ${orders.length} orders`);
+    } catch (err) {
+      console.error('Daily report cron error:', err);
+    }
+  }, { timezone: 'Africa/Cairo' });
+
+  console.log('⏰ Daily report scheduled at 11:00 PM Cairo time');
+};
+
 // Start server
 const startServer = async () => {
   await connectDB();
+  scheduleDailyReport();
   app.listen(PORT, () => {
     console.log(`🚀 TOKA Backend running on port ${PORT}`);
   });
