@@ -52,7 +52,7 @@ export default function Home({ featured = [], categories = [] }) {
                   <Link href="/products" className="w-full sm:w-auto px-8 py-4 bg-brand-primary text-white font-bold rounded-2xl shadow-md hover:shadow-lg hover:-translate-y-1 transition-all duration-300 text-center">
                     {ui.shopCollection}
                   </Link>
-                  <Link href="/about" className="w-full sm:w-auto px-8 py-4 bg-white text-brand-text border-2 border-brand-surface font-bold rounded-2xl hover:bg-brand-surface/50 hover:-translate-y-1 transition-all duration-300 text-center">
+                  <Link href="/products?featured=true" className="w-full sm:w-auto px-8 py-4 bg-white text-brand-text border-2 border-brand-surface font-bold rounded-2xl hover:bg-brand-surface/50 hover:-translate-y-1 transition-all duration-300 text-center">
                     {ui.viewBestSellers}
                   </Link>
                 </div>
@@ -77,9 +77,10 @@ export default function Home({ featured = [], categories = [] }) {
               <div className="relative w-full max-w-[280px] sm:max-w-[340px] md:max-w-[420px] aspect-square mx-auto lg:mr-0">
                 {/* Main Image */}
                 <motion.div 
-                  initial={{ opacity: 0, x: 300, y: -50, rotate: 15 }} 
-                  animate={{ opacity: 1, x: 0, y: 0, rotate: 0 }} 
-                  transition={{ duration: 1.4, type: "spring", bounce: 0.4 }}
+                  initial={{ opacity: 0, x: 200, y: -30, rotate: 12 }} 
+                  whileInView={{ opacity: 1, x: 0, y: 0, rotate: 0 }} 
+                  viewport={{ once: true, margin: "-50px" }}
+                  transition={{ duration: 1.2, type: "spring", bounce: 0.35 }}
                   className="absolute top-0 right-0 left-auto w-[78%] h-[78%] z-20"
                 >
                   <div className="w-full h-full bg-white rounded-[24px] p-2 shadow-lg group hover:-translate-y-2 transition-transform duration-500 relative">
@@ -88,9 +89,10 @@ export default function Home({ featured = [], categories = [] }) {
                 </motion.div>
                 {/* Secondary Image */}
                 <motion.div 
-                  initial={{ opacity: 0, x: -300, y: 150, rotate: -25 }} 
-                  animate={{ opacity: 1, x: 0, y: 0, rotate: 0 }} 
-                  transition={{ duration: 1.4, delay: 0.2, type: "spring", bounce: 0.4 }}
+                  initial={{ opacity: 0, x: -200, y: 100, rotate: -20 }} 
+                  whileInView={{ opacity: 1, x: 0, y: 0, rotate: 0 }} 
+                  viewport={{ once: true, margin: "-50px" }}
+                  transition={{ duration: 1.2, delay: 0.15, type: "spring", bounce: 0.35 }}
                   className="absolute bottom-0 left-0 right-auto w-[55%] h-[55%] z-30"
                 >
                   <div className="w-full h-full bg-white rounded-[20px] p-2 shadow-md hover:scale-105 transition-transform duration-500 relative">
@@ -118,20 +120,28 @@ export default function Home({ featured = [], categories = [] }) {
               {ui.shopByCategory}
             </h2>
             <div className="grid grid-cols-2 xl:grid-cols-4 gap-3 md:gap-5 xl:gap-6">
-              {categories.map((cat) => {
+              {categories.map((cat, idx) => {
                 const bgImage = cat.coverImage || '/images/placeholder-category.jpg';
                 return (
-                  <Link key={cat._id} href={`/products?category=${cat._id}`} className="group relative w-full h-[200px] xl:h-[240px] rounded-[24px] overflow-hidden shadow-sm hover:shadow-lg transition-all duration-300 cursor-pointer">
-                    <Image src={bgImage} alt={t(cat.nameAr, cat.nameEn)} fill sizes="(max-width: 768px) 50vw, 25vw" className="object-cover transition-transform duration-500 group-hover:scale-110" loading="lazy" unoptimized={bgImage.startsWith('/')} />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent flex items-end p-5">
-                      <div className="flex items-center justify-between w-full">
-                        <h3 className="text-white font-heading font-bold text-xl">{t(cat.nameAr, cat.nameEn)}</h3>
-                        <div className="w-8 h-8 rounded-full bg-white/20 backdrop-blur-md flex items-center justify-center text-white opacity-0 group-hover:opacity-100 transition-opacity -translate-x-2 group-hover:translate-x-0 transform duration-300">
-                          <ArrowRight size={16} />
+                  <motion.div
+                    key={cat._id}
+                    initial={{ opacity: 0, x: idx % 2 === 0 ? -120 : 120, y: 30 }}
+                    whileInView={{ opacity: 1, x: 0, y: 0 }}
+                    viewport={{ once: true, margin: "-60px" }}
+                    transition={{ duration: 0.7, delay: idx * 0.1, type: "spring", bounce: 0.3 }}
+                  >
+                    <Link href={`/products?category=${cat._id}`} className="group relative w-full h-[200px] xl:h-[240px] rounded-[24px] overflow-hidden shadow-sm hover:shadow-lg transition-all duration-300 cursor-pointer block">
+                      <Image src={bgImage} alt={t(cat.nameAr, cat.nameEn)} fill sizes="(max-width: 768px) 50vw, 25vw" className="object-cover transition-transform duration-500 group-hover:scale-110" loading="lazy" unoptimized={bgImage.startsWith('/')} />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent flex items-end p-5">
+                        <div className="flex items-center justify-between w-full">
+                          <h3 className="text-white font-heading font-bold text-xl">{t(cat.nameAr, cat.nameEn)}</h3>
+                          <div className="w-8 h-8 rounded-full bg-white/20 backdrop-blur-md flex items-center justify-center text-white opacity-0 group-hover:opacity-100 transition-opacity -translate-x-2 group-hover:translate-x-0 transform duration-300">
+                            <ArrowRight size={16} />
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  </Link>
+                    </Link>
+                  </motion.div>
                 );
               })}
             </div>

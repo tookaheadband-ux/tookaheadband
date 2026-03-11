@@ -62,13 +62,13 @@ export default function Products() {
   return (
     <div className="bg-white min-h-screen pt-28 pb-32">
       <div className="w-full mx-auto px-6 md:px-16 lg:px-24">
-        <Breadcrumb items={[{ label: 'Home', href: '/' }, { label: ui.allProducts || 'All Products', href: '/products' }]} />
+        <Breadcrumb items={[{ label: 'Home', href: '/' }, { label: router.query.featured ? (ui.bestSellers || 'Best Sellers') : (ui.allProducts || 'All Products'), href: router.query.featured ? '/products?featured=true' : '/products' }]} />
 
         <div className="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-6 border-b border-brand-200 pb-8 relative">
           <div className="relative">
             <div className="absolute -top-10 -left-10 w-32 h-32 bg-brand-primary/20 rounded-full blur-3xl pointer-events-none"></div>
-            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold font-heading text-brand-text mb-2 relative z-10">{ui.allProducts}</h1>
-            {!loading && <p className="text-sm font-body font-bold text-gray-500 relative z-10">{total} items found</p>}
+            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold font-heading text-brand-text mb-2 relative z-10">{router.query.featured ? (ui.bestSellers || 'Best Sellers') : ui.allProducts}</h1>
+            {!loading && <p className="text-sm font-body font-bold text-gray-500 relative z-10">{total} {ui.items}</p>}
           </div>
           <div className="flex flex-col sm:flex-row gap-3 w-full md:w-auto relative z-10">
             <div className="relative w-full sm:w-64">
