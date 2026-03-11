@@ -35,24 +35,24 @@ export default function Home({ featured = [], categories = [] }) {
             {/* Left Column: Text */}
             <div className="lg:w-1/2 flex flex-col items-center lg:items-start text-center lg:text-left pt-0 md:pt-6 lg:pt-0 w-full px-2 sm:px-0">
               <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }}>
-                <span className="inline-block py-1.5 px-4 bg-brand-primary/10 text-brand-primary font-bold tracking-wide rounded-full text-sm mb-6 border border-brand-primary/20">
+                <span className="inline-block py-1.5 px-5 bg-brand-primary/15 text-brand-primary font-bold tracking-wide rounded-full text-sm mb-6 border border-brand-primary/30 shadow-sm">
                   ✨ NEW COLLECTION
                 </span>
                 <h1 className="text-[28px] sm:text-[32px] md:text-[36px] xl:text-[48px] font-heading font-extrabold text-brand-text leading-[1.3] mb-5 px-2">
                   Handmade Accessories for{' '}
-                  <span className="relative inline-block mt-1">
-                    <span className="relative z-10 px-2">Little Princesses</span>
-                    <span className="absolute bottom-1 left-0 w-full h-[10px] md:h-[14px] bg-brand-primary/60 -z-10 rounded-sm"></span>
+                  <span className="relative inline-block mt-1 group">
+                    <span className="relative z-10 px-2 group-hover:text-brand-primary transition-colors duration-300">Little Princesses</span>
+                    <span className="absolute bottom-1 left-0 w-full h-[10px] md:h-[14px] bg-brand-primary/40 -z-10 rounded-sm group-hover:h-full group-hover:opacity-20 transition-all duration-300"></span>
                   </span> 👑
                 </h1>
                 <p className="text-base md:text-lg text-brand-700 font-body mb-8 max-w-[480px]">
                   Beautiful handmade headbands made with love. Perfect unique accessories to celebrate your little one's everyday moments.
                 </p>
-                <div className="flex flex-col sm:flex-row items-center gap-4 w-full sm:w-auto mt-6">
-                  <Link href="/products" className="w-full sm:w-auto px-8 py-4 bg-brand-primary text-white font-bold rounded-xl shadow-[0_4px_14px_0_rgba(255,199,209,0.5)] hover:shadow-[0_6px_20px_rgba(255,199,209,0.7)] hover:-translate-y-1 transition-all duration-300 text-center">
+                <div className="flex flex-col sm:flex-row items-center gap-4 w-full sm:w-auto mt-8">
+                  <Link href="/products" className="w-full sm:w-auto px-8 py-4 bg-brand-primary text-white font-bold rounded-2xl shadow-md hover:shadow-lg hover:-translate-y-1 transition-all duration-300 text-center">
                     Shop Collection
                   </Link>
-                  <Link href="/about" className="w-full sm:w-auto px-8 py-4 bg-white text-brand-text border-2 border-brand-secondary/50 font-bold rounded-xl hover:bg-brand-secondary/10 hover:-translate-y-1 transition-all duration-300 text-center">
+                  <Link href="/about" className="w-full sm:w-auto px-8 py-4 bg-white text-brand-text border-2 border-brand-surface font-bold rounded-2xl hover:bg-brand-surface/50 hover:-translate-y-1 transition-all duration-300 text-center">
                     View Best Sellers
                   </Link>
                 </div>
@@ -74,16 +74,30 @@ export default function Home({ featured = [], categories = [] }) {
 
             {/* Right Column: Image Collage */}
             <div className="lg:w-1/2 relative w-full flex justify-center lg:justify-end mt-12 lg:mt-0">
-              <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.8 }} className="relative w-full max-w-[280px] sm:max-w-[340px] md:max-w-[420px] aspect-square mx-auto lg:mr-0">
+              <div className="relative w-full max-w-[280px] sm:max-w-[340px] md:max-w-[420px] aspect-square mx-auto lg:mr-0">
                 {/* Main Image */}
-                <div className="absolute top-0 right-0 left-auto w-[78%] h-[78%] bg-white rounded-2xl p-2 shadow-xl z-20">
-                  <Image src="/images/photo_2026-03-08_15-18-52.jpg" alt="Kids accessories" fill sizes="(max-width: 768px) 60vw, 30vw" className="object-cover rounded-[12px]" priority />
-                </div>
+                <motion.div 
+                  initial={{ opacity: 0, x: 300, y: -50, rotate: 15 }} 
+                  animate={{ opacity: 1, x: 0, y: 0, rotate: 0 }} 
+                  transition={{ duration: 1.4, type: "spring", bounce: 0.4 }}
+                  className="absolute top-0 right-0 left-auto w-[78%] h-[78%] z-20"
+                >
+                  <div className="w-full h-full bg-white rounded-[24px] p-2 shadow-lg group hover:-translate-y-2 transition-transform duration-500 relative">
+                    <Image src="/images/photo_2026-03-08_15-18-52.jpg" alt="Kids accessories" fill sizes="(max-width: 768px) 60vw, 30vw" className="object-cover rounded-[16px]" priority />
+                  </div>
+                </motion.div>
                 {/* Secondary Image */}
-                <div className="absolute bottom-0 left-0 right-auto w-[55%] h-[55%] bg-white rounded-2xl p-2 shadow-lg z-30">
-                  <Image src="/images/photo_2026-03-08_15-18-47.jpg" alt="Product detail" fill sizes="(max-width: 768px) 45vw, 20vw" className="object-cover rounded-[12px]" priority />
-                </div>
-              </motion.div>
+                <motion.div 
+                  initial={{ opacity: 0, x: -300, y: 150, rotate: -25 }} 
+                  animate={{ opacity: 1, x: 0, y: 0, rotate: 0 }} 
+                  transition={{ duration: 1.4, delay: 0.2, type: "spring", bounce: 0.4 }}
+                  className="absolute bottom-0 left-0 right-auto w-[55%] h-[55%] z-30"
+                >
+                  <div className="w-full h-full bg-white rounded-[20px] p-2 shadow-md hover:scale-105 transition-transform duration-500 relative">
+                    <Image src="/images/photo_2026-03-08_15-18-47.jpg" alt="Product detail" fill sizes="(max-width: 768px) 45vw, 20vw" className="object-cover rounded-[12px]" priority />
+                  </div>
+                </motion.div>
+              </div>
             </div>
 
           </div>
@@ -107,7 +121,7 @@ export default function Home({ featured = [], categories = [] }) {
               {categories.map((cat) => {
                 const bgImage = cat.coverImage || '/images/placeholder-category.jpg';
                 return (
-                  <Link key={cat._id} href={`/products?category=${cat._id}`} className="group relative w-full h-[180px] xl:h-[220px] rounded-[16px] overflow-hidden shadow-sm hover:shadow-xl transition-shadow cursor-pointer">
+                  <Link key={cat._id} href={`/products?category=${cat._id}`} className="group relative w-full h-[200px] xl:h-[240px] rounded-[24px] overflow-hidden shadow-sm hover:shadow-lg transition-all duration-300 cursor-pointer">
                     <Image src={bgImage} alt={t(cat.nameAr, cat.nameEn)} fill sizes="(max-width: 768px) 50vw, 25vw" className="object-cover transition-transform duration-500 group-hover:scale-110" loading="lazy" unoptimized={bgImage.startsWith('/')} />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent flex items-end p-5">
                       <div className="flex items-center justify-between w-full">
@@ -153,8 +167,8 @@ export default function Home({ featured = [], categories = [] }) {
               ))}
             </div>
 
-            <div className="mt-8 text-center sm:hidden">
-              <Link href="/products" className="inline-block py-3 px-6 bg-white border-2 border-brand-primary rounded-xl font-bold text-brand-text text-sm">
+            <div className="mt-10 text-center sm:hidden">
+              <Link href="/products" className="inline-block py-3 px-8 bg-white border-2 border-brand-surface rounded-2xl font-bold text-brand-text text-sm shadow-sm hover:shadow-md hover:-translate-y-1 transition-all duration-300">
                 View All Products
               </Link>
             </div>
@@ -170,17 +184,17 @@ export default function Home({ featured = [], categories = [] }) {
       </div>
 
       {/* 5. PROMO BANNER (Ticket Style) */}
-      <section className="py-[60px] md:py-[80px] relative w-full overflow-hidden px-4 bg-white">
-        <div className="max-w-4xl mx-auto rounded-3xl promo-ticket bg-gradient-to-r from-pink-300 via-brand-primary to-brand-secondary p-1 relative overflow-hidden shadow-2xl hover:scale-[1.01] transition-transform duration-500 cursor-pointer">
+      <section className="py-[60px] md:py-[80px] relative w-full overflow-hidden px-4 bg-brand-background">
+        <div className="max-w-4xl mx-auto rounded-[32px] promo-ticket bg-gradient-to-r from-brand-primary via-brand-secondary to-brand-surface p-1 relative overflow-hidden shadow-lg hover:shadow-xl hover:-translate-y-1 transition-all duration-500 cursor-pointer group">
           <motion.div animate={{ rotate: 360 }} transition={{ duration: 20, repeat: Infinity, ease: "linear" }} className="absolute -top-10 -left-10 text-white/20 pointer-events-none">
             <Sparkles size={120} />
           </motion.div>
 
-          <div className="bg-white/20 backdrop-blur-sm rounded-[22px] py-12 px-6 flex flex-col justify-center items-center text-center relative z-10 w-full h-full border border-white/40">
-            <h2 className="text-[28px] md:text-[36px] font-heading font-extrabold text-white mb-2 drop-shadow-md">
+          <div className="bg-white/40 backdrop-blur-md rounded-[28px] py-12 px-6 flex flex-col justify-center items-center text-center relative z-10 w-full h-full border border-white/60 group-hover:bg-white/50 transition-colors duration-500">
+            <h2 className="text-[28px] md:text-[36px] font-heading font-extrabold text-brand-900 mb-2 drop-shadow-sm">
               Free Gift with Orders Over 500 EGP 🎁
             </h2>
-            <div className="inline-block bg-white text-brand-primary font-bold px-6 py-2 rounded-full mt-2 shadow-sm uppercase tracking-widest text-sm">
+            <div className="inline-block bg-white text-brand-primary font-bold px-8 py-3 rounded-full mt-4 shadow-sm group-hover:shadow-md transition-shadow uppercase tracking-widest text-sm">
               Code: MAGIC2024
             </div>
           </div>
@@ -209,7 +223,7 @@ export default function Home({ featured = [], categories = [] }) {
               <p className="text-brand-700 font-body mb-8 leading-relaxed">
                 Every single piece is cut, sewn, and assembled by hand in our studio. We use only the softest fabrics sourced carefully to ensure the absolute best quality for your little ones.
               </p>
-              <Link href="/about" className="h-[40px] px-6 bg-brand-text text-white font-bold rounded-xl flex items-center justify-center hover:scale-105 transition-transform">
+              <Link href="/about" className="h-[44px] px-8 bg-brand-text text-white font-bold rounded-2xl flex items-center justify-center hover:bg-brand-primary hover:shadow-md hover:-translate-y-1 transition-all duration-300">
                 Read Our Story
               </Link>
             </div>
@@ -239,9 +253,9 @@ export default function Home({ featured = [], categories = [] }) {
             <input
               type="email"
               placeholder="Enter your email"
-              className="flex-1 h-[44px] px-4 rounded-xl border-2 border-white focus:border-brand-primary outline-none text-brand-text font-body transition-colors"
+              className="flex-1 h-[48px] px-6 rounded-2xl border-2 border-white focus:border-brand-primary outline-none text-brand-text font-body transition-colors shadow-sm"
             />
-            <button className="h-[44px] px-8 bg-brand-primary text-brand-text font-bold rounded-xl hover:scale-105 transition-transform whitespace-nowrap shadow-sm">
+            <button className="h-[48px] px-8 bg-brand-primary text-white font-bold rounded-2xl shadow-sm hover:shadow-md hover:-translate-y-1 transition-all duration-300 whitespace-nowrap">
               Subscribe
             </button>
           </form>

@@ -1,34 +1,40 @@
 @import "tailwindcss";
 
 @theme {
-  --color-brand-primary: #FF708A;
-  /* Primary Pink */
-  --color-brand-secondary: #C1A2FF;
-  /* Lavender */
-  --color-brand-accent: #FFDF70;
-  /* Soft Yellow */
-  --color-brand-surface: #AFEBE0;
-  /* Mint */
-  --color-brand-background: #FFFFFF;
-  /* Global Background */
+  --color-brand-primary: #FF8BA4;
+  /* Softer Pastel Pink */
+  --color-brand-secondary: #D4BFFF;
+  /* Softer Lavender */
+  --color-brand-accent: #FFEA9E;
+  /* Softer Yellow */
+  --color-brand-surface: #E0F7F2;
+  /* Lighter Mint / Surface Background */
+  --color-brand-background: #FAFAFA;
+  /* Off-white Global Background */
   --color-brand-card: #FFFFFF;
   /* Card Background */
-  --color-brand-text: #333333;
-  /* Primary Text */
+  --color-brand-text: #4A4A4A;
+  /* Softer Dark Gray Primary Text */
 
   /* Fallback aliases for existing components before complete rewrite */
   --color-brand-50: #FFFFFF;
-  --color-brand-100: #FFFFFF;
-  --color-brand-200: #C1A2FF;
-  --color-brand-300: #FF708A;
-  --color-brand-400: #AFEBE0;
-  --color-brand-700: #666666;
-  --color-brand-900: #333333;
+  --color-brand-100: #FFF5F7;
+  --color-brand-200: #D4BFFF;
+  --color-brand-300: #FF8BA4;
+  --color-brand-400: #E0F7F2;
+  --color-brand-700: #888888;
+  --color-brand-900: #4A4A4A;
+  
+  --shadow-sm: 0 4px 14px 0 rgba(255,139,164,0.15);
+  --shadow-md: 0 8px 24px 0 rgba(255,139,164,0.2);
+  --shadow-lg: 0 16px 32px 0 rgba(212,191,255,0.25);
+  /* Lavender tinted large shadow */
 
   --font-family-heading: 'Fredoka', 'Poppins', sans-serif;
   --font-family-body: 'Nunito', 'Inter', sans-serif;
   --font-family-arabic: 'Nunito', sans-serif;
 }
+
 
 body {
   overflow-x: hidden;
