@@ -4,7 +4,7 @@ import { useLang } from '@/context/LanguageContext';
 import { useCart } from '@/context/CartContext';
 import { useWishlist } from '@/context/WishlistContext';
 import { useState } from 'react';
-import { Eye, Heart } from 'lucide-react';
+import { Eye, Heart, Check } from 'lucide-react';
 import QuickViewModal from './QuickViewModal';
 
 export default function ProductCard({ product }) {
@@ -13,6 +13,7 @@ export default function ProductCard({ product }) {
   const { toggleItem, isInWishlist } = useWishlist();
   const [isQuickViewOpen, setIsQuickViewOpen] = useState(false);
   const [imgLoaded, setImgLoaded] = useState(false);
+  const [isAdding, setIsAdding] = useState(false);
   const wishlisted = isInWishlist(product._id);
 
   const name = t(product.nameAr, product.nameEn);
@@ -72,11 +73,26 @@ export default function ProductCard({ product }) {
 
       <div className="mt-2 md:mt-4 px-2 md:px-4 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity duration-300 w-full relative z-10">
         <button
-          onClick={(e) => { e.preventDefault(); addItem(product); }}
-          disabled={product.stock <= 0}
-          className="w-full h-[40px] md:h-[48px] bg-brand-primary text-brand-text font-bold text-[12px] md:text-sm tracking-wide rounded-xl hover:scale-[1.03] hover:bg-[#ffb8c7] transition-all duration-200 disabled:opacity-40 disabled:scale-100 disabled:cursor-not-allowed shadow-sm"
+          onClick={(e) => {
+            e.preventDefault();
+            addItem(product);
+            setIsAdding(true);
+            setTimeout(() => setIsAdding(false), 1500);
+          }}
+          disabled={product.stock <= 0 || isAdding}
+          className={`w-full h-[40px] md:h-[48px] font-bold text-[12px] md:text-sm tracking-wide rounded-xl transition-all duration-300 shadow-sm flex items-center justify-center gap-2 ${
+            isAdding 
+              ? 'bg-green-500 text-white scale-[1.02]' 
+              : 'bg-brand-primary text-brand-text hover:scale-[1.03] hover:bg-[#ffb8c7] disabled:opacity-40 disabled:scale-100 disabled:cursor-not-allowed'
+          }`}
         >
-          {ui.addToCart}
+          {isAdding ? (
+            <span className="flex items-center gap-1.5 animate-[bounce_0.5s_ease-in-out]">
+              <Check strokeWidth={3} size={16} />
+            </span>
+          ) : (
+            ui.addToCart
+          )}
         </button>
       </div>
 

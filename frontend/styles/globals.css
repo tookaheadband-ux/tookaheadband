@@ -1,7 +1,7 @@
 @import "tailwindcss";
 
 @theme {
-  --color-brand-primary: #FF9EAF;
+  --color-brand-primary: #FF708A;
   /* Primary Pink */
   --color-brand-secondary: #C1A2FF;
   /* Lavender */
@@ -9,7 +9,7 @@
   /* Soft Yellow */
   --color-brand-surface: #AFEBE0;
   /* Mint */
-  --color-brand-background: #FFF9FB;
+  --color-brand-background: #FFFFFF;
   /* Global Background */
   --color-brand-card: #FFFFFF;
   /* Card Background */
@@ -17,10 +17,10 @@
   /* Primary Text */
 
   /* Fallback aliases for existing components before complete rewrite */
-  --color-brand-50: #FFF9FB;
+  --color-brand-50: #FFFFFF;
   --color-brand-100: #FFFFFF;
   --color-brand-200: #C1A2FF;
-  --color-brand-300: #FF9EAF;
+  --color-brand-300: #FF708A;
   --color-brand-400: #AFEBE0;
   --color-brand-700: #666666;
   --color-brand-900: #333333;

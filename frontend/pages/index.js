@@ -27,17 +27,15 @@ export default function Home({ featured = [], categories = [] }) {
             <Sparkles size={36} fill="currentColor" />
           </motion.div>
 
-          {/* Dynamic Background Blobs */}
-          <div className="absolute top-0 right-1/4 w-72 h-72 bg-brand-primary/20 rounded-full mix-blend-multiply filter blur-3xl opacity-70 animate-blob pointer-events-none -z-10"></div>
-          <div className="absolute top-0 right-1/2 w-72 h-72 bg-brand-surface/30 rounded-full mix-blend-multiply filter blur-3xl opacity-70 animate-blob animation-delay-2000 pointer-events-none -z-10"></div>
-          <div className="absolute -bottom-8 right-1/3 w-72 h-72 bg-brand-secondary/30 rounded-full mix-blend-multiply filter blur-3xl opacity-70 animate-blob animation-delay-4000 pointer-events-none -z-10"></div>
+          {/* Clean White Background for Hero */}
+          <div className="absolute top-0 right-0 w-full h-full bg-white -z-10"></div>
 
           <div className="flex flex-col lg:flex-row items-center gap-12 lg:gap-8 mt-[20px] md:mt-[65px] lg:mt-0 relative z-10">
 
             {/* Left Column: Text */}
             <div className="lg:w-1/2 flex flex-col items-center lg:items-start text-center lg:text-left pt-0 md:pt-6 lg:pt-0 w-full px-2 sm:px-0">
               <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }}>
-                <span className="inline-block py-1.5 px-3 bg-brand-surface text-teal-800 rounded-full text-sm font-bold tracking-wide mb-6">
+                <span className="inline-block py-1.5 px-4 bg-brand-primary/10 text-brand-primary font-bold tracking-wide rounded-full text-sm mb-6 border border-brand-primary/20">
                   ✨ NEW COLLECTION
                 </span>
                 <h1 className="text-[28px] sm:text-[32px] md:text-[36px] xl:text-[48px] font-heading font-extrabold text-brand-text leading-[1.3] mb-5 px-2">
@@ -85,8 +83,6 @@ export default function Home({ featured = [], categories = [] }) {
                 <div className="absolute bottom-0 left-0 right-auto w-[55%] h-[55%] bg-white rounded-2xl p-2 shadow-lg z-30">
                   <Image src="/images/photo_2026-03-08_15-18-47.jpg" alt="Product detail" fill sizes="(max-width: 768px) 45vw, 20vw" className="object-cover rounded-[12px]" priority />
                 </div>
-                {/* Decorative blob — clipped by section overflow-hidden */}
-                <div className="absolute top-[10%] left-[5%] w-[55%] h-[55%] bg-brand-secondary/50 rounded-full blur-3xl -z-10 pointer-events-none"></div>
               </motion.div>
             </div>
 
