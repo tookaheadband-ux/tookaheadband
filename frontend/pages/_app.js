@@ -5,10 +5,13 @@ import { WishlistProvider } from '@/context/WishlistContext';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import CartDrawer from '@/components/CartDrawer';
-import FloatingWhatsApp from '@/components/FloatingWhatsApp';
-import BackToTop from '@/components/BackToTop';
+import dynamic from 'next/dynamic';
 import { Toaster } from 'react-hot-toast';
 import Head from 'next/head';
+
+// Lazy-load below-fold components to reduce initial bundle size
+const FloatingWhatsApp = dynamic(() => import('@/components/FloatingWhatsApp'), { ssr: false });
+const BackToTop = dynamic(() => import('@/components/BackToTop'), { ssr: false });
 
 export default function App({ Component, pageProps }) {
   const isAdmin = Component.isAdmin;

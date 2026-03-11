@@ -1,14 +1,13 @@
-@import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@300;400;500;600;700&family=Poppins:wght@300;400;500;600;700&family=Nunito:wght@300;400;500;600;700;800&family=Inter:wght@300;400;500;600;700&display=swap');
 @import "tailwindcss";
 
 @theme {
-  --color-brand-primary: #FFC7D1;
+  --color-brand-primary: #FF9EAF;
   /* Primary Pink */
-  --color-brand-secondary: #E6D8FF;
+  --color-brand-secondary: #C1A2FF;
   /* Lavender */
-  --color-brand-accent: #FFF4C2;
+  --color-brand-accent: #FFDF70;
   /* Soft Yellow */
-  --color-brand-surface: #DFF8F3;
+  --color-brand-surface: #AFEBE0;
   /* Mint */
   --color-brand-background: #FFF9FB;
   /* Global Background */
@@ -20,9 +19,9 @@
   /* Fallback aliases for existing components before complete rewrite */
   --color-brand-50: #FFF9FB;
   --color-brand-100: #FFFFFF;
-  --color-brand-200: #E6D8FF;
-  --color-brand-300: #FFC7D1;
-  --color-brand-400: #DFF8F3;
+  --color-brand-200: #C1A2FF;
+  --color-brand-300: #FF9EAF;
+  --color-brand-400: #AFEBE0;
   --color-brand-700: #666666;
   --color-brand-900: #333333;
 

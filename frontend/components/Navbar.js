@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import Image from 'next/image';
 import { useState, useEffect } from 'react';
 import { useLang } from '@/context/LanguageContext';
 import { useCart } from '@/context/CartContext';
@@ -57,7 +58,7 @@ export default function Navbar() {
           {/* Logo - Center on Mobile, Left on Desktop */}
           <div className="flex justify-center md:justify-start">
             <Link href="/" className="flex items-center gap-2">
-              <img src="/logo/logo.jpg" alt="TOOKA Logo" className="h-[24px] md:h-[28px] max-w-[120px] object-contain" />
+              <Image src="/logo/logo.jpg" alt="TOOKA Logo" width={120} height={28} priority className="h-[24px] md:h-[28px] max-w-[120px] object-contain" />
               <span className="text-xl md:text-2xl font-bold tracking-wide font-heading text-brand-text uppercase mt-1">
                 TOOKA
               </span>

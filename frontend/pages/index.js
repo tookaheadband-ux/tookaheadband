@@ -1,51 +1,14 @@
-import { useState, useEffect, useRef } from 'react';
+import { useRef } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { useLang } from '@/context/LanguageContext';
 import ProductCard from '@/components/ProductCard';
 import { fetchProducts, fetchCategories } from '@/lib/api';
-import { motion, useInView } from 'framer-motion';
-import { Sparkles, Heart, Gift, Truck, ShieldCheck, Instagram, ArrowRight, Quote } from 'lucide-react';
-import SkeletonCard from '@/components/SkeletonCard';
+import { motion } from 'framer-motion';
+import { Sparkles, Heart, Gift, ArrowRight } from 'lucide-react';
 
-export default function Home() {
+export default function Home({ featured = [], categories = [] }) {
   const { t, ui } = useLang();
-  const [featured, setFeatured] = useState([]);
-  const [categories, setCategories] = useState([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    const load = async () => {
-      try {
-        const [featRes, catRes] = await Promise.all([
-          fetchProducts({ limit: 4 }), // Fetch best sellers / featured
-          fetchCategories(),
-        ]);
-        setFeatured(featRes.data.products);
-        setCategories(catRes.data);
-      } catch (err) {
-        console.error('Load error:', err);
-      } finally {
-        setLoading(false);
-      }
-    };
-    load();
-  }, []);
-
-  if (loading) {
-    return (
-      <div className="bg-brand-background min-h-screen pt-28 pb-32">
-        <div className="max-w-screen-2xl mx-auto px-4 md:px-5 lg:px-6">
-          <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 md:gap-5 xl:gap-6 pt-12">
-            {[...Array(8)].map((_, i) => (
-              <div key={i} className="h-[300px] md:h-[400px]">
-                <SkeletonCard />
-              </div>
-            ))}
-          </div>
-        </div>
-      </div>
-    );
-  }
 
   return (
     <div className="bg-brand-background">
@@ -116,11 +79,11 @@ export default function Home() {
               <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.8 }} className="relative w-full max-w-[280px] sm:max-w-[340px] md:max-w-[420px] aspect-square mx-auto lg:mr-0">
                 {/* Main Image */}
                 <div className="absolute top-0 right-0 left-auto w-[78%] h-[78%] bg-white rounded-2xl p-2 shadow-xl z-20">
-                  <img src="/images/photo_2026-03-08_15-18-52.jpg" alt="Kids accessories" className="w-full h-full object-cover rounded-[12px]" />
+                  <Image src="/images/photo_2026-03-08_15-18-52.jpg" alt="Kids accessories" fill sizes="(max-width: 768px) 60vw, 30vw" className="object-cover rounded-[12px]" priority />
                 </div>
                 {/* Secondary Image */}
                 <div className="absolute bottom-0 left-0 right-auto w-[55%] h-[55%] bg-white rounded-2xl p-2 shadow-lg z-30">
-                  <img src="/images/photo_2026-03-08_15-18-47.jpg" alt="Product detail" className="w-full h-full object-cover rounded-[12px]" />
+                  <Image src="/images/photo_2026-03-08_15-18-47.jpg" alt="Product detail" fill sizes="(max-width: 768px) 45vw, 20vw" className="object-cover rounded-[12px]" priority />
                 </div>
                 {/* Decorative blob — clipped by section overflow-hidden */}
                 <div className="absolute top-[10%] left-[5%] w-[55%] h-[55%] bg-brand-secondary/50 rounded-full blur-3xl -z-10 pointer-events-none"></div>
@@ -149,7 +112,7 @@ export default function Home() {
                 const bgImage = cat.coverImage || '/images/placeholder-category.jpg';
                 return (
                   <Link key={cat._id} href={`/products?category=${cat._id}`} className="group relative w-full h-[180px] xl:h-[220px] rounded-[16px] overflow-hidden shadow-sm hover:shadow-xl transition-shadow cursor-pointer">
-                    <img src={bgImage} alt={t(cat.nameAr, cat.nameEn)} className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" />
+                    <Image src={bgImage} alt={t(cat.nameAr, cat.nameEn)} fill sizes="(max-width: 768px) 50vw, 25vw" className="object-cover transition-transform duration-500 group-hover:scale-110" loading="lazy" unoptimized={bgImage.startsWith('/')} />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent flex items-end p-5">
                       <div className="flex items-center justify-between w-full">
                         <h3 className="text-white font-heading font-bold text-xl">{t(cat.nameAr, cat.nameEn)}</h3>
@@ -241,7 +204,7 @@ export default function Home() {
         <div className="max-w-screen-2xl mx-auto px-4 md:px-5 lg:px-6">
           <div className="flex flex-col md:flex-row items-center gap-8 lg:gap-16">
             <div className="w-full md:w-1/2 relative h-[260px] md:h-[380px] rounded-[16px] overflow-hidden">
-              <img src="https://images.unsplash.com/photo-1515488042361-ee00e0ddd4e4?auto=format&fit=crop&w=800&q=80" alt="Making headbands" className="w-full h-full object-cover" />
+              <Image src="https://images.unsplash.com/photo-1515488042361-ee00e0ddd4e4?auto=format&fit=crop&w=800&q=80" alt="Making headbands" fill sizes="(max-width: 768px) 100vw, 50vw" className="object-cover" loading="lazy" />
             </div>
             <div className="w-full md:w-1/2 flex flex-col items-center md:items-start text-center md:text-left">
               <h2 className="text-[24px] xl:text-[32px] font-heading font-bold text-brand-text mb-4">
@@ -291,4 +254,26 @@ export default function Home() {
 
     </div>
   );
+}
+
+export async function getStaticProps() {
+  try {
+    const [featRes, catRes] = await Promise.all([
+      fetchProducts({ limit: 4 }),
+      fetchCategories(),
+    ]);
+    return {
+      props: {
+        featured: featRes.data.products || [],
+        categories: catRes.data || [],
+      },
+      revalidate: 60, // ISR: regenerate page every 60 seconds
+    };
+  } catch (err) {
+    console.error('getStaticProps error:', err);
+    return {
+      props: { featured: [], categories: [] },
+      revalidate: 30,
+    };
+  }
 }
