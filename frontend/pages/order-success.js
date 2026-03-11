@@ -24,9 +24,9 @@ export default function OrderSuccess() {
         </p>
         {orderId && (
           <div className="bg-white border border-gray-100 rounded-2xl p-5 mb-8 shadow-sm text-left">
-            <p className="text-xs font-black text-gray-500 uppercase tracking-widest mb-2">Your Order ID</p>
+            <p className="text-xs font-black text-gray-500 uppercase tracking-widest mb-2">{ui.yourOrderId}</p>
             <p className="font-black text-gray-900 text-sm break-all mb-3 select-all">{orderId}</p>
-            <p className="text-xs text-gray-400 font-bold">Save this ID to track your order status anytime.</p>
+            <p className="text-xs text-gray-400 font-bold">{ui.saveOrderId}</p>
           </div>
         )}
         <div className="flex flex-col sm:flex-row gap-3 justify-center">
@@ -34,7 +34,7 @@ export default function OrderSuccess() {
             <Link href={"/track-order?orderId=" + orderId}
               className="h-[48px] px-6 flex items-center justify-center gap-2 bg-white border-2 border-brand-primary text-brand-text font-bold text-sm rounded-xl hover:-translate-y-1 transition-all duration-300">
               <PackageSearch size={16} />
-              Track My Order
+              {ui.trackMyOrder}
             </Link>
           )}
           <Link href="/"

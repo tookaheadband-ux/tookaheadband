@@ -46,7 +46,7 @@ export default function About() {
             <div className="w-full lg:w-1/2 pt-10 lg:pt-0 text-center lg:text-left">
               <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }}>
                 <span className="inline-block py-1.5 px-4 bg-white text-teal-800 rounded-full text-xs font-black tracking-widest mb-6 shadow-sm border border-brand-50 uppercase shadow-[0_2px_10px_rgba(20,184,166,0.1)]">
-                  ✨ Our Story
+                  ✨ {ui.ourStory}
                 </span>
                 
                 <h1 className="text-[32px] sm:text-5xl lg:text-6xl font-black font-heading text-brand-text mb-8 capitalize leading-[1.2]">
@@ -63,7 +63,7 @@ export default function About() {
                       ))}
                     </div>
                   ) : (
-                    <p className="text-gray-500 italic font-body">No content available.</p>
+                    <p className="text-gray-500 italic font-body">{ui.noContent}</p>
                   )}
                   
                   {/* Decorative spark on text box */}
@@ -95,7 +95,7 @@ export default function About() {
                 <div className="flex gap-1 mb-2.5">
                   {[1,2,3,4,5].map(i => <Star key={i} size={14} className="text-yellow-400 fill-yellow-400" />)}
                 </div>
-                <p className="font-black text-gray-900 text-xs sm:text-sm leading-tight">Handcrafted with precise details & love.</p>
+                <p className="font-black text-gray-900 text-xs sm:text-sm leading-tight">{ui.handcraftedDetail}</p>
               </motion.div>
               
               {/* Decorative Heart */}

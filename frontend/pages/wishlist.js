@@ -15,9 +15,9 @@ export default function WishlistPage() {
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-10">
           <h1 className="text-3xl sm:text-4xl font-bold font-heading text-brand-text mb-2">
-            💖 {ui.wishlist || 'My Wishlist'}
+            💖 {ui.wishlist}
           </h1>
-          <p className="text-sm text-gray-500 font-body">{items.length} items saved</p>
+          <p className="text-sm text-gray-500 font-body">{items.length} {ui.itemsSaved}</p>
         </div>
 
         {items.length === 0 ? (
@@ -25,10 +25,10 @@ export default function WishlistPage() {
             <div className="w-20 h-20 bg-pink-50 rounded-full flex items-center justify-center mx-auto mb-4">
               <Heart size={32} className="text-pink-300" />
             </div>
-            <h3 className="text-xl font-bold text-gray-500 mb-2">Your wishlist is empty</h3>
-            <p className="text-sm text-gray-400 mb-6">Browse products and tap the heart to save them here</p>
+            <h3 className="text-xl font-bold text-gray-500 mb-2">{ui.emptyWishlist}</h3>
+            <p className="text-sm text-gray-400 mb-6">{ui.browseWishlistHint}</p>
             <Link href="/products" className="inline-flex h-12 px-8 items-center justify-center bg-brand-primary text-white font-bold rounded-xl hover:-translate-y-1 transition-all shadow-lg shadow-pink-200">
-              Browse Products
+              {ui.browseProducts}
             </Link>
           </div>
         ) : (
@@ -57,7 +57,7 @@ export default function WishlistPage() {
                       <div className="flex gap-2">
                         <button onClick={() => addItem(product)} disabled={product.stock <= 0}
                           className="flex-1 h-9 flex items-center justify-center gap-1 bg-brand-primary text-white text-xs font-bold rounded-xl hover:scale-[1.03] transition-all disabled:opacity-40">
-                          <ShoppingBag size={14} /> Add
+                          <ShoppingBag size={14} /> {ui.add}
                         </button>
                         <button onClick={() => removeItem(product._id)}
                           className="h-9 w-9 flex items-center justify-center bg-red-50 text-red-400 rounded-xl hover:bg-red-100 hover:text-red-500 transition-colors">

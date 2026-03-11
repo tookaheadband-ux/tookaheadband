@@ -14,7 +14,7 @@ export default function Footer() {
             <div className="flex flex-col gap-4">
               <h3 className="text-3xl font-extrabold font-heading text-brand-text uppercase">TOOKA</h3>
               <p className="text-sm font-body text-brand-700 leading-relaxed">
-                Beautiful handmade headbands made with love. Perfect accessories for your little princesses.
+                {ui.footerDesc}
               </p>
               <div className="flex gap-4 mt-2">
                 {/* Social Links */}
@@ -29,7 +29,7 @@ export default function Footer() {
 
             {/* Section 2: Links */}
             <div className="flex flex-col gap-4">
-              <h4 className="text-lg font-bold font-heading text-brand-text mb-2">Quick Links</h4>
+              <h4 className="text-lg font-bold font-heading text-brand-text mb-2">{ui.quickLinks}</h4>
               <Link href="/" className="text-sm font-body text-brand-700 hover:text-brand-primary transition-colors">{ui.home}</Link>
               <Link href="/products" className="text-sm font-body text-brand-700 hover:text-brand-primary transition-colors">{ui.allProducts}</Link>
               <Link href="/about" className="text-sm font-body text-brand-700 hover:text-brand-primary transition-colors">{ui.about}</Link>
@@ -37,7 +37,7 @@ export default function Footer() {
 
             {/* Section 3: Contact */}
             <div className="flex flex-col gap-4">
-              <h4 className="text-lg font-bold font-heading text-brand-text mb-2">Contact Us</h4>
+              <h4 className="text-lg font-bold font-heading text-brand-text mb-2">{ui.contactUs}</h4>
               <p className="text-sm font-body text-brand-700">Email: hello@toka.com</p>
               <p className="text-sm font-body text-brand-700">Phone: +20 100 208 4496</p>
               <p className="text-sm font-body text-brand-700">Cairo, Egypt</p>
@@ -45,12 +45,12 @@ export default function Footer() {
 
             {/* Section 4: Newsletter */}
             <div className="flex flex-col gap-4">
-              <h4 className="text-lg font-bold font-heading text-brand-text mb-2">Join Our Newsletter</h4>
-              <p className="text-sm font-body text-brand-700 mb-2">Subscribe for updates and exclusive offers!</p>
+              <h4 className="text-lg font-bold font-heading text-brand-text mb-2">{ui.joinNewsletter}</h4>
+              <p className="text-sm font-body text-brand-700 mb-2">{ui.newsletterHint}</p>
               <form className="flex gap-2" onSubmit={(e) => e.preventDefault()}>
-                <input type="email" placeholder="Your email address" className="flex-1 min-w-0 px-4 py-2 rounded-xl border border-brand-200 focus:outline-none focus:border-brand-primary text-sm" />
-                <button type="submit" className="px-4 py-2 bg-brand-primary text-brand-text font-bold rounded-xl text-sm hover:scale-105 transition-transform">
-                  Subscribe
+                <input type="email" placeholder={ui.yourEmail} className="flex-1 min-w-0 px-4 py-2 rounded-xl border border-brand-200 focus:outline-none focus:border-brand-primary text-sm" />
+                <button type="submit" className="px-4 py-2 bg-brand-primary text-white font-bold rounded-xl text-sm hover:scale-105 transition-transform">
+                  {ui.subscribe}
                 </button>
               </form>
             </div>
@@ -58,7 +58,7 @@ export default function Footer() {
           </div>
 
           <div className="mt-16 pt-8 border-t border-brand-200 flex flex-col md:flex-row items-center justify-between gap-4">
-            <p className="text-sm font-body text-brand-700">&copy; {new Date().getFullYear()} TOOKA. All rights reserved.</p>
+            <p className="text-sm font-body text-brand-700">&copy; {new Date().getFullYear()} TOOKA. {ui.allRights}</p>
           </div>
         </div>
       </footer>

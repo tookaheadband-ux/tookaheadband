@@ -15,7 +15,7 @@ export default function Cart() {
            <svg className="w-10 h-10" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" /></svg>
         </div>
         <h1 className="text-3xl font-heading font-bold text-brand-text mb-2 tracking-wide">{ui.emptyCart}</h1>
-        <p className="text-brand-700 font-body mb-8">Looks like you haven't added anything yet.</p>
+        <p className="text-brand-700 font-body mb-8">{ui.emptyCartHint}</p>
         <Link href="/products" className="h-[48px] px-8 flex items-center justify-center bg-brand-primary text-white font-bold rounded-xl shadow-[0_4px_14px_0_rgba(255,199,209,0.5)] hover:-translate-y-1 transition-all">{ui.continueShopping}</Link>
       </div>
     );
@@ -73,7 +73,7 @@ export default function Cart() {
           {/* Sticky Summary */}
           <div className="w-full lg:w-[380px] flex-shrink-0">
             <div className="lg:sticky lg:top-32 bg-white/60 backdrop-blur-md p-6 sm:p-8 rounded-3xl border border-white shadow-sm">
-              <h2 className="text-xl font-heading font-bold text-brand-text mb-6">Order Summary</h2>
+              <h2 className="text-xl font-heading font-bold text-brand-text mb-6">{ui.orderSummary}</h2>
 
               <div className="flex justify-between items-center mb-6 pb-6 border-b border-brand-200/60">
                 <span className="text-brand-700 font-body font-medium">{ui.total}</span>

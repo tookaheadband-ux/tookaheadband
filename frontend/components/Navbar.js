@@ -24,7 +24,7 @@ export default function Navbar() {
   const navLinks = [
     { href: '/', label: ui.home },
     { href: '/products', label: ui.products },
-    { href: '/track-order', label: 'Track Order' },
+    { href: '/track-order', label: ui.trackOrder },
     { href: '/about', label: ui.about },
   ];
 
@@ -118,7 +118,7 @@ export default function Navbar() {
 
             {/* Shop Button */}
             <Link href="/products" className="hidden sm:flex items-center justify-center bg-brand-primary text-brand-text hover:bg-brand-secondary transition-all font-semibold rounded-xl text-sm" style={{ height: '40px', padding: '0 24px' }}>
-              Shop Now
+              {ui.shopNow}
             </Link>
           </div>
         </div>

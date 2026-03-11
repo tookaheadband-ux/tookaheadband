@@ -25,7 +25,7 @@ export default function Checkout() {
       const res = await validateCoupon({ code: couponCode, orderTotal: total });
       setCouponResult(res.data);
     } catch (err) {
-      setCouponError(err.response?.data?.message || 'Invalid coupon');
+      setCouponError(err.response?.data?.message || ui.invalidCoupon);
     } finally { setApplyingCoupon(false); }
   };
 
@@ -34,8 +34,8 @@ export default function Checkout() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
-    if (!form.name || !form.phone || !form.address) { setError('Please fill in all required fields'); return; }
-    if (items.length === 0) { setError('Cart is empty'); return; }
+    if (!form.name || !form.phone || !form.address) { setError(ui.fillRequired); return; }
+    if (items.length === 0) { setError(ui.cartEmpty); return; }
     setLoading(true);
     try {
       const orderRes = await createOrder({ ...form, couponCode: couponResult ? couponResult.code : '', items: items.map((i) => ({ productId: i.productId, qty: i.qty })) });
@@ -57,7 +57,7 @@ export default function Checkout() {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-16">
 
           <form onSubmit={handleSubmit} className="lg:col-span-7 flex flex-col gap-5">
-            <h2 className="text-lg font-heading font-bold text-brand-text mb-2">Shipping Information</h2>
+            <h2 className="text-lg font-heading font-bold text-brand-text mb-2">{ui.shippingInfo}</h2>
 
             {error && <div className="p-4 bg-red-50 text-red-700 text-sm rounded-xl border border-red-200 font-body">{error}</div>}
 
@@ -88,31 +88,31 @@ export default function Checkout() {
             </div>
 
             <div className="mt-8 border-t border-brand-200/60 pt-8">
-              <h2 className="text-lg font-heading font-bold text-brand-text mb-6">Payment Method</h2>
+              <h2 className="text-lg font-heading font-bold text-brand-text mb-6">{ui.paymentMethod}</h2>
               <div className="border-2 border-brand-primary p-6 bg-brand-50/50 rounded-2xl flex items-center justify-between shadow-sm">
                 <div>
                   <p className="text-sm font-bold tracking-wide uppercase text-brand-900">{ui.cashOnDelivery}</p>
-                  <p className="text-xs text-brand-500 font-medium mt-1">Pay when you receive your order</p>
+                  <p className="text-xs text-brand-500 font-medium mt-1">{ui.payWhenReceive}</p>
                 </div>
                 <div className="w-6 h-6 rounded-full border-[6px] border-brand-primary flex-shrink-0" />
               </div>
             </div>
 
             <button type="submit" disabled={loading} className="w-full h-[56px] mt-8 flex items-center justify-center bg-brand-primary text-white font-bold text-base md:text-lg tracking-wide rounded-xl shadow-[0_4px_14px_0_rgba(255,199,209,0.5)] hover:shadow-[0_6px_20px_rgba(255,199,209,0.7)] hover:-translate-y-1 transition-all duration-300 disabled:opacity-50 disabled:hover:translate-y-0 disabled:cursor-not-allowed">
-              {loading ? 'Processing...' : ui.placeOrder}
+              {loading ? ui.processing : ui.placeOrder}
             </button>
           </form>
 
           {/* Order Summary sidebar */}
           <div className="lg:col-span-5">
             <div className="bg-white/60 backdrop-blur-md p-6 sm:p-8 rounded-3xl border border-white shadow-sm lg:sticky lg:top-32">
-              <h3 className="text-xl font-heading font-bold text-brand-text mb-6">Order Summary</h3>
+              <h3 className="text-xl font-heading font-bold text-brand-text mb-6">{ui.orderSummary}</h3>
 
               <div className="space-y-4 mb-6">
                 {items.map((item) => (
                   <div key={item.productId} className="flex justify-between items-center text-sm">
                     <span className="text-gray-700 font-body font-medium pr-4 leading-relaxed line-clamp-1">{item.productNameSnapshot} <span className="text-gray-500 font-bold ml-1">×{item.qty}</span></span>
-                    <span className="font-heading font-bold text-brand-900 flex-shrink-0">{item.priceSnapshot * item.qty} EGP</span>
+                    <span className="font-heading font-bold text-brand-900 flex-shrink-0">{item.priceSnapshot * item.qty} {ui.egp}</span>
                   </div>
                 ))}
               </div>
@@ -120,13 +120,13 @@ export default function Checkout() {
               <div className="border-t border-brand-200/60 pt-6">
                 {/* Coupon Input */}
                 <div className="mb-4">
-                  <label className="block text-xs font-black uppercase tracking-widest text-gray-600 mb-2">🏷️ Coupon Code</label>
+                  <label className="block text-xs font-black uppercase tracking-widest text-gray-600 mb-2">🏷️ {ui.couponCode}</label>
                   <div className="flex gap-2">
                     <input value={couponCode} onChange={(e) => setCouponCode(e.target.value.toUpperCase())} placeholder="e.g. TOOKA20"
                       className="flex-1 h-10 px-4 rounded-xl border-2 border-gray-200 focus:border-pink-400 outline-none text-gray-900 font-black tracking-wider text-sm bg-gray-50 uppercase" />
                     <button type="button" onClick={handleApplyCoupon} disabled={applyingCoupon}
                       className="h-10 px-5 bg-gray-900 text-white font-bold text-sm rounded-xl hover:-translate-y-0.5 transition-all disabled:opacity-50">
-                      {applyingCoupon ? '...' : 'Apply'}
+                      {applyingCoupon ? '...' : ui.apply}
                     </button>
                   </div>
                   {couponError && <p className="text-xs text-red-500 font-bold mt-1">{couponError}</p>}
@@ -139,19 +139,19 @@ export default function Checkout() {
 
                 {couponResult && (
                   <div className="flex justify-between items-center text-sm mb-3">
-                    <span className="text-gray-500 font-bold">Subtotal</span>
-                    <span className="text-gray-500 font-bold">{total} EGP</span>
+                    <span className="text-gray-500 font-bold">{ui.subtotal}</span>
+                    <span className="text-gray-500 font-bold">{total} {ui.egp}</span>
                   </div>
                 )}
                 {couponResult && (
                   <div className="flex justify-between items-center text-sm mb-3">
-                    <span className="text-green-600 font-bold">Discount</span>
-                    <span className="text-green-600 font-bold">-{couponResult.discount} EGP</span>
+                    <span className="text-green-600 font-bold">{ui.discount}</span>
+                    <span className="text-green-600 font-bold">-{couponResult.discount} {ui.egp}</span>
                   </div>
                 )}
                 <div className="flex justify-between items-center font-bold text-lg">
                   <span className="text-brand-700 uppercase tracking-widest text-sm font-body">{ui.total}</span>
-                  <span className="text-2xl font-heading font-bold text-gray-900">{finalTotal} <span className="text-sm tracking-wider text-gray-600">EGP</span></span>
+                  <span className="text-2xl font-heading font-bold text-gray-900">{finalTotal} <span className="text-sm tracking-wider text-gray-600">{ui.egp}</span></span>
                 </div>
               </div>
             </div>

@@ -36,37 +36,37 @@ export default function Home({ featured = [], categories = [] }) {
             <div className="lg:w-1/2 flex flex-col items-center lg:items-start text-center lg:text-left pt-0 md:pt-6 lg:pt-0 w-full px-2 sm:px-0">
               <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }}>
                 <span className="inline-block py-1.5 px-5 bg-brand-primary/15 text-brand-primary font-bold tracking-wide rounded-full text-sm mb-6 border border-brand-primary/30 shadow-sm">
-                  ✨ NEW COLLECTION
+                  ✨ {ui.newCollection}
                 </span>
                 <h1 className="text-[28px] sm:text-[32px] md:text-[36px] xl:text-[48px] font-heading font-extrabold text-brand-text leading-[1.3] mb-5 px-2">
-                  Handmade Accessories for{' '}
+                  {ui.heroMainTitle}{' '}
                   <span className="relative inline-block mt-1 group">
-                    <span className="relative z-10 px-2 group-hover:text-brand-primary transition-colors duration-300">Little Princesses</span>
+                    <span className="relative z-10 px-2 group-hover:text-brand-primary transition-colors duration-300">{ui.heroHighlight}</span>
                     <span className="absolute bottom-1 left-0 w-full h-[10px] md:h-[14px] bg-brand-primary/40 -z-10 rounded-sm group-hover:h-full group-hover:opacity-20 transition-all duration-300"></span>
                   </span> 👑
                 </h1>
                 <p className="text-base md:text-lg text-brand-700 font-body mb-8 max-w-[480px]">
-                  Beautiful handmade headbands made with love. Perfect unique accessories to celebrate your little one's everyday moments.
+                  {ui.heroDesc}
                 </p>
                 <div className="flex flex-col sm:flex-row items-center gap-4 w-full sm:w-auto mt-8">
                   <Link href="/products" className="w-full sm:w-auto px-8 py-4 bg-brand-primary text-white font-bold rounded-2xl shadow-md hover:shadow-lg hover:-translate-y-1 transition-all duration-300 text-center">
-                    Shop Collection
+                    {ui.shopCollection}
                   </Link>
                   <Link href="/about" className="w-full sm:w-auto px-8 py-4 bg-white text-brand-text border-2 border-brand-surface font-bold rounded-2xl hover:bg-brand-surface/50 hover:-translate-y-1 transition-all duration-300 text-center">
-                    View Best Sellers
+                    {ui.viewBestSellers}
                   </Link>
                 </div>
 
                 {/* Trust Badges */}
                 <div className="flex items-center justify-center lg:justify-start gap-4 mt-8 opacity-70">
                   <div className="flex items-center gap-1.5 text-xs font-bold text-brand-700 bg-white/50 px-3 py-1.5 rounded-full backdrop-blur-sm">
-                    <span className="text-green-500">✔</span> Handmade
+                    <span className="text-green-500">✔</span> {ui.handmade}
                   </div>
                   <div className="flex items-center gap-1.5 text-xs font-bold text-brand-700 bg-white/50 px-3 py-1.5 rounded-full backdrop-blur-sm">
-                    <span className="text-blue-400">🛡️</span> Secure
+                    <span className="text-blue-400">🛡️</span> {ui.secure}
                   </div>
                   <div className="flex items-center gap-1.5 text-xs font-bold text-brand-700 bg-white/50 px-3 py-1.5 rounded-full backdrop-blur-sm hidden sm:flex">
-                    <span className="text-brand-primary">🚚</span> Fast Delivery
+                    <span className="text-brand-primary">🚚</span> {ui.fastDelivery}
                   </div>
                 </div>
               </motion.div>
@@ -115,7 +115,7 @@ export default function Home({ featured = [], categories = [] }) {
         >
           <div className="max-w-screen-2xl mx-auto px-4 md:px-5 lg:px-6">
             <h2 className="text-[24px] xl:text-[32px] font-heading font-bold text-brand-text mb-8 text-center md:text-left">
-              Shop by Category
+              {ui.shopByCategory}
             </h2>
             <div className="grid grid-cols-2 xl:grid-cols-4 gap-3 md:gap-5 xl:gap-6">
               {categories.map((cat) => {
@@ -151,7 +151,7 @@ export default function Home({ featured = [], categories = [] }) {
           <div className="max-w-screen-2xl mx-auto px-4 md:px-5 lg:px-6">
             <div className="flex justify-between items-end mb-8">
               <h2 className="text-[24px] xl:text-[32px] font-heading font-bold text-brand-text">
-                Best Sellers 💕
+                {ui.bestSellersTitle}
               </h2>
               <Link href="/products" className="text-brand-primary font-bold text-sm hover:underline hidden sm:block">
                 View All
@@ -169,7 +169,7 @@ export default function Home({ featured = [], categories = [] }) {
 
             <div className="mt-10 text-center sm:hidden">
               <Link href="/products" className="inline-block py-3 px-8 bg-white border-2 border-brand-surface rounded-2xl font-bold text-brand-text text-sm shadow-sm hover:shadow-md hover:-translate-y-1 transition-all duration-300">
-                View All Products
+                {ui.viewAllProducts}
               </Link>
             </div>
           </div>
@@ -192,7 +192,7 @@ export default function Home({ featured = [], categories = [] }) {
 
           <div className="bg-white/40 backdrop-blur-md rounded-[28px] py-12 px-6 flex flex-col justify-center items-center text-center relative z-10 w-full h-full border border-white/60 group-hover:bg-white/50 transition-colors duration-500">
             <h2 className="text-[28px] md:text-[36px] font-heading font-extrabold text-brand-900 mb-2 drop-shadow-sm">
-              Free Gift with Orders Over 500 EGP 🎁
+              {ui.promoTitle}
             </h2>
             <div className="inline-block bg-white text-brand-primary font-bold px-8 py-3 rounded-full mt-4 shadow-sm group-hover:shadow-md transition-shadow uppercase tracking-widest text-sm">
               Code: MAGIC2024
@@ -218,13 +218,13 @@ export default function Home({ featured = [], categories = [] }) {
             </div>
             <div className="w-full md:w-1/2 flex flex-col items-center md:items-start text-center md:text-left">
               <h2 className="text-[24px] xl:text-[32px] font-heading font-bold text-brand-text mb-4">
-                Handmade with Love 💖
+                {ui.handmadeWithLove}
               </h2>
               <p className="text-brand-700 font-body mb-8 leading-relaxed">
-                Every single piece is cut, sewn, and assembled by hand in our studio. We use only the softest fabrics sourced carefully to ensure the absolute best quality for your little ones.
+                {ui.handmadeWithLoveDesc}
               </p>
               <Link href="/about" className="h-[44px] px-8 bg-brand-text text-white font-bold rounded-2xl flex items-center justify-center hover:bg-brand-primary hover:shadow-md hover:-translate-y-1 transition-all duration-300">
-                Read Our Story
+                {ui.readOurStory}
               </Link>
             </div>
           </div>
@@ -244,19 +244,19 @@ export default function Home({ featured = [], categories = [] }) {
             <Gift size={32} />
           </div>
           <h2 className="text-[24px] xl:text-[32px] font-heading font-bold text-brand-text mb-3">
-            Join the TOOKA Family
+            {ui.joinFamily}
           </h2>
           <p className="text-brand-700 font-body mb-8">
-            Subscribe to get special offers, free giveaways, and once-in-a-lifetime deals.
+            {ui.joinFamilyDesc}
           </p>
           <form className="flex flex-col sm:flex-row gap-3" onSubmit={e => e.preventDefault()}>
             <input
               type="email"
-              placeholder="Enter your email"
+              placeholder={ui.enterEmail}
               className="flex-1 h-[48px] px-6 rounded-2xl border-2 border-white focus:border-brand-primary outline-none text-brand-text font-body transition-colors shadow-sm"
             />
             <button className="h-[48px] px-8 bg-brand-primary text-white font-bold rounded-2xl shadow-sm hover:shadow-md hover:-translate-y-1 transition-all duration-300 whitespace-nowrap">
-              Subscribe
+              {ui.subscribe}
             </button>
           </form>
         </div>
