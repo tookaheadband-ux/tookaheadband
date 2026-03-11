@@ -1,12 +1,14 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import { useLang } from '@/context/LanguageContext';
+import { useToast } from '@/context/ToastContext';
 import Pagination from '@/components/Pagination';
 import { AdminNav } from './dashboard';
 import { adminGetMe, adminGetOrders, adminUpdateOrderStatus, adminExportOrdersPdf } from '@/lib/api';
 
 export default function AdminOrders() {
   const { ui } = useLang();
+  const { toast } = useToast();
   const router = useRouter();
   const [orders, setOrders] = useState([]);
   const [page, setPage] = useState(1);
@@ -73,11 +75,11 @@ export default function AdminOrders() {
       link.click();
       link.remove();
       window.URL.revokeObjectURL(url);
-    } catch { alert('Export failed'); }
+    } catch { toast.error('Export failed'); }
     finally { setExporting(false); }
   };
 
-  const handleStatus = async (id, status) => { try { await adminUpdateOrderStatus(id, status); load(); } catch { alert('Error'); } };
+  const handleStatus = async (id, status) => { try { await adminUpdateOrderStatus(id, status); load(); toast.success('Status updated'); } catch { toast.error('Error updating status'); } };
   const statusColors = {
     pending: 'bg-amber-50 text-amber-700 border-amber-200',
     shipped: 'bg-blue-50 text-blue-700 border-blue-200',

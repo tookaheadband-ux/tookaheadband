@@ -1,5 +1,5 @@
 import { createContext, useContext, useState, useEffect } from 'react';
-import toast from 'react-hot-toast';
+
 
 const CartContext = createContext();
 
@@ -42,8 +42,10 @@ export function CartProvider({ children }) {
       ];
     });
 
-    // Trigger toast notification on successful add
-    toast.success('Added to your Cart! 🛍️');
+    // Dispatch event for toast notification (listened by ToastContext)
+    if (typeof window !== 'undefined') {
+      window.dispatchEvent(new CustomEvent('cart-toast', { detail: { message: 'Added to your Cart! 🛍️', type: 'success' } }));
+    }
   };
 
   const updateQty = (productId, qty) => {

@@ -3,12 +3,14 @@ import { useRouter } from 'next/router';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useLang } from '@/context/LanguageContext';
+import { useToast } from '@/context/ToastContext';
 import Pagination from '@/components/Pagination';
 import { AdminNav } from './dashboard';
 import { adminGetMe, adminGetProducts, adminCreateProduct, adminUpdateProduct, adminDeleteProduct, adminGetCategories, adminUpdateRelatedProducts } from '@/lib/api';
 
 export default function AdminProducts() {
   const { t, ui } = useLang();
+  const { toast, confirm } = useToast();
   const router = useRouter();
   const [products, setProducts] = useState([]);
   const [categories, setCategories] = useState([]);
@@ -48,9 +50,9 @@ export default function AdminProducts() {
       }
       else { await adminCreateProduct(fd); }
       setShowModal(false); loadProducts();
-    } catch (err) { alert(err.response?.data?.message || 'Error'); } finally { setSaving(false); }
+    } catch (err) { toast.error(err.response?.data?.message || 'Error'); } finally { setSaving(false); }
   };
-  const handleDelete = async (id) => { if (!confirm('Delete this product?')) return; try { await adminDeleteProduct(id); loadProducts(); } catch { alert('Error'); } };
+  const handleDelete = async (id) => { const ok = await confirm('Are you sure you want to delete this product?'); if (!ok) return; try { await adminDeleteProduct(id); loadProducts(); toast.success('Product deleted'); } catch { toast.error('Error deleting product'); } };
   const handleLogout = () => { localStorage.removeItem('toka-admin-token'); router.push('/admin/login'); };
 
   const openRelated = (p) => {
@@ -68,7 +70,7 @@ export default function AdminProducts() {
       await adminUpdateRelatedProducts(relatedModal._id, relatedSelected);
       setRelatedModal(null);
       loadProducts();
-    } catch { alert('Error saving related products'); } finally { setSavingRelated(false); }
+    } catch { toast.error('Error saving related products'); } finally { setSavingRelated(false); }
   };
 
   const filteredForRelated = products.filter((p) =>

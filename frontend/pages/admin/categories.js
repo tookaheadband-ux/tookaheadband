@@ -2,11 +2,13 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import Image from 'next/image';
 import { useLang } from '@/context/LanguageContext';
+import { useToast } from '@/context/ToastContext';
 import { AdminNav } from './dashboard';
 import { adminGetMe, adminGetCategories, adminCreateCategory, adminUpdateCategory, adminDeleteCategory } from '@/lib/api';
 
 export default function AdminCategories() {
   const { t, ui } = useLang();
+  const { toast, confirm } = useToast();
   const router = useRouter();
   const [categories, setCategories] = useState([]);
   const [showModal, setShowModal] = useState(false);
@@ -29,9 +31,9 @@ export default function AdminCategories() {
       if (file) fd.append('coverImage', file);
       editCat ? await adminUpdateCategory(editCat._id, fd) : await adminCreateCategory(fd);
       setShowModal(false); load();
-    } catch (err) { alert(err.response?.data?.message || 'Error'); } finally { setSaving(false); }
+    } catch (err) { toast.error(err.response?.data?.message || 'Error'); } finally { setSaving(false); }
   };
-  const handleDelete = async (id) => { if (!confirm('Delete?')) return; try { await adminDeleteCategory(id); load(); } catch { alert('Error'); } };
+  const handleDelete = async (id) => { const ok = await confirm('Are you sure you want to delete this category?'); if (!ok) return; try { await adminDeleteCategory(id); load(); toast.success('Category deleted'); } catch { toast.error('Error deleting category'); } };
   const handleLogout = () => { localStorage.removeItem('toka-admin-token'); router.push('/admin/login'); };
 
   return (

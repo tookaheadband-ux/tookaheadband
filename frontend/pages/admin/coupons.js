@@ -1,11 +1,13 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import { useLang } from '@/context/LanguageContext';
+import { useToast } from '@/context/ToastContext';
 import { AdminNav } from './dashboard';
 import { adminGetMe, adminGetCoupons, adminCreateCoupon, adminUpdateCoupon, adminDeleteCoupon } from '@/lib/api';
 
 export default function AdminCoupons() {
   const { ui } = useLang();
+  const { toast, confirm } = useToast();
   const router = useRouter();
   const [coupons, setCoupons] = useState([]);
   const [showModal, setShowModal] = useState(false);
@@ -33,9 +35,9 @@ export default function AdminCoupons() {
       const data = { ...form, value: Number(form.value), minOrder: Number(form.minOrder) || 0, maxUses: Number(form.maxUses) || 0, expiresAt: form.expiresAt || null };
       editCoupon ? await adminUpdateCoupon(editCoupon._id, data) : await adminCreateCoupon(data);
       setShowModal(false); load();
-    } catch (err) { alert(err.response?.data?.message || 'Error'); } finally { setSaving(false); }
+    } catch (err) { toast.error(err.response?.data?.message || 'Error'); } finally { setSaving(false); }
   };
-  const handleDelete = async (id) => { if (!confirm('Delete this coupon?')) return; try { await adminDeleteCoupon(id); load(); } catch { alert('Error'); } };
+  const handleDelete = async (id) => { const ok = await confirm('Are you sure you want to delete this coupon?'); if (!ok) return; try { await adminDeleteCoupon(id); load(); toast.success('Coupon deleted'); } catch { toast.error('Error deleting coupon'); } };
   const handleLogout = () => { localStorage.removeItem('toka-admin-token'); router.push('/admin/login'); };
 
   return (
