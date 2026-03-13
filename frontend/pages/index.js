@@ -76,10 +76,9 @@ export default function Home({ featured = [], categories = [] }) {
             <div className="lg:w-1/2 relative w-full flex justify-center lg:justify-end mt-12 lg:mt-0">
               <div className="relative w-full max-w-[280px] sm:max-w-[340px] md:max-w-[420px] aspect-square mx-auto lg:mr-0">
                 {/* Main Image */}
-                <motion.div 
-                  initial={{ opacity: 0, x: 200, y: -30, rotate: 12 }} 
-                  whileInView={{ opacity: 1, x: 0, y: 0, rotate: 0 }} 
-                  viewport={{ once: true, margin: "-50px" }}
+                <motion.div
+                  initial={{ opacity: 0, x: 200, y: -30, rotate: 12 }}
+                  animate={{ opacity: 1, x: 0, y: 0, rotate: 0 }}
                   transition={{ duration: 1.2, type: "spring", bounce: 0.35 }}
                   className="absolute top-0 right-0 left-auto w-[78%] h-[78%] z-20"
                 >
@@ -88,10 +87,9 @@ export default function Home({ featured = [], categories = [] }) {
                   </div>
                 </motion.div>
                 {/* Secondary Image */}
-                <motion.div 
-                  initial={{ opacity: 0, x: -200, y: 100, rotate: -20 }} 
-                  whileInView={{ opacity: 1, x: 0, y: 0, rotate: 0 }} 
-                  viewport={{ once: true, margin: "-50px" }}
+                <motion.div
+                  initial={{ opacity: 0, x: -200, y: 100, rotate: -20 }}
+                  animate={{ opacity: 1, x: 0, y: 0, rotate: 0 }}
                   transition={{ duration: 1.2, delay: 0.15, type: "spring", bounce: 0.35 }}
                   className="absolute bottom-0 left-0 right-auto w-[55%] h-[55%] z-30"
                 >
@@ -131,7 +129,7 @@ export default function Home({ featured = [], categories = [] }) {
                     transition={{ duration: 0.7, delay: idx * 0.1, type: "spring", bounce: 0.3 }}
                   >
                     <Link href={`/products?category=${cat._id}`} className="group relative w-full h-[200px] xl:h-[240px] rounded-[24px] overflow-hidden shadow-sm hover:shadow-lg transition-all duration-300 cursor-pointer block">
-                      <Image src={bgImage} alt={t(cat.nameAr, cat.nameEn)} fill sizes="(max-width: 768px) 50vw, 25vw" className="object-cover transition-transform duration-500 group-hover:scale-110" loading="lazy" unoptimized={bgImage.startsWith('/')} />
+                      <Image src={bgImage} alt={t(cat.nameAr, cat.nameEn)} fill sizes="(max-width: 768px) 50vw, 25vw" className="object-cover transition-transform duration-500 group-hover:scale-110" unoptimized={bgImage.startsWith('/')} />
                       <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent flex items-end p-5">
                         <div className="flex items-center justify-between w-full">
                           <h3 className="text-white font-heading font-bold text-xl">{t(cat.nameAr, cat.nameEn)}</h3>
