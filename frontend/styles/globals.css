@@ -37,7 +37,6 @@
 
 
 body {
-  overflow-x: hidden;
   width: 100%;
   position: relative;
 }
@@ -53,7 +52,6 @@ body {
   color: var(--color-brand-900);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  overflow-x: clip;
 }
 
 [dir="rtl"] body {

@@ -31,6 +31,7 @@ export default function ProductDetail() {
   const addToCartRef = useRef(null);
   const [showSticky, setShowSticky] = useState(false);
 
+
   // Reviews
   const [reviews, setReviews] = useState([]);
   const [avgRating, setAvgRating] = useState(0);
@@ -93,8 +94,8 @@ export default function ProductDetail() {
         <title>{name} — TOOKA</title>
         <meta name="description" content={description} />
       </Head>
-      <div className="bg-brand-background min-h-screen pt-28 pb-32">
-        <div className="w-full mx-auto px-6 md:px-16 lg:px-24">
+      <div className="bg-brand-background min-h-screen pt-24 md:pt-28 pb-20 md:pb-32">
+        <div className="w-full mx-auto px-4 md:px-16 lg:px-24">
 
           <Breadcrumb items={[
             { label: 'Home', href: '/' },
@@ -102,12 +103,13 @@ export default function ProductDetail() {
             { label: name, href: `/products/${id}` }
           ]} />
 
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-16 items-start">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-16">
 
-            {/* Gallery Section */}
-            <div className="lg:col-span-6 xl:col-span-5 animate-fade-in flex flex-col md:flex-row gap-3 md:gap-4 md:sticky md:top-32">
-              {/* Thumbnails */}
-              {product.images?.length > 1 && (
+            {/* Gallery Wrapper to enable sticky behavior inside grid */}
+            <div className="lg:col-span-6 xl:col-span-5 relative">
+              <div className="animate-fade-in flex flex-col md:flex-row gap-3 md:gap-4 lg:sticky lg:top-28">
+                {/* Thumbnails */}
+                {product.images?.length > 1 && (
                 <div className="flex md:flex-col gap-2 md:gap-3 overflow-x-auto md:overflow-y-auto md:max-h-[550px] order-2 md:order-1 hide-scrollbar py-2 md:py-0 md:pr-1">
                   {product.images.map((img, idx) => (
                     <button
@@ -173,6 +175,7 @@ export default function ProductDetail() {
                   Hover to zoom
                 </div>
               </div>
+              </div>
             </div>
 
             {/* Lightbox */}
@@ -225,8 +228,8 @@ export default function ProductDetail() {
             {/* Details Section */}
             <div className="lg:col-span-6 xl:col-span-6 xl:col-start-7 animate-fade-in flex flex-col pt-4 md:pt-0" style={{ animationDelay: '0.1s' }}>
 
-              <div className="mb-8 pb-8">
-                <div className="flex items-center gap-3 mb-4">
+              <div className="mb-5 pb-5 md:mb-8 md:pb-8">
+                <div className="flex items-center gap-3 mb-3">
                   {categoryName && (
                     <p className="text-xs font-semibold tracking-[0.2em] uppercase text-gray-500">
                       {categoryName}
@@ -238,14 +241,14 @@ export default function ProductDetail() {
                     </span>
                   )}
                 </div>
-                <h1 className="text-3xl sm:text-4xl font-bold font-[var(--font-family-heading)] text-brand-900 mb-6 uppercase tracking-wider">{name}</h1>
-                <p className="text-2xl font-medium text-brand-900">
-                  {product.price} <span className="text-sm font-normal text-gray-600 tracking-widest uppercase">{ui.egp}</span>
+                <h1 className="text-xl sm:text-3xl font-bold font-[var(--font-family-heading)] text-brand-900 mb-3 md:mb-6 uppercase tracking-wider">{name}</h1>
+                <p className="text-lg sm:text-2xl font-medium text-brand-900">
+                  {product.price} <span className="text-xs sm:text-sm font-normal text-gray-600 tracking-widest uppercase">{ui.egp}</span>
                 </p>
               </div>
 
               {description && (
-                <div className="mb-10 text-brand-700 leading-relaxed text-sm format-description">
+                <div className="mb-6 md:mb-10 text-brand-700 leading-relaxed text-sm format-description">
                   {description.split('\n').map((line, i) => <p key={i} className="mb-2">{line}</p>)}
                 </div>
               )}
@@ -259,7 +262,7 @@ export default function ProductDetail() {
 
               {product.stock > 0 ? (
                 <div className="space-y-6 mt-auto">
-                  <div className="flex items-center justify-between border-y border-brand-100 py-6">
+                  <div className="flex items-center justify-between border-y border-brand-100 py-4 md:py-6">
                     <span className="text-xs uppercase tracking-widest font-semibold text-brand-900">{ui.qty}</span>
                     <div className="flex items-center">
                       <button onClick={() => setQty(Math.max(1, qty - 1))}
@@ -273,17 +276,17 @@ export default function ProductDetail() {
                   <div className="flex flex-col gap-4">
                     <div ref={addToCartRef} className="w-full">
                       <button onClick={handleAddToCart}
-                        className={`w-full h-[56px] text-white font-bold text-base md:text-lg tracking-wide rounded-xl transition-all duration-300 ${
+                        className={`w-full h-[48px] md:h-[56px] font-bold text-sm md:text-base tracking-wide rounded-xl transition-all duration-300 ${
                           added
-                            ? 'bg-brand-500 shadow-sm'
-                            : 'bg-brand-primary shadow-[0_4px_14px_0_rgba(255,199,209,0.5)] hover:shadow-[0_6px_20px_rgba(255,199,209,0.7)] hover:-translate-y-1'
+                            ? 'bg-green-700 text-white shadow-md scale-[0.98]'
+                            : 'bg-brand-primary text-white shadow-[0_4px_14px_0_rgba(255,199,209,0.5)] hover:shadow-[0_6px_20px_rgba(255,199,209,0.7)] hover:-translate-y-1'
                         }`}>
                         {added ? 'Added to bag' : ui.addToCart}
                       </button>
                     </div>
 
                     <a href={`https://wa.me/201002084496?text=${whatsappMsg}`} target="_blank" rel="noopener noreferrer"
-                      className="w-full h-[56px] bg-white border-2 border-[#25D366] text-[#25D366] font-bold text-base md:text-lg tracking-wide rounded-xl hover:bg-[#25D366]/5 hover:-translate-y-1 transition-all duration-300 flex items-center justify-center">
+                      className="w-full h-[48px] md:h-[56px] bg-[#25D366] text-white font-bold text-sm md:text-base tracking-wide rounded-xl shadow-[0_4px_14px_0_rgba(37,211,102,0.39)] hover:shadow-[0_6px_20px_rgba(37,211,102,0.6)] hover:-translate-y-1 transition-all duration-300 flex items-center justify-center">
                       {ui.orderViaWhatsApp}
                     </a>
                   </div>
@@ -304,21 +307,10 @@ export default function ProductDetail() {
                 </div>
               )}
 
-            </div>
-          </div>
-
-        </div>
-
-        {/* Related Products */}
-        {product.relatedProducts?.length > 0 && (
-          <RelatedProducts products={product.relatedProducts} />
-        )}
-
-        {/* Reviews Section */}
-        <div className="max-w-screen-xl mx-auto px-4 md:px-6 pb-16">
-          <div className="border-t border-brand-100 pt-12">
-            <h2 className="text-2xl font-bold text-gray-900 mb-2">⭐ Reviews ({reviewCount})</h2>
-            {avgRating > 0 && <p className="text-sm text-gray-600 font-bold mb-6">Average: {avgRating}/5 stars</p>}
+            {/* Reviews Section — inside right column so gallery stays sticky */}
+            <div className="mt-12 border-t border-brand-100 pt-10">
+              <h2 className="text-xl font-bold text-gray-900 mb-2">⭐ Reviews ({reviewCount})</h2>
+              {avgRating > 0 && <p className="text-sm text-gray-600 font-bold mb-6">Average: {avgRating}/5 stars</p>}
 
             {/* Leave Review Form */}
             <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5 mb-8">
@@ -363,7 +355,16 @@ export default function ProductDetail() {
               {reviews.length === 0 && <p className="text-sm text-gray-400 text-center py-6">No reviews yet. Be the first!</p>}
             </div>
           </div>
+
+            </div>
+          </div>
         </div>
+
+        {/* Related Products */}
+        {product.relatedProducts?.length > 0 && (
+          <RelatedProducts products={product.relatedProducts} />
+        )}
+
       </div>
 
       {/* Sticky Add to Cart for Mobile */}

@@ -31,7 +31,7 @@ export default function App({ Component, pageProps }) {
         {!isAdmin && <Navbar />}
         <CartDrawer />
 
-        <main className={isAdmin ? '' : 'min-h-screen overflow-x-hidden w-full relative'}>
+        <main className={isAdmin ? '' : 'min-h-screen w-full'}>
           <Component {...pageProps} />
         </main>
 

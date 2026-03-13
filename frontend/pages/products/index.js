@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import Head from 'next/head';
 import { useRouter } from 'next/router';
 import { useLang } from '@/context/LanguageContext';
@@ -72,8 +72,8 @@ export default function Products() {
       <title>{router.query.featured ? 'Best Sellers' : 'All Products'} — TOOKA</title>
       <meta name="description" content="Shop TOOKA's handmade kids accessories — headbands, clips, and more." />
     </Head>
-    <div className="bg-white min-h-screen pt-28 pb-32">
-      <div className="w-full mx-auto px-6 md:px-16 lg:px-24">
+    <div className="bg-white min-h-screen pt-24 md:pt-28 pb-20 md:pb-32">
+      <div className="max-w-screen-2xl mx-auto px-4 md:px-6 lg:px-8">
         <Breadcrumb items={[{ label: 'Home', href: '/' }, { label: router.query.featured ? (ui.bestSellers || 'Best Sellers') : (ui.allProducts || 'All Products'), href: router.query.featured ? '/products?featured=true' : '/products' }]} />
 
         <div className="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-6 border-b border-brand-200 pb-8 relative">
