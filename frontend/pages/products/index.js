@@ -1,4 +1,5 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
+import Head from 'next/head';
 import { useRouter } from 'next/router';
 import { useLang } from '@/context/LanguageContext';
 import ProductCard from '@/components/ProductCard';
@@ -20,9 +21,15 @@ export default function Products() {
   const [totalPages, setTotalPages] = useState(1);
   const [total, setTotal] = useState(0);
   const [search, setSearch] = useState('');
+  const [debouncedSearch, setDebouncedSearch] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('');
   const [filters, setFilters] = useState(DEFAULT_FILTERS);
   const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const timer = setTimeout(() => setDebouncedSearch(search), 400);
+    return () => clearTimeout(timer);
+  }, [search]);
 
   useEffect(() => {
     if (router.query.category) setSelectedCategory(router.query.category);
@@ -39,7 +46,7 @@ export default function Products() {
       try {
         const params = { page, limit: 12 };
         if (selectedCategory) params.category = selectedCategory;
-        if (search) params.search = search;
+        if (debouncedSearch) params.search = debouncedSearch;
         if (router.query.featured) params.featured = 'true';
         if (filters.minPrice) params.minPrice = filters.minPrice;
         if (filters.maxPrice) params.maxPrice = filters.maxPrice;
@@ -54,12 +61,17 @@ export default function Products() {
       finally { setLoading(false); }
     };
     load();
-  }, [page, selectedCategory, search, router.query.featured, filters]);
+  }, [page, selectedCategory, debouncedSearch, router.query.featured, filters]);
 
   const handleFiltersChange = (newFilters) => { setFilters(newFilters); setPage(1); };
   const handleFiltersReset = () => { setFilters(DEFAULT_FILTERS); setPage(1); };
 
   return (
+    <>
+    <Head>
+      <title>{router.query.featured ? 'Best Sellers' : 'All Products'} — TOOKA</title>
+      <meta name="description" content="Shop TOOKA's handmade kids accessories — headbands, clips, and more." />
+    </Head>
     <div className="bg-white min-h-screen pt-28 pb-32">
       <div className="w-full mx-auto px-6 md:px-16 lg:px-24">
         <Breadcrumb items={[{ label: 'Home', href: '/' }, { label: router.query.featured ? (ui.bestSellers || 'Best Sellers') : (ui.allProducts || 'All Products'), href: router.query.featured ? '/products?featured=true' : '/products' }]} />
@@ -75,7 +87,7 @@ export default function Products() {
               <input
                 type="text" value={search}
                 onChange={(e) => { setSearch(e.target.value); setPage(1); }}
-                placeholder={ui.search}
+                placeholder={`${ui.search} (name or SKU)`}
                 className="w-full h-[48px] pl-11 pr-4 rounded-xl border-2 border-white focus:border-brand-primary outline-none text-brand-text font-body transition-colors bg-white/60 backdrop-blur-md shadow-sm"
               />
               <svg className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -160,5 +172,6 @@ export default function Products() {
         )}
       </div>
     </div>
+    </>
   );
 }

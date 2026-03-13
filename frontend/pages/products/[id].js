@@ -250,6 +250,13 @@ export default function ProductDetail() {
                 </div>
               )}
 
+              {product.stock > 0 && product.stock <= 5 && (
+                <div className="mb-4 flex items-center gap-2 bg-orange-50 border border-orange-200 text-orange-700 text-xs font-black px-4 py-2.5 rounded-xl">
+                  <span>🔥</span>
+                  <span>Only {product.stock} left in stock — order soon!</span>
+                </div>
+              )}
+
               {product.stock > 0 ? (
                 <div className="space-y-6 mt-auto">
                   <div className="flex items-center justify-between border-y border-brand-100 py-6">
