@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { useState, useEffect } from 'react';
+import { useRouter } from 'next/router';
 import { useLang } from '@/context/LanguageContext';
 import { useCart } from '@/context/CartContext';
 import { useWishlist } from '@/context/WishlistContext';
@@ -12,6 +13,11 @@ export default function Navbar() {
   const { count: wishlistCount } = useWishlist();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const router = useRouter();
+
+  useEffect(() => {
+    setMobileOpen(false);
+  }, [router.pathname]);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -36,16 +42,76 @@ export default function Navbar() {
           : 'bg-transparent py-4 md:py-6'
         }`}
     >
-      <div className="max-w-screen-2xl mx-auto px-4 md:px-5 lg:px-6">
-        <div className="relative grid grid-cols-3 md:flex md:items-center md:justify-between h-[60px] xl:h-[72px] items-center">
+      <div className="max-w-screen-2xl mx-auto px-4 md:px-6 lg:px-8">
+        <div className="flex items-center justify-between h-[60px] xl:h-[68px]">
 
-          {/* Mobile Menu Button - Left */}
-          <div className="flex md:hidden justify-start">
+          {/* Logo */}
+          <Link href="/" className="flex items-center gap-2.5 shrink-0">
+            <Image src="/logo/logo.jpg" alt="TOOKA Logo" width={32} height={32} priority className="w-8 h-8 object-contain rounded-md" />
+            <span className="text-[20px] md:text-[22px] font-extrabold tracking-widest font-heading text-brand-text uppercase">
+              TOOKA
+            </span>
+          </Link>
+
+          {/* Desktop Nav - Center */}
+          <div className="hidden lg:flex items-center gap-10 xl:gap-14">
+            {navLinks.map((link) => (
+              <Link
+                key={link.href}
+                href={link.href}
+                className="text-[14px] font-semibold text-brand-700 hover:text-brand-primary transition-colors tracking-wide"
+              >
+                {link.label}
+              </Link>
+            ))}
+          </div>
+
+          {/* Right Actions */}
+          <div className="flex items-center gap-2 md:gap-3">
+            <div className="hidden sm:block">
+              <LanguageSwitcher />
+            </div>
+
+            {/* Wishlist */}
+            <Link href="/wishlist" className="relative w-9 h-9 flex items-center justify-center rounded-xl hover:bg-brand-50 transition-colors" aria-label="Wishlist">
+              <svg className="w-[18px] h-[18px] text-brand-text" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+              </svg>
+              {wishlistCount > 0 && (
+                <span className="absolute top-0.5 right-0.5 bg-pink-500 text-white text-[9px] font-bold w-[16px] h-[16px] rounded-full flex items-center justify-center">
+                  {wishlistCount}
+                </span>
+              )}
+            </Link>
+
+            {/* Cart */}
+            <button
+              onClick={() => setIsOpen(true)}
+              className="relative w-9 h-9 flex items-center justify-center rounded-xl hover:bg-brand-50 transition-colors"
+              aria-label="Cart"
+            >
+              <svg className="w-[18px] h-[18px] text-brand-text" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+              </svg>
+              {itemCount > 0 && (
+                <span className="absolute top-0.5 right-0.5 bg-brand-primary text-white text-[9px] font-bold w-[16px] h-[16px] rounded-full flex items-center justify-center">
+                  {itemCount}
+                </span>
+              )}
+            </button>
+
+            {/* Shop Button */}
+            <Link href="/products" className="hidden md:flex items-center justify-center bg-brand-primary text-white hover:bg-brand-primary/90 transition-all font-bold rounded-xl text-sm h-[38px] px-5">
+              {ui.shopNow}
+            </Link>
+
+            {/* Mobile Menu Button */}
             <button
               onClick={() => setMobileOpen(!mobileOpen)}
               aria-label="Menu"
+              className="lg:hidden w-9 h-9 flex items-center justify-center rounded-xl hover:bg-brand-50 transition-colors"
             >
-              <svg className="w-6 h-6 text-brand-900" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-5 h-5 text-brand-900" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 {mobileOpen ? (
                   <path strokeLinecap="square" strokeLinejoin="miter" strokeWidth={1.5} d="M6 18L18 6M6 6l12 12" />
                 ) : (
@@ -53,73 +119,6 @@ export default function Navbar() {
                 )}
               </svg>
             </button>
-          </div>
-
-          {/* Logo - Center on Mobile, Left on Desktop */}
-          <div className="flex justify-center md:justify-start">
-            <Link href="/" className="flex items-center gap-2">
-              <Image src="/logo/logo.jpg" alt="TOOKA Logo" width={120} height={28} priority className="h-[24px] md:h-[28px] max-w-[120px] object-contain" />
-              <span className="text-xl md:text-2xl font-bold tracking-wide font-heading text-brand-text uppercase mt-1">
-                TOOKA
-              </span>
-            </Link>
-          </div>
-
-          {/* Desktop Nav - Center */}
-          <div className="hidden lg:flex flex-1 items-center justify-center gap-8 xl:gap-12">
-            {navLinks.map((link) => (
-              <Link
-                key={link.href}
-                href={link.href}
-                className="text-base font-medium text-brand-text hover:text-brand-primary transition-colors"
-              >
-                {link.label}
-              </Link>
-            ))}
-          </div>
-
-          {/* Right Actions - Right */}
-          <div className="flex justify-end md:items-center gap-3 md:gap-5">
-            <div className="hidden sm:block">
-              <LanguageSwitcher />
-            </div>
-
-            {/* Wishlist */}
-            <Link href="/wishlist" className="relative group" aria-label="Wishlist">
-              <svg className="w-5 h-5 text-brand-text" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
-              </svg>
-              {wishlistCount > 0 && (
-                <span className="absolute -top-1.5 -right-1.5 bg-pink-500 text-white text-[10px] font-bold w-[18px] h-[18px] rounded-full flex items-center justify-center shadow-sm">
-                  {wishlistCount}
-                </span>
-              )}
-            </Link>
-
-            <button
-              onClick={() => setIsOpen(true)}
-              className="relative group flex items-center gap-2"
-              aria-label="Cart"
-            >
-              <span className="hidden sm:block text-xs lg:text-sm tracking-[0.15em] lg:tracking-[0.2em] uppercase font-bold text-brand-700 group-hover:text-brand-900 transition-colors">
-                {ui.cart}
-              </span>
-              <div className="relative">
-                <svg className="w-5 h-5 text-brand-text" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
-                </svg>
-                {itemCount > 0 && (
-                  <span className="absolute -top-1.5 -right-1.5 bg-brand-primary text-brand-text text-[10px] font-bold w-[18px] h-[18px] rounded-full flex items-center justify-center shadow-sm">
-                    {itemCount}
-                  </span>
-                )}
-              </div>
-            </button>
-
-            {/* Shop Button */}
-            <Link href="/products" className="hidden sm:flex items-center justify-center bg-brand-primary text-brand-text hover:bg-brand-secondary transition-all font-semibold rounded-xl text-sm" style={{ height: '40px', padding: '0 24px' }}>
-              {ui.shopNow}
-            </Link>
           </div>
         </div>
 

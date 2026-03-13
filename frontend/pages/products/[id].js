@@ -70,6 +70,8 @@ export default function ProductDetail() {
 
   const handleAddToCart = () => {
     addItem(product, qty);
+    setAdded(true);
+    setTimeout(() => setAdded(false), 1500);
   };
 
   const name = product ? t(product.nameAr, product.nameEn) : '';

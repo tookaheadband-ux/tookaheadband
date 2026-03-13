@@ -10,7 +10,7 @@ export default function FloatingWhatsApp() {
       href={whatsappUrl}
       target="_blank"
       rel="noopener noreferrer"
-      className="fixed bottom-6 right-6 z-[90] flex items-center justify-center w-14 h-14 bg-[#25D366] text-white rounded-full shadow-lg hover:bg-[#1ebd5c] transition-colors group"
+      className="fixed bottom-24 right-5 md:bottom-8 z-[90] flex items-center justify-center w-14 h-14 bg-[#25D366] text-white rounded-full shadow-lg hover:bg-[#1ebd5c] transition-colors group"
       aria-label="Chat with us on WhatsApp"
     >
       {/* Pulse Animation Rings */}

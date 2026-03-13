@@ -1,3 +1,4 @@
+import Head from 'next/head';
 import Link from 'next/link';
 import { useLang } from '@/context/LanguageContext';
 import { useWishlist } from '@/context/WishlistContext';
@@ -11,7 +12,9 @@ export default function WishlistPage() {
   const { addItem } = useCart();
 
   return (
-    <div className="min-h-screen bg-brand-background pt-22 sm:pt-32 pb-20">
+    <>
+    <Head><title>{ui.wishlist || 'Wishlist'} — TOOKA</title></Head>
+    <div className="min-h-screen bg-brand-background pt-24 sm:pt-32 pb-20">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-10">
           <h1 className="text-3xl sm:text-4xl font-bold font-heading text-brand-text mb-2">
@@ -73,5 +76,6 @@ export default function WishlistPage() {
         )}
       </div>
     </div>
+    </>
   );
 }

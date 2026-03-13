@@ -1,3 +1,4 @@
+import Head from 'next/head';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -22,6 +23,8 @@ export default function Cart() {
   }
 
   return (
+    <>
+    <Head><title>{ui.yourCart || 'Cart'} — TOOKA</title></Head>
     <div className="bg-brand-background min-h-screen pt-28 pb-32">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <h1 className="text-3xl md:text-4xl font-bold font-heading text-brand-text mb-8 md:mb-12">{ui.yourCart}</h1>
@@ -89,5 +92,6 @@ export default function Cart() {
         </div>
       </div>
     </div>
+    </>
   );
 }

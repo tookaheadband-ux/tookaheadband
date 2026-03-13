@@ -16,7 +16,11 @@ const getProducts = async (req, res, next) => {
 
     if (req.query.search) {
       const searchRegex = new RegExp(req.query.search, 'i');
-      filter.$or = [{ nameAr: searchRegex }, { nameEn: searchRegex }];
+      filter.$or = [{ nameAr: searchRegex }, { nameEn: searchRegex }, { sku: searchRegex }];
+    }
+
+    if (req.query.sku) {
+      filter.sku = new RegExp(req.query.sku, 'i');
     }
 
     if (req.query.featured === 'true') filter.isFeatured = true;

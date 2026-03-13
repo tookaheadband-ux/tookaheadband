@@ -1,4 +1,5 @@
 import { useRef } from 'react';
+import Head from 'next/head';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useLang } from '@/context/LanguageContext';
@@ -11,6 +12,14 @@ export default function Home({ featured = [], categories = [] }) {
   const { t, ui } = useLang();
 
   return (
+    <>
+    <Head>
+      <title>TOOKA — Handmade Kids Accessories</title>
+      <meta name="description" content="TOOKA — Beautiful handmade headbands and accessories for kids. Shop our latest collection." />
+      <meta property="og:title" content="TOOKA — Handmade Kids Accessories" />
+      <meta property="og:description" content="Beautiful handmade headbands and accessories for kids." />
+      <meta property="og:type" content="website" />
+    </Head>
     <div className="bg-brand-background">
 
       {/* 1. HERO SECTION */}
@@ -111,7 +120,7 @@ export default function Home({ featured = [], categories = [] }) {
           whileInView={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
           viewport={{ once: true, margin: "-100px" }}
           transition={{ duration: 0.8 }}
-          className="py-[40px] md:py-[60px] xl:py-[80px] bg-white"
+          className="py-[40px] md:py-[60px] xl:py-[80px] bg-white overflow-hidden"
         >
           <div className="max-w-screen-2xl mx-auto px-4 md:px-5 lg:px-6">
             <h2 className="text-[24px] xl:text-[32px] font-heading font-bold text-brand-text mb-8 text-center md:text-left">
@@ -271,6 +280,7 @@ export default function Home({ featured = [], categories = [] }) {
       </motion.section>
 
     </div>
+    </>
   );
 }
 

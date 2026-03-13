@@ -1,3 +1,4 @@
+import Head from 'next/head';
 import { useState } from 'react';
 import { useRouter } from 'next/router';
 import { useLang } from '@/context/LanguageContext';
@@ -50,6 +51,8 @@ export default function Checkout() {
   }
 
   return (
+    <>
+    <Head><title>{ui.checkout || 'Checkout'} — TOOKA</title></Head>
     <div className="bg-brand-background min-h-screen pt-28 pb-32">
       <div className="max-w-[1200px] mx-auto px-6 md:px-12">
         <h1 className="text-3xl md:text-4xl font-bold font-heading text-brand-text mb-8 md:mb-12 tracking-wide">{ui.checkout}</h1>
@@ -160,5 +163,6 @@ export default function Checkout() {
         </div>
       </div>
     </div>
+    </>
   );
 }
