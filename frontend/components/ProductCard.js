@@ -71,7 +71,7 @@ export default function ProductCard({ product }) {
         </p>
       </Link>
 
-      <div className="mt-3 md:mt-4 px-2 md:px-4 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity duration-300 w-full relative z-10 pb-2">
+      <div className="mt-3 md:mt-4 px-2 md:px-4 w-full relative z-10 pb-2">
         <button
           onClick={(e) => {
             e.preventDefault();
@@ -81,14 +81,14 @@ export default function ProductCard({ product }) {
           }}
           disabled={product.stock <= 0 || isAdding}
           className={`w-full h-[44px] md:h-[48px] font-bold text-[13px] md:text-sm tracking-wide rounded-[16px] transition-all duration-300 shadow-sm flex items-center justify-center gap-2 ${
-            isAdding 
-              ? 'bg-brand-surface text-brand-900 scale-[1.02] shadow-md' 
+            isAdding
+              ? 'bg-green-600 text-white shadow-md scale-[0.98]'
               : 'bg-brand-primary text-white hover:shadow-md hover:-translate-y-1 hover:bg-brand-primary/90 disabled:opacity-50 disabled:translate-y-0 disabled:cursor-not-allowed'
           }`}
         >
           {isAdding ? (
-            <span className="flex items-center gap-1.5 animate-[bounce_0.5s_ease-in-out]">
-              <Check strokeWidth={3} size={16} />
+            <span className="flex items-center gap-1.5">
+              <Check strokeWidth={3} size={15} /> Added!
             </span>
           ) : (
             ui.addToCart

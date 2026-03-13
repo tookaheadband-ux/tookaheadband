@@ -52,17 +52,17 @@ export default function Cart() {
                         <h3 className="font-heading font-bold text-brand-text text-sm sm:text-lg mb-1 line-clamp-2">{item.productNameSnapshot}</h3>
                         <p className="text-gray-700 font-body font-semibold text-xs sm:text-sm">{item.priceSnapshot} <span className="text-[10px] sm:text-xs uppercase tracking-wider text-gray-600 font-bold ml-1">{ui.egp}</span></p>
                       </div>
-                      <button onClick={() => removeItem(item.productId)} className="w-8 h-8 flex items-center justify-center rounded-full bg-red-50 text-red-400 hover:bg-red-100 hover:text-red-600 transition-colors flex-shrink-0" title="Remove Item">
+                      <button onClick={() => removeItem(item.productId)} className="w-10 h-10 flex items-center justify-center rounded-full bg-red-50 text-red-400 hover:bg-red-100 hover:text-red-600 transition-colors flex-shrink-0" title="Remove Item">
                         <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
                       </button>
                     </div>
 
                     <div className="flex items-center justify-between mt-4">
                       {/* Quantity Pill */}
-                      <div className="flex items-center bg-brand-50 border border-brand-100 rounded-full px-1.5 py-1">
-                        <button onClick={() => updateQty(item.productId, item.qty - 1)} className="w-6 h-6 sm:w-8 sm:h-8 flex items-center justify-center text-brand-900 text-lg hover:bg-white rounded-full transition-colors shadow-sm">-</button>
-                        <span className="w-8 flex items-center justify-center text-xs sm:text-sm font-bold text-brand-900">{item.qty}</span>
-                        <button onClick={() => updateQty(item.productId, item.qty + 1)} className="w-6 h-6 sm:w-8 sm:h-8 flex items-center justify-center text-brand-900 text-lg hover:bg-white rounded-full transition-colors shadow-sm">+</button>
+                      <div className="flex items-center bg-brand-50 border border-brand-100 rounded-full px-1 py-1 gap-1">
+                        <button onClick={() => updateQty(item.productId, item.qty - 1)} className="w-8 h-8 flex items-center justify-center text-brand-900 text-lg hover:bg-white rounded-full transition-colors shadow-sm font-bold">-</button>
+                        <span className="w-7 flex items-center justify-center text-sm font-bold text-brand-900">{item.qty}</span>
+                        <button onClick={() => updateQty(item.productId, item.qty + 1)} className="w-8 h-8 flex items-center justify-center text-brand-900 text-lg hover:bg-white rounded-full transition-colors shadow-sm font-bold">+</button>
                       </div>
 
                       <p className="font-heading font-bold text-base sm:text-lg text-gray-900">{item.priceSnapshot * item.qty} <span className="text-[10px] sm:text-xs uppercase tracking-wider text-gray-600 font-bold">{ui.egp}</span></p>
@@ -75,7 +75,7 @@ export default function Cart() {
 
           {/* Sticky Summary */}
           <div className="w-full lg:w-[380px] flex-shrink-0">
-            <div className="lg:sticky lg:top-32 bg-white/60 backdrop-blur-md p-6 sm:p-8 rounded-3xl border border-white shadow-sm">
+            <div className="lg:sticky lg:top-24 bg-white/60 backdrop-blur-md p-6 sm:p-8 rounded-3xl border border-white shadow-sm">
               <h2 className="text-xl font-heading font-bold text-brand-text mb-6">{ui.orderSummary}</h2>
 
               <div className="flex justify-between items-center mb-6 pb-6 border-b border-brand-200/60">

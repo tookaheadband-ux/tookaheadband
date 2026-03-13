@@ -18,7 +18,7 @@ export default function WishlistPage() {
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-10">
           <h1 className="text-3xl sm:text-4xl font-bold font-heading text-brand-text mb-2">
-            💖 {ui.wishlist}
+            {ui.wishlist}
           </h1>
           <p className="text-sm text-gray-500 font-body">{items.length} {ui.itemsSaved}</p>
         </div>
@@ -59,12 +59,12 @@ export default function WishlistPage() {
                       <p className="text-gray-900 font-black text-sm mb-3">{product.price} <span className="text-xs text-gray-600">EGP</span></p>
                       <div className="flex gap-2">
                         <button onClick={() => addItem(product)} disabled={product.stock <= 0}
-                          className="flex-1 h-9 flex items-center justify-center gap-1 bg-brand-primary text-white text-xs font-bold rounded-xl hover:scale-[1.03] transition-all disabled:opacity-40">
-                          <ShoppingBag size={14} /> {ui.add}
+                          className="flex-1 h-10 flex items-center justify-center gap-1.5 bg-brand-primary text-white text-xs font-bold rounded-xl hover:-translate-y-0.5 hover:shadow-md transition-all disabled:opacity-40 disabled:translate-y-0">
+                          <ShoppingBag size={14} /> {ui.addToCart}
                         </button>
                         <button onClick={() => removeItem(product._id)}
-                          className="h-9 w-9 flex items-center justify-center bg-red-50 text-red-400 rounded-xl hover:bg-red-100 hover:text-red-500 transition-colors">
-                          <Trash2 size={14} />
+                          className="h-10 w-10 flex items-center justify-center bg-red-50 text-red-400 rounded-xl hover:bg-red-500 hover:text-white transition-all">
+                          <Trash2 size={15} />
                         </button>
                       </div>
                     </div>
