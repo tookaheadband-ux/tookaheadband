@@ -66,6 +66,8 @@ export const adminDeleteCoupon = (id) => api.delete(`/admin/coupons/${id}`);
 // Reviews
 export const getProductReviews = (productId) => api.get(`/products/${productId}/reviews`);
 export const createProductReview = (productId, data) => api.post(`/products/${productId}/reviews`, data);
+export const adminGetReviews = (params) => api.get('/admin/reviews', { params });
+export const adminDeleteReview = (id) => api.delete(`/admin/reviews/${id}`);
 
 // Back in Stock
 export const subscribeNotifyMe = (productId, email) => api.post(`/products/${productId}/notify-me`, { email });

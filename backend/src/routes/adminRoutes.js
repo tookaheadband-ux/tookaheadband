@@ -9,6 +9,7 @@ const { createCategory, updateCategory, deleteCategory, getCategories } = requir
 const { getOrders, updateOrderStatus, exportOrdersPdf } = require('../controllers/orderController');
 const { updatePage } = require('../controllers/pageController');
 const { getCoupons, createCoupon, updateCoupon, deleteCoupon } = require('../controllers/couponController');
+const { getAllReviews, deleteReview } = require('../controllers/reviewController');
 
 // Auth
 router.post('/login', login);
@@ -40,6 +41,10 @@ router.get('/coupons', auth, getCoupons);
 router.post('/coupons', auth, createCoupon);
 router.put('/coupons/:id', auth, updateCoupon);
 router.delete('/coupons/:id', auth, deleteCoupon);
+
+// Reviews (admin)
+router.get('/reviews', auth, getAllReviews);
+router.delete('/reviews/:id', auth, deleteReview);
 
 // Related Products (admin)
 router.put('/products/:id/related', auth, updateRelatedProducts);

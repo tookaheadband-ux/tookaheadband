@@ -11,6 +11,7 @@ const navItems = (ui, active) => [
   { href: '/admin/orders', label: ui.manageOrders, icon: '📦', active: active === 'orders' },
   { href: '/admin/pages', label: ui.pages, icon: '📄', active: active === 'pages' },
   { href: '/admin/coupons', label: 'Coupons', icon: '🏷️', active: active === 'coupons' },
+  { href: '/admin/reviews', label: 'Reviews', icon: '⭐', active: active === 'reviews' },
   { href: '/admin/sku-search', label: 'SKU Search', icon: '🔍', active: active === 'sku-search' },
 ];
 
