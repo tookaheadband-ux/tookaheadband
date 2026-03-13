@@ -175,6 +175,15 @@ export function LanguageProvider({ children }) {
       ourStory: 'Our Story',
       noContent: 'No content available.',
       handcraftedDetail: 'Handcrafted with precise details & love.',
+      // Product Features
+      featureFastDelivery: 'Fast Delivery',
+      featureFastDeliveryDesc: 'Inside & outside Egypt',
+      featurePremiumQuality: 'Premium Quality',
+      featurePremiumQualityDesc: '100% handmade',
+      featureMadeWithLove: 'Made with Love',
+      featureMadeWithLoveDesc: 'Care in every detail',
+      featureEasyReturns: 'Easy Returns',
+      featureEasyReturnsDesc: '14-day return policy',
     },
     ar: {
       home: 'الرئيسية',
@@ -325,6 +334,15 @@ export function LanguageProvider({ children }) {
       ourStory: 'قصتنا',
       noContent: 'لا يوجد محتوى متاح.',
       handcraftedDetail: 'مصنوعة يدوياً بتفاصيل دقيقة وحب.',
+      // Product Features
+      featureFastDelivery: 'توصيل سريع',
+      featureFastDeliveryDesc: 'داخل وخارج مصر',
+      featurePremiumQuality: 'جودة عالية',
+      featurePremiumQualityDesc: '100% صناعة يدوية',
+      featureMadeWithLove: 'صُنع بحب',
+      featureMadeWithLoveDesc: 'عناية في كل تفصيلة',
+      featureEasyReturns: 'استرجاع سهل',
+      featureEasyReturnsDesc: 'سياسة استرجاع 14 يوم',
     },
   };
 

@@ -10,6 +10,7 @@ import { Star } from 'lucide-react';
 import Breadcrumb from '@/components/Breadcrumb';
 import SkeletonProductDetail from '@/components/SkeletonProductDetail';
 import RelatedProducts from '@/components/RelatedProducts';
+import { Truck, ShieldCheck, HeartPulse, RefreshCw } from 'lucide-react';
 
 export default function ProductDetail() {
   const router = useRouter();
@@ -106,9 +107,10 @@ export default function ProductDetail() {
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-16">
 
             {/* Gallery Wrapper to enable sticky behavior inside grid */}
-            <div className="lg:col-span-6 xl:col-span-5 relative">
-              <div className="animate-fade-in flex flex-col md:flex-row gap-3 md:gap-4 lg:sticky lg:top-28">
-                {/* Thumbnails */}
+            <div className="lg:col-span-6 xl:col-span-5 w-full">
+              <div className="lg:sticky lg:top-28 animate-fade-in flex flex-col gap-8 relative z-10">
+                <div className="flex flex-col md:flex-row gap-3 md:gap-4">
+                  {/* Thumbnails */}
                 {product.images?.length > 1 && (
                 <div className="flex md:flex-col gap-2 md:gap-3 overflow-x-auto md:overflow-y-auto md:max-h-[550px] order-2 md:order-1 hide-scrollbar py-2 md:py-0 md:pr-1">
                   {product.images.map((img, idx) => (
@@ -174,9 +176,47 @@ export default function ProductDetail() {
                   <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v3m0 0v3m0-3h3m-3 0H7" /></svg>
                   Hover to zoom
                 </div>
+                </div>
               </div>
+
+                {/* Features Section below gallery on Desktop */}
+                <div className="hidden lg:grid grid-cols-2 gap-4 bg-white rounded-2xl p-6 border border-gray-100 shadow-[0_4px_24px_rgba(0,0,0,0.02)]">
+                   <div className="flex flex-col items-center text-center p-4 bg-brand-50 rounded-xl hover:-translate-y-1 transition-transform">
+                     <div className="w-12 h-12 bg-white rounded-full flex items-center justify-center mb-3 text-brand-primary shadow-sm">
+                       <Truck className="w-6 h-6" />
+                     </div>
+                     <h4 className="text-sm font-bold text-gray-900 mb-1">{ui.featureFastDelivery}</h4>
+                     <p className="text-xs text-gray-500 font-medium">{ui.featureFastDeliveryDesc}</p>
+                   </div>
+
+                   <div className="flex flex-col items-center text-center p-4 bg-brand-50 rounded-xl hover:-translate-y-1 transition-transform">
+                     <div className="w-12 h-12 bg-white rounded-full flex items-center justify-center mb-3 text-brand-primary shadow-sm">
+                       <ShieldCheck className="w-6 h-6" />
+                     </div>
+                     <h4 className="text-sm font-bold text-gray-900 mb-1">{ui.featurePremiumQuality}</h4>
+                     <p className="text-xs text-gray-500 font-medium">{ui.featurePremiumQualityDesc}</p>
+                   </div>
+
+                   <div className="flex flex-col items-center text-center p-4 bg-brand-50 rounded-xl hover:-translate-y-1 transition-transform">
+                     <div className="w-12 h-12 bg-white rounded-full flex items-center justify-center mb-3 text-brand-primary shadow-sm">
+                       <HeartPulse className="w-6 h-6" />
+                     </div>
+                     <h4 className="text-sm font-bold text-gray-900 mb-1">{ui.featureMadeWithLove}</h4>
+                     <p className="text-xs text-gray-500 font-medium">{ui.featureMadeWithLoveDesc}</p>
+                   </div>
+
+                   <div className="flex flex-col items-center text-center p-4 bg-brand-50 rounded-xl hover:-translate-y-1 transition-transform">
+                     <div className="w-12 h-12 bg-white rounded-full flex items-center justify-center mb-3 text-brand-primary shadow-sm">
+                       <RefreshCw className="w-6 h-6" />
+                     </div>
+                     <h4 className="text-sm font-bold text-gray-900 mb-1">{ui.featureEasyReturns}</h4>
+                     <p className="text-xs text-gray-500 font-medium">{ui.featureEasyReturnsDesc}</p>
+                   </div>
+                </div>
               </div>
             </div>
+
+
 
             {/* Lightbox */}
             {lightboxOpen && product.images?.length > 0 && (
@@ -224,6 +264,8 @@ export default function ProductDetail() {
                 )}
               </div>
             )}
+
+
 
             {/* Details Section */}
             <div className="lg:col-span-6 xl:col-span-6 xl:col-start-7 animate-fade-in flex flex-col pt-4 md:pt-0" style={{ animationDelay: '0.1s' }}>
@@ -355,16 +397,17 @@ export default function ProductDetail() {
               {reviews.length === 0 && <p className="text-sm text-gray-400 text-center py-6">No reviews yet. Be the first!</p>}
             </div>
           </div>
-
-            </div>
-          </div>
         </div>
+      </div>
 
-        {/* Related Products */}
-        {product.relatedProducts?.length > 0 && (
+      {/* Related Products */}
+      {product.relatedProducts?.length > 0 && (
+        <div className="w-full mx-auto px-4 md:px-16 lg:px-24 mb-20">
           <RelatedProducts products={product.relatedProducts} />
-        )}
+        </div>
+      )}
 
+      </div>
       </div>
 
       {/* Sticky Add to Cart for Mobile */}
