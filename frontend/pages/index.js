@@ -132,8 +132,8 @@ export default function Home({ featured = [], categories = [] }) {
                 return (
                   <motion.div
                     key={cat._id}
-                    initial={{ opacity: 0, x: idx % 2 === 0 ? -120 : 120, y: 30 }}
-                    whileInView={{ opacity: 1, x: 0, y: 0 }}
+                    initial={{ opacity: 0, y: 50 }}
+                    whileInView={{ opacity: 1, y: 0 }}
                     viewport={{ once: true, margin: "-60px" }}
                     transition={{ duration: 0.7, delay: idx * 0.1, type: "spring", bounce: 0.3 }}
                   >
