@@ -22,6 +22,7 @@ app.use(cors({
   origin: [
     process.env.FRONTEND_URL || 'http://localhost:3000',
     'https://tooka.vercel.app',
+    'https://tookaheadbandfrontend.vercel.app',
   ],
   credentials: true,
 }));
