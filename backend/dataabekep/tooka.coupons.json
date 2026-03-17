@@ -1,0 +1,64 @@
+[{
+  "_id": {
+    "$oid": "69ad7f88bcbc6bfeb83cca92"
+  },
+  "code": "TOOKA",
+  "type": "fixed",
+  "value": 10,
+  "minOrder": 0,
+  "maxUses": 0,
+  "usedCount": 1,
+  "expiresAt": {
+    "$date": "2026-03-31T00:00:00.000Z"
+  },
+  "isActive": true,
+  "createdAt": {
+    "$date": "2026-03-08T13:54:16.011Z"
+  },
+  "updatedAt": {
+    "$date": "2026-03-08T13:55:01.120Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "69ade706205b15136da0b1c7"
+  },
+  "code": "TTOOKA",
+  "type": "fixed",
+  "value": 100,
+  "minOrder": 0,
+  "maxUses": 0,
+  "usedCount": 0,
+  "expiresAt": null,
+  "isActive": true,
+  "createdAt": {
+    "$date": "2026-03-08T21:15:50.549Z"
+  },
+  "updatedAt": {
+    "$date": "2026-03-08T21:15:50.549Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "69b5475f5981a996f1e2b6a9"
+  },
+  "code": "TTOOKAONE",
+  "type": "percentage",
+  "value": 50,
+  "minOrder": 0,
+  "maxUses": 0,
+  "usedCount": 0,
+  "expiresAt": {
+    "$date": "2026-03-27T00:00:00.000Z"
+  },
+  "isActive": true,
+  "createdAt": {
+    "$date": "2026-03-14T11:32:47.573Z"
+  },
+  "updatedAt": {
+    "$date": "2026-03-14T11:32:47.573Z"
+  },
+  "__v": 0
+}]

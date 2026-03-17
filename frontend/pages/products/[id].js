@@ -295,6 +295,12 @@ export default function ProductDetail() {
                 </div>
               )}
 
+              {product.stock > 0 && (
+                <div className="mb-4 flex items-center gap-2 text-green-600 text-sm font-bold">
+                  <span>✔</span> In Stock ({product.stock})
+                </div>
+              )}
+
               {product.stock > 0 && product.stock <= 5 && (
                 <div className="mb-4 flex items-center gap-2 bg-orange-50 border border-orange-200 text-orange-700 text-xs font-black px-4 py-2.5 rounded-xl">
                   <span>🔥</span>

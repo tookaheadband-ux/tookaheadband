@@ -1,0 +1,346 @@
+[{
+  "_id": {
+    "$oid": "69a8b115419aab5ec26e1072"
+  },
+  "nameAr": "توكة شعر لؤلؤية",
+  "nameEn": "Pearl Hair Clip Set",
+  "descriptionAr": "مجموعة من توك الشعر المزينة باللؤلؤ",
+  "descriptionEn": "Set of pearl-embellished hair clips",
+  "price": 65,
+  "images": [
+    "https://images.unsplash.com/photo-1515488042361-ee00e0ddd4e4?auto=format&fit=crop&q=80&w=800"
+  ],
+  "categoryId": {
+    "$oid": "69a8b114419aab5ec26e106b"
+  },
+  "stock": 20,
+  "isFeatured": true,
+  "soldCount": 45,
+  "__v": 0,
+  "createdAt": {
+    "$date": "2026-03-04T22:24:21.048Z"
+  },
+  "updatedAt": {
+    "$date": "2026-03-04T22:24:21.048Z"
+  },
+  "sku": "TK-P9ZS"
+},
+{
+  "_id": {
+    "$oid": "69a8b115419aab5ec26e1073"
+  },
+  "nameAr": "توكة شعر ذهبية",
+  "nameEn": "Gold Vine Hair Clip",
+  "descriptionAr": "توكة شعر بتصميم أوراق الشجر الذهبية",
+  "descriptionEn": "Gold vine design hair clip",
+  "price": 85,
+  "images": [
+    "https://images.unsplash.com/photo-1622290291468-a28f7a7dc6a8?auto=format&fit=crop&q=80&w=800"
+  ],
+  "categoryId": {
+    "$oid": "69a8b114419aab5ec26e106b"
+  },
+  "stock": 12,
+  "isFeatured": false,
+  "soldCount": 18,
+  "__v": 0,
+  "createdAt": {
+    "$date": "2026-03-04T22:24:21.048Z"
+  },
+  "updatedAt": {
+    "$date": "2026-03-04T22:24:21.048Z"
+  },
+  "sku": "TK-6SP3"
+},
+{
+  "_id": {
+    "$oid": "69a8b115419aab5ec26e1074"
+  },
+  "nameAr": "مشبك شعر كريستال",
+  "nameEn": "Crystal Barrette",
+  "descriptionAr": "مشبك شعر مرصع بالكريستال اللامع",
+  "descriptionEn": "Sparkling crystal-encrusted barrette",
+  "price": 110,
+  "images": [
+    "https://images.unsplash.com/photo-1503944583220-79d8926ad5e2?auto=format&fit=crop&q=80&w=800"
+  ],
+  "categoryId": {
+    "$oid": "69a8b114419aab5ec26e106b"
+  },
+  "stock": 8,
+  "isFeatured": true,
+  "soldCount": 22,
+  "__v": 0,
+  "createdAt": {
+    "$date": "2026-03-04T22:24:21.048Z"
+  },
+  "updatedAt": {
+    "$date": "2026-03-04T22:24:21.048Z"
+  },
+  "sku": "TK-CTY2"
+},
+{
+  "_id": {
+    "$oid": "69a8b115419aab5ec26e1076"
+  },
+  "nameAr": "سوار ذهب وردي",
+  "nameEn": "Rose Gold Chain Bracelet",
+  "descriptionAr": "سوار بتصميم سلسلة من الذهب الوردي",
+  "descriptionEn": "Chain link bracelet in rose gold",
+  "price": 180,
+  "images": [
+    "https://images.unsplash.com/photo-1615361200141-f45040f367be?auto=format&fit=crop&q=80&w=800"
+  ],
+  "categoryId": {
+    "$oid": "69a8b114419aab5ec26e106c"
+  },
+  "stock": 14,
+  "isFeatured": false,
+  "soldCount": 31,
+  "__v": 1,
+  "createdAt": {
+    "$date": "2026-03-04T22:24:21.049Z"
+  },
+  "updatedAt": {
+    "$date": "2026-03-08T14:20:48.563Z"
+  },
+  "sku": "TK-GQTS",
+  "colors": [],
+  "relatedProducts": [],
+  "sizes": []
+},
+{
+  "_id": {
+    "$oid": "69a8b115419aab5ec26e1077"
+  },
+  "nameAr": "سوار تنس كلاسيكي",
+  "nameEn": "Classic Tennis Bracelet",
+  "descriptionAr": "سوار تنس كلاسيكي مرصع بالزركون",
+  "descriptionEn": "Classic tennis bracelet with cubic zirconia",
+  "price": 220,
+  "images": [
+    "https://res.cloudinary.com/dlxqm1tkd/image/upload/v1772978340/toka/qwucod9tjvj7lxl64mbr.jpg"
+  ],
+  "categoryId": {
+    "$oid": "69a8b114419aab5ec26e106c"
+  },
+  "stock": 10,
+  "isFeatured": true,
+  "soldCount": 28,
+  "__v": 2,
+  "createdAt": {
+    "$date": "2026-03-04T22:24:21.049Z"
+  },
+  "updatedAt": {
+    "$date": "2026-03-08T15:10:34.265Z"
+  },
+  "sku": "TK-5STV",
+  "colors": [],
+  "relatedProducts": [
+    {
+      "$oid": "69a8b115419aab5ec26e107b"
+    },
+    {
+      "$oid": "69a8b115419aab5ec26e1073"
+    }
+  ],
+  "sizes": []
+},
+{
+  "_id": {
+    "$oid": "69a8b115419aab5ec26e1079"
+  },
+  "nameAr": "عقد ذهبي بطبقات",
+  "nameEn": "Layered Gold Necklace",
+  "descriptionAr": "عقد عصري من طبقات الذهب",
+  "descriptionEn": "Modern layered gold necklace",
+  "price": 250,
+  "images": [
+    "https://images.unsplash.com/photo-1599643477877-530eb83abc8e?auto=format&fit=crop&q=80&w=800"
+  ],
+  "categoryId": {
+    "$oid": "69a8b114419aab5ec26e106d"
+  },
+  "stock": 10,
+  "isFeatured": true,
+  "soldCount": 37,
+  "__v": 1,
+  "createdAt": {
+    "$date": "2026-03-04T22:24:21.049Z"
+  },
+  "updatedAt": {
+    "$date": "2026-03-08T14:20:48.210Z"
+  },
+  "sku": "TK-93FS",
+  "colors": [],
+  "relatedProducts": [],
+  "sizes": []
+},
+{
+  "_id": {
+    "$oid": "69a8b115419aab5ec26e107b"
+  },
+  "nameAr": "عقد شوكر كريستال",
+  "nameEn": "Crystal Choker Necklace",
+  "descriptionAr": "شوكر لامع مرصع بالكريستال للسهرات",
+  "descriptionEn": "Sparkling crystal choker for evening wear",
+  "price": 180,
+  "images": [
+    "https://images.unsplash.com/photo-1601121141461-9d6647bca1ed?auto=format&fit=crop&q=80&w=800"
+  ],
+  "categoryId": {
+    "$oid": "69a8b114419aab5ec26e106d"
+  },
+  "stock": 7,
+  "isFeatured": true,
+  "soldCount": 41,
+  "__v": 1,
+  "createdAt": {
+    "$date": "2026-03-04T22:24:21.049Z"
+  },
+  "updatedAt": {
+    "$date": "2026-03-08T14:20:48.901Z"
+  },
+  "sku": "TK-EV5P",
+  "colors": [],
+  "relatedProducts": [],
+  "sizes": []
+},
+{
+  "_id": {
+    "$oid": "69a8b115419aab5ec26e107c"
+  },
+  "nameAr": "عقد ماسي متدلي",
+  "nameEn": "Diamond Drop Necklace",
+  "descriptionAr": "عقد ذهب أبيض مع قطعة ماس متدلية",
+  "descriptionEn": "White gold necklace with a drop diamond",
+  "price": 450,
+  "images": [
+    "https://res.cloudinary.com/dlxqm1tkd/image/upload/v1772978326/toka/xokx2uselnoeve063wxp.jpg"
+  ],
+  "categoryId": {
+    "$oid": "69a8b114419aab5ec26e106d"
+  },
+  "stock": 4,
+  "isFeatured": false,
+  "soldCount": 6,
+  "__v": 2,
+  "createdAt": {
+    "$date": "2026-03-04T22:24:21.049Z"
+  },
+  "updatedAt": {
+    "$date": "2026-03-08T14:09:28.778Z"
+  },
+  "sku": "TK-V72W",
+  "colors": [],
+  "relatedProducts": [],
+  "sizes": []
+},
+{
+  "_id": {
+    "$oid": "69ad76e90326a22f3bfcc603"
+  },
+  "nameAr": "توكة",
+  "nameEn": "tooka",
+  "descriptionAr": "اناقة الطفل ",
+  "descriptionEn": "babe cute",
+  "price": 199,
+  "images": [
+    "https://res.cloudinary.com/dlxqm1tkd/image/upload/v1772975849/toka/bvnmvu9rftan9lkuqhlb.jpg"
+  ],
+  "categoryId": {
+    "$oid": "69a8b114419aab5ec26e106b"
+  },
+  "stock": 6,
+  "isFeatured": true,
+  "soldCount": 5,
+  "colors": [],
+  "sizes": [],
+  "relatedProducts": [
+    {
+      "$oid": "69a8b115419aab5ec26e107b"
+    }
+  ],
+  "createdAt": {
+    "$date": "2026-03-08T13:17:29.998Z"
+  },
+  "updatedAt": {
+    "$date": "2026-03-08T21:11:55.247Z"
+  },
+  "sku": "TK-WCGV",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "69ad777a0326a22f3bfcc613"
+  },
+  "nameAr": "الاناقة",
+  "nameEn": "cute antiq",
+  "descriptionAr": "شكلل جيد",
+  "descriptionEn": "good shape",
+  "price": 2333,
+  "images": [
+    "https://res.cloudinary.com/dlxqm1tkd/image/upload/v1772975992/toka/we4o5vp9b3egnrr1qh1e.jpg",
+    "https://res.cloudinary.com/dlxqm1tkd/image/upload/v1772975992/toka/u59gqfxmfiill8ovumtq.jpg",
+    "https://res.cloudinary.com/dlxqm1tkd/image/upload/v1772975993/toka/xvcaodhdgghdwtng22te.jpg",
+    "https://res.cloudinary.com/dlxqm1tkd/image/upload/v1772975994/toka/qihgq8l8ynem3nslj4qj.jpg"
+  ],
+  "categoryId": {
+    "$oid": "69a8b114419aab5ec26e106c"
+  },
+  "stock": 7,
+  "isFeatured": true,
+  "soldCount": 3,
+  "colors": [],
+  "sizes": [],
+  "relatedProducts": [
+    {
+      "$oid": "69a8b115419aab5ec26e107c"
+    },
+    {
+      "$oid": "69a8b115419aab5ec26e1079"
+    }
+  ],
+  "createdAt": {
+    "$date": "2026-03-08T13:19:54.755Z"
+  },
+  "updatedAt": {
+    "$date": "2026-03-14T11:22:34.417Z"
+  },
+  "sku": "TK-3Y8E",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "69b547b24fd178a588e511fa"
+  },
+  "nameAr": "",
+  "nameEn": "tooka",
+  "descriptionAr": "",
+  "descriptionEn": "",
+  "price": 10,
+  "images": [
+    "https://res.cloudinary.com/dlxqm1tkd/image/upload/v1773488050/toka/ii7gyowilyll3ohystfq.png"
+  ],
+  "categoryId": {
+    "$oid": "69a8b114419aab5ec26e106c"
+  },
+  "stock": 0,
+  "isFeatured": true,
+  "soldCount": 0,
+  "colors": [
+    "undefined"
+  ],
+  "sizes": [
+    "undefined"
+  ],
+  "relatedProducts": [],
+  "createdAt": {
+    "$date": "2026-03-14T11:34:10.874Z"
+  },
+  "updatedAt": {
+    "$date": "2026-03-14T11:34:10.874Z"
+  },
+  "sku": "TK-8CA6",
+  "__v": 0
+}]

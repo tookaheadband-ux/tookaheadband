@@ -86,4 +86,47 @@ const updateRelatedProducts = async (req, res, next) => {
   }
 };
 
-module.exports = { login, getMe, getDashboard, updateRelatedProducts };
+// Admin: change password
+const changePassword = async (req, res, next) => {
+  try {
+    const { currentPassword, newPassword } = req.body;
+
+    if (!currentPassword || !newPassword) {
+      return res.status(400).json({ message: 'Current password and new password are required' });
+    }
+
+    if (newPassword.length < 6) {
+      return res.status(400).json({ message: 'New password must be at least 6 characters' });
+    }
+
+    const envPass = process.env.ADMIN_PASS;
+    let isMatch = false;
+
+    if (envPass.startsWith('$2')) {
+      isMatch = await bcrypt.compare(currentPassword, envPass);
+    } else {
+      isMatch = currentPassword === envPass;
+    }
+
+    if (!isMatch) {
+      return res.status(401).json({ message: 'Current password is incorrect' });
+    }
+
+    const hashedPassword = await bcrypt.hash(newPassword, 12);
+
+    const fs = require('fs');
+    const path = require('path');
+    const envPath = path.resolve(__dirname, '../../../.env');
+    let envContent = fs.readFileSync(envPath, 'utf-8');
+    envContent = envContent.replace(/ADMIN_PASS=.*/, `ADMIN_PASS=${hashedPassword}`);
+    fs.writeFileSync(envPath, envContent);
+
+    process.env.ADMIN_PASS = hashedPassword;
+
+    res.json({ message: 'Password changed successfully' });
+  } catch (err) {
+    next(err);
+  }
+};
+
+module.exports = { login, getMe, getDashboard, updateRelatedProducts, changePassword };

@@ -1,0 +1,54 @@
+[{
+  "_id": {
+    "$oid": "69ad7438f29eea7cb95424bd"
+  },
+  "productId": {
+    "$oid": "69a8b115419aab5ec26e1076"
+  },
+  "name": "mahmod",
+  "rating": 5,
+  "comment": "good\n",
+  "createdAt": {
+    "$date": "2026-03-08T13:06:00.842Z"
+  },
+  "updatedAt": {
+    "$date": "2026-03-08T13:06:00.842Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "69b120989b1e633b02810412"
+  },
+  "productId": {
+    "$oid": "69ad76e90326a22f3bfcc603"
+  },
+  "name": "ggg",
+  "rating": 5,
+  "comment": "ggg",
+  "createdAt": {
+    "$date": "2026-03-11T07:58:16.967Z"
+  },
+  "updatedAt": {
+    "$date": "2026-03-11T07:58:16.967Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "69b547e4e7b9186be58d0291"
+  },
+  "productId": {
+    "$oid": "69b547b24fd178a588e511fa"
+  },
+  "name": "mahmood",
+  "rating": 5,
+  "comment": "goood\n",
+  "createdAt": {
+    "$date": "2026-03-14T11:35:00.700Z"
+  },
+  "updatedAt": {
+    "$date": "2026-03-14T11:35:00.700Z"
+  },
+  "__v": 0
+}]

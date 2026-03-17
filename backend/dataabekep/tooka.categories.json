@@ -1,0 +1,64 @@
+[{
+  "_id": {
+    "$oid": "69a8b114419aab5ec26e106b"
+  },
+  "nameAr": "توك شعر",
+  "nameEn": "Hair Clips",
+  "slug": "hair-clips",
+  "coverImage": "https://res.cloudinary.com/dlxqm1tkd/image/upload/v1772979098/toka/c52vhtl5ocbq2cugqzdd.jpg",
+  "__v": 0,
+  "createdAt": {
+    "$date": "2026-03-04T22:24:20.977Z"
+  },
+  "updatedAt": {
+    "$date": "2026-03-08T14:11:39.060Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "69a8b114419aab5ec26e106c"
+  },
+  "nameAr": "أساور",
+  "nameEn": "Bracelets",
+  "slug": "bracelets",
+  "coverImage": "https://res.cloudinary.com/dlxqm1tkd/image/upload/v1772979021/toka/khnojaljlmtdsqcytpcx.jpg",
+  "__v": 0,
+  "createdAt": {
+    "$date": "2026-03-04T22:24:20.978Z"
+  },
+  "updatedAt": {
+    "$date": "2026-03-08T14:10:22.291Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "69a8b114419aab5ec26e106d"
+  },
+  "nameAr": "عقود",
+  "nameEn": "Necklaces",
+  "slug": "necklaces",
+  "coverImage": "https://res.cloudinary.com/dlxqm1tkd/image/upload/v1772979056/toka/kanniatjtob4al7uf355.jpg",
+  "__v": 0,
+  "createdAt": {
+    "$date": "2026-03-04T22:24:20.978Z"
+  },
+  "updatedAt": {
+    "$date": "2026-03-08T14:10:56.941Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "69a8b114419aab5ec26e106e"
+  },
+  "nameAr": "حلقان",
+  "nameEn": "Earrings",
+  "slug": "earrings",
+  "coverImage": "https://res.cloudinary.com/dlxqm1tkd/image/upload/v1772979045/toka/y2wxxwzv5l1okeqrnnap.jpg",
+  "__v": 0,
+  "createdAt": {
+    "$date": "2026-03-04T22:24:20.978Z"
+  },
+  "updatedAt": {
+    "$date": "2026-03-08T14:10:46.408Z"
+  }
+}]

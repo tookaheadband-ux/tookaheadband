@@ -1,0 +1,18 @@
+[{
+  "_id": {
+    "$oid": "69a8b115419aab5ec26e1082"
+  },
+  "slug": "about",
+  "titleAr": "عن توكا",
+  "titleEn": "About TOOKA",
+  "contentAr": "توكا هي علامة تجارية مصرية متخصصة في صناعة الإكسسوارات اليدوية. نصنع كل قطعة بحب واهتمام بالتفاصيل لنقدم لكِ إكسسوارات فريدة تعكس أنوثتك وجمالك. منتجاتنا مصنوعة من خامات عالية الجودة وكل قطعة هي عمل فني فريد.",
+  "contentEn": "TOOKA is an Egyptian brand specializing in handmade accessories. We craft each piece with love and attention to detail to bring you unique accessories that reflect your femininity and beauty. Our products are made from high-quality materials, and every piece is a unique work of art.",
+  "images": [],
+  "createdAt": {
+    "$date": "2026-03-04T22:24:21.118Z"
+  },
+  "updatedAt": {
+    "$date": "2026-03-08T20:43:47.822Z"
+  },
+  "__v": 0
+}]

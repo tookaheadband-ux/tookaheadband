@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import Link from 'next/link';
 import { useLang } from '@/context/LanguageContext';
-import { adminDashboard, adminGetMe, adminSendDailyReport } from '@/lib/api';
+import { adminDashboard, adminGetMe, adminSendDailyReport, adminChangePassword } from '@/lib/api';
 
 const navItems = (ui, active) => [
   { href: '/admin/dashboard', label: ui.dashboard, icon: '📊', active: active === 'dashboard' },
@@ -56,6 +56,9 @@ export default function Dashboard() {
   const [loading, setLoading] = useState(true);
   const [reportLoading, setReportLoading] = useState(false);
   const [reportMsg, setReportMsg] = useState('');
+  const [pwForm, setPwForm] = useState({ currentPassword: '', newPassword: '', confirmPassword: '' });
+  const [pwLoading, setPwLoading] = useState(false);
+  const [pwMsg, setPwMsg] = useState({ text: '', type: '' });
 
   useEffect(() => {
     (async () => {
@@ -71,6 +74,25 @@ export default function Dashboard() {
     try { const res = await adminSendDailyReport(); setReportMsg(res.data.message); }
     catch { setReportMsg('Failed to send report'); }
     finally { setReportLoading(false); }
+  };
+
+  const handleChangePassword = async (e) => {
+    e.preventDefault();
+    setPwMsg({ text: '', type: '' });
+    if (pwForm.newPassword !== pwForm.confirmPassword) {
+      setPwMsg({ text: 'Passwords do not match', type: 'error' });
+      return;
+    }
+    setPwLoading(true);
+    try {
+      const res = await adminChangePassword({ currentPassword: pwForm.currentPassword, newPassword: pwForm.newPassword });
+      setPwMsg({ text: res.data.message, type: 'success' });
+      setPwForm({ currentPassword: '', newPassword: '', confirmPassword: '' });
+    } catch (err) {
+      setPwMsg({ text: err.response?.data?.message || 'Failed to change password', type: 'error' });
+    } finally {
+      setPwLoading(false);
+    }
   };
 
   if (loading) return <div className="min-h-screen bg-pink-50/50 flex items-center justify-center"><div className="w-8 h-8 border-3 border-pink-200 border-t-pink-500 rounded-full animate-spin" /></div>;
@@ -122,6 +144,30 @@ export default function Dashboard() {
             {reportMsg && <p className="mt-3 text-sm text-green-600 font-bold">{reportMsg}</p>}
           </div>
 
+          <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm">
+            <h3 className="font-black text-gray-900 text-lg mb-2 flex items-center gap-2">
+              <span>🔒</span> Change Password
+            </h3>
+            <form onSubmit={handleChangePassword} className="space-y-3">
+              <input type="password" placeholder="Current Password" value={pwForm.currentPassword}
+                onChange={(e) => setPwForm({ ...pwForm, currentPassword: e.target.value })} required
+                className="w-full h-11 px-4 rounded-xl border border-gray-200 text-sm font-semibold focus:outline-none focus:border-pink-400" />
+              <input type="password" placeholder="New Password" value={pwForm.newPassword}
+                onChange={(e) => setPwForm({ ...pwForm, newPassword: e.target.value })} required minLength={6}
+                className="w-full h-11 px-4 rounded-xl border border-gray-200 text-sm font-semibold focus:outline-none focus:border-pink-400" />
+              <input type="password" placeholder="Confirm New Password" value={pwForm.confirmPassword}
+                onChange={(e) => setPwForm({ ...pwForm, confirmPassword: e.target.value })} required minLength={6}
+                className="w-full h-11 px-4 rounded-xl border border-gray-200 text-sm font-semibold focus:outline-none focus:border-pink-400" />
+              <button type="submit" disabled={pwLoading}
+                className="h-11 px-8 bg-gradient-to-r from-pink-400 to-rose-500 text-white font-black text-sm rounded-xl shadow-lg shadow-pink-200 hover:shadow-xl hover:-translate-y-0.5 transition-all duration-300 disabled:opacity-50">
+                {pwLoading ? 'Saving...' : 'Change Password'}
+              </button>
+              {pwMsg.text && <p className={`text-sm font-bold ${pwMsg.type === 'error' ? 'text-red-500' : 'text-green-600'}`}>{pwMsg.text}</p>}
+            </form>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
           <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm">
             <h3 className="font-black text-gray-900 text-lg mb-3 flex items-center gap-2">
               <span>🚀</span> Quick Links

@@ -69,6 +69,15 @@ export default function ProductCard({ product }) {
         <p className="text-brand-900 text-[15px] md:text-[18px] font-body font-black flex items-baseline gap-1">
           {product.price} <span className="text-[10px] md:text-[11px] uppercase tracking-wider text-brand-700">{ui.egp}</span>
         </p>
+        {product.stock > 0 ? (
+          <p className="text-green-600 text-[12px] md:text-[13px] font-bold flex items-center gap-1">
+            <Check size={14} strokeWidth={3} /> In Stock ({product.stock})
+          </p>
+        ) : (
+          <p className="text-red-500 text-[12px] md:text-[13px] font-bold">
+            Out of Stock
+          </p>
+        )}
       </Link>
 
       <div className="mt-3 md:mt-4 px-2 md:px-4 w-full relative z-10 pb-2">
