@@ -79,13 +79,16 @@ const scheduleDailyReport = () => {
   console.log('⏰ Daily report scheduled at 11:00 PM Cairo time');
 };
 
-// Start server
-const startServer = async () => {
-  await connectDB();
-  scheduleDailyReport();
-  app.listen(PORT, () => {
-    console.log(`🚀 TOKA Backend running on port ${PORT}`);
-  });
-};
+// Connect to DB
+connectDB();
+scheduleDailyReport();
 
-startServer();
+// Start server (local dev)
+if (require.main === module) {
+  app.listen(PORT, () => {
+    console.log(`TOKA Backend running on port ${PORT}`);
+  });
+}
+
+// Export for Vercel
+module.exports = app;
