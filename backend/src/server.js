@@ -29,6 +29,16 @@ app.use(cors({
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+// Ensure DB connection before each request (for serverless)
+app.use(async (req, res, next) => {
+  try {
+    await connectDB();
+    next();
+  } catch (err) {
+    next(err);
+  }
+});
+
 // Routes
 app.use('/api/products', productRoutes);
 app.use('/api/categories', categoryRoutes);
@@ -79,9 +89,10 @@ const scheduleDailyReport = () => {
   console.log('⏰ Daily report scheduled at 11:00 PM Cairo time');
 };
 
-// Connect to DB
-connectDB();
-scheduleDailyReport();
+// Schedule daily report (local dev only)
+if (require.main === module) {
+  scheduleDailyReport();
+}
 
 // Start server (local dev)
 if (require.main === module) {
