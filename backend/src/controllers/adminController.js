@@ -2,7 +2,14 @@ const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 const Order = require('../models/Order');
 const Product = require('../models/Product');
+const AdminSettings = require('../models/AdminSettings');
 const moment = require('moment-timezone');
+
+// Helper: get current admin password (DB first, then env fallback)
+const getAdminPassword = async () => {
+  const setting = await AdminSettings.findOne({ key: 'admin_password' });
+  return setting ? setting.value : process.env.ADMIN_PASS;
+};
 
 // Admin: login
 const login = async (req, res, next) => {
@@ -13,14 +20,13 @@ const login = async (req, res, next) => {
       return res.status(401).json({ message: 'Invalid credentials' });
     }
 
-    // Compare password with bcrypt hash or plain text from env
-    const envPass = process.env.ADMIN_PASS;
+    const storedPass = await getAdminPassword();
     let isMatch = false;
 
-    if (envPass.startsWith('$2')) {
-      isMatch = await bcrypt.compare(password, envPass);
+    if (storedPass.startsWith('$2')) {
+      isMatch = await bcrypt.compare(password, storedPass);
     } else {
-      isMatch = password === envPass;
+      isMatch = password === storedPass;
     }
 
     if (!isMatch) {
@@ -99,13 +105,13 @@ const changePassword = async (req, res, next) => {
       return res.status(400).json({ message: 'New password must be at least 6 characters' });
     }
 
-    const envPass = process.env.ADMIN_PASS;
+    const storedPass = await getAdminPassword();
     let isMatch = false;
 
-    if (envPass.startsWith('$2')) {
-      isMatch = await bcrypt.compare(currentPassword, envPass);
+    if (storedPass.startsWith('$2')) {
+      isMatch = await bcrypt.compare(currentPassword, storedPass);
     } else {
-      isMatch = currentPassword === envPass;
+      isMatch = currentPassword === storedPass;
     }
 
     if (!isMatch) {
@@ -114,14 +120,11 @@ const changePassword = async (req, res, next) => {
 
     const hashedPassword = await bcrypt.hash(newPassword, 12);
 
-    const fs = require('fs');
-    const path = require('path');
-    const envPath = path.resolve(__dirname, '../../../.env');
-    let envContent = fs.readFileSync(envPath, 'utf-8');
-    envContent = envContent.replace(/ADMIN_PASS=.*/, `ADMIN_PASS=${hashedPassword}`);
-    fs.writeFileSync(envPath, envContent);
-
-    process.env.ADMIN_PASS = hashedPassword;
+    await AdminSettings.findOneAndUpdate(
+      { key: 'admin_password' },
+      { value: hashedPassword },
+      { upsert: true }
+    );
 
     res.json({ message: 'Password changed successfully' });
   } catch (err) {
