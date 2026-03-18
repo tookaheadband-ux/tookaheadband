@@ -333,7 +333,7 @@ export default function ProductDetail() {
                       </button>
                     </div>
 
-                    <a href={`https://wa.me/201002084496?text=${whatsappMsg}`} target="_blank" rel="noopener noreferrer"
+                    <a href={`https://wa.me/201557788876?text=${whatsappMsg}`} target="_blank" rel="noopener noreferrer"
                       className="w-full h-[48px] md:h-[56px] bg-[#25D366] text-white font-bold text-sm md:text-base tracking-wide rounded-xl shadow-[0_4px_14px_0_rgba(37,211,102,0.39)] hover:shadow-[0_6px_20px_rgba(37,211,102,0.6)] hover:-translate-y-1 transition-all duration-300 flex items-center justify-center">
                       {ui.orderViaWhatsApp}
                     </a>
