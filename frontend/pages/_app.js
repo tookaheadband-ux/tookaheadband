@@ -22,9 +22,19 @@ export default function App({ Component, pageProps }) {
         <WishlistProvider>
         <ToastProvider>
         <Head>
-          <title>TOOKA — Handmade Accessories</title>
-          <meta name="description" content="TOOKA — Beautiful handmade accessories from Egypt. Hair clips, bracelets, necklaces, earrings and more." />
+          <title>TOOKA — Handmade Headbands & Accessories</title>
+          <meta name="description" content="TOOKA — Beautiful handmade headbands and accessories from Egypt. Shop unique hair accessories, clips, and more." />
           <meta name="viewport" content="width=device-width, initial-scale=1" />
+          <meta name="keywords" content="tooka, headbands, handmade accessories, hair accessories, Egypt, hair clips, توكا, اكسسوارات, توكة" />
+          <meta property="og:title" content="TOOKA — Handmade Headbands & Accessories" />
+          <meta property="og:description" content="Beautiful handmade headbands and accessories from Egypt." />
+          <meta property="og:url" content="https://tookaheadbands.com" />
+          <meta property="og:type" content="website" />
+          <meta property="og:site_name" content="TOOKA" />
+          <meta name="twitter:card" content="summary" />
+          <meta name="twitter:title" content="TOOKA — Handmade Headbands & Accessories" />
+          <meta name="twitter:description" content="Beautiful handmade headbands and accessories from Egypt." />
+          <link rel="canonical" href="https://tookaheadbands.com" />
           <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>T</text></svg>" />
         </Head>
 

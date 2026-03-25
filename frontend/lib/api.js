@@ -31,6 +31,7 @@ export const adminLogin = (data) => api.post('/admin/login', data);
 export const adminGetMe = () => api.get('/admin/me');
 export const adminDashboard = () => api.get('/admin/dashboard');
 export const adminChangePassword = (data) => api.put('/admin/change-password', data);
+export const adminBackupDatabase = () => api.get('/admin/backup');
 
 export const adminGetProducts = (params) => api.get('/admin/products', { params });
 export const adminCreateProduct = (formData) =>

@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import Link from 'next/link';
 import { useLang } from '@/context/LanguageContext';
-import { adminDashboard, adminGetMe, adminSendDailyReport, adminChangePassword } from '@/lib/api';
+import { adminDashboard, adminGetMe, adminSendDailyReport, adminChangePassword, adminBackupDatabase } from '@/lib/api';
 
 const navItems = (ui, active) => [
   { href: '/admin/dashboard', label: ui.dashboard, icon: '📊', active: active === 'dashboard' },
@@ -59,6 +59,7 @@ export default function Dashboard() {
   const [pwForm, setPwForm] = useState({ currentPassword: '', newPassword: '', confirmPassword: '' });
   const [pwLoading, setPwLoading] = useState(false);
   const [pwMsg, setPwMsg] = useState({ text: '', type: '' });
+  const [backupLoading, setBackupLoading] = useState(false);
 
   useEffect(() => {
     (async () => {
@@ -74,6 +75,21 @@ export default function Dashboard() {
     try { const res = await adminSendDailyReport(); setReportMsg(res.data.message); }
     catch { setReportMsg('Failed to send report'); }
     finally { setReportLoading(false); }
+  };
+
+  const handleBackup = async () => {
+    setBackupLoading(true);
+    try {
+      const res = await adminBackupDatabase();
+      const blob = new Blob([JSON.stringify(res.data, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `tooka-backup-${new Date().toISOString().slice(0, 10)}.json`;
+      a.click();
+      URL.revokeObjectURL(url);
+    } catch { alert('Failed to download backup'); }
+    finally { setBackupLoading(false); }
   };
 
   const handleChangePassword = async (e) => {
@@ -168,6 +184,17 @@ export default function Dashboard() {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+          <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm">
+            <h3 className="font-black text-gray-900 text-lg mb-2 flex items-center gap-2">
+              <span>💾</span> Database Backup
+            </h3>
+            <p className="text-sm font-semibold text-gray-500 mb-4">Download a full backup of all your data as a JSON file.</p>
+            <button onClick={handleBackup} disabled={backupLoading}
+              className="h-11 px-8 bg-gradient-to-r from-pink-400 to-rose-500 text-white font-black text-sm rounded-xl shadow-lg shadow-pink-200 hover:shadow-xl hover:-translate-y-0.5 transition-all duration-300 disabled:opacity-50">
+              {backupLoading ? 'Downloading...' : 'Download Backup'}
+            </button>
+          </div>
+
           <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm">
             <h3 className="font-black text-gray-900 text-lg mb-3 flex items-center gap-2">
               <span>🚀</span> Quick Links

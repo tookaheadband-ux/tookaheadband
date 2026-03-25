@@ -2,6 +2,10 @@ const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 const Order = require('../models/Order');
 const Product = require('../models/Product');
+const Category = require('../models/Category');
+const Coupon = require('../models/Coupon');
+const Review = require('../models/Review');
+const Page = require('../models/Page');
 const AdminSettings = require('../models/AdminSettings');
 const moment = require('moment-timezone');
 
@@ -132,4 +136,27 @@ const changePassword = async (req, res, next) => {
   }
 };
 
-module.exports = { login, getMe, getDashboard, updateRelatedProducts, changePassword };
+// Admin: backup entire database
+const backupDatabase = async (req, res, next) => {
+  try {
+    const [products, categories, orders, coupons, reviews, pages] = await Promise.all([
+      Product.find().lean(),
+      Category.find().lean(),
+      Order.find().lean(),
+      Coupon.find().lean(),
+      Review.find().lean(),
+      Page.find().lean(),
+    ]);
+
+    const backup = { products, categories, orders, coupons, reviews, pages };
+    const date = moment().tz('Africa/Cairo').format('YYYY-MM-DD');
+
+    res.setHeader('Content-Type', 'application/json');
+    res.setHeader('Content-Disposition', `attachment; filename=tooka-backup-${date}.json`);
+    res.json(backup);
+  } catch (err) {
+    next(err);
+  }
+};
+
+module.exports = { login, getMe, getDashboard, updateRelatedProducts, changePassword, backupDatabase };

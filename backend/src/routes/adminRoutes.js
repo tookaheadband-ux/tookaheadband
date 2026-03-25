@@ -3,7 +3,7 @@ const router = express.Router();
 const auth = require('../middlewares/auth');
 const { upload } = require('../config/cloudinary');
 
-const { login, getMe, getDashboard, updateRelatedProducts, changePassword } = require('../controllers/adminController');
+const { login, getMe, getDashboard, updateRelatedProducts, changePassword, backupDatabase } = require('../controllers/adminController');
 const { createProduct, updateProduct, deleteProduct, getProducts } = require('../controllers/productController');
 const { createCategory, updateCategory, deleteCategory, getCategories } = require('../controllers/categoryController');
 const { getOrders, updateOrderStatus, exportOrdersPdf } = require('../controllers/orderController');
@@ -16,6 +16,7 @@ router.post('/login', login);
 router.get('/me', auth, getMe);
 router.get('/dashboard', auth, getDashboard);
 router.put('/change-password', auth, changePassword);
+router.get('/backup', auth, backupDatabase);
 
 // Products (admin)
 router.get('/products', auth, getProducts);
