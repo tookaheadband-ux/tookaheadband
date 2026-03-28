@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import Link from 'next/link';
 import { useLang } from '@/context/LanguageContext';
-import { adminDashboard, adminGetMe, adminSendDailyReport, adminChangePassword, adminBackupDatabase } from '@/lib/api';
+import { adminDashboard, adminGetMe, adminSendDailyReport, adminChangePassword, adminBackupDatabase, adminGetSiteSettings, adminUpdateSiteSettings } from '@/lib/api';
 
 const navItems = (ui, active) => [
   { href: '/admin/dashboard', label: ui.dashboard, icon: '📊', active: active === 'dashboard' },
@@ -12,6 +12,8 @@ const navItems = (ui, active) => [
   { href: '/admin/pages', label: ui.pages, icon: '📄', active: active === 'pages' },
   { href: '/admin/coupons', label: 'Coupons', icon: '🏷️', active: active === 'coupons' },
   { href: '/admin/reviews', label: 'Reviews', icon: '⭐', active: active === 'reviews' },
+  { href: '/admin/profit', label: 'Profit', icon: '📈', active: active === 'profit' },
+  { href: '/admin/shipping', label: 'Shipping', icon: '🚚', active: active === 'shipping' },
   { href: '/admin/sku-search', label: 'SKU Search', icon: '🔍', active: active === 'sku-search' },
 ];
 
@@ -60,12 +62,23 @@ export default function Dashboard() {
   const [pwLoading, setPwLoading] = useState(false);
   const [pwMsg, setPwMsg] = useState({ text: '', type: '' });
   const [backupLoading, setBackupLoading] = useState(false);
+  const [contactForm, setContactForm] = useState({ contact_email: '', contact_phone: '' });
+  const [contactSaving, setContactSaving] = useState(false);
+  const [contactMsg, setContactMsg] = useState({ text: '', type: '' });
 
   useEffect(() => {
     (async () => {
-      try { await adminGetMe(); const res = await adminDashboard(); setStats(res.data); }
-      catch { router.push('/admin/login'); }
+      try {
+        await adminGetMe();
+        const res = await adminDashboard();
+        setStats(res.data);
+      }
+      catch { router.push('/admin/login'); return; }
       finally { setLoading(false); }
+      try {
+        const settingsRes = await adminGetSiteSettings();
+        setContactForm({ contact_email: settingsRes.data.contact_email || '', contact_phone: settingsRes.data.contact_phone || '' });
+      } catch {}
     })();
   }, [router]);
 
@@ -109,6 +122,18 @@ export default function Dashboard() {
     } finally {
       setPwLoading(false);
     }
+  };
+
+  const handleContactSave = async (e) => {
+    e.preventDefault();
+    setContactMsg({ text: '', type: '' });
+    setContactSaving(true);
+    try {
+      await adminUpdateSiteSettings(contactForm);
+      setContactMsg({ text: 'Contact info updated!', type: 'success' });
+    } catch (err) {
+      setContactMsg({ text: err.response?.data?.message || 'Failed to update', type: 'error' });
+    } finally { setContactSaving(false); }
   };
 
   if (loading) return <div className="min-h-screen bg-pink-50/50 flex items-center justify-center"><div className="w-8 h-8 border-3 border-pink-200 border-t-pink-500 rounded-full animate-spin" /></div>;
@@ -193,6 +218,32 @@ export default function Dashboard() {
               className="h-11 px-8 bg-gradient-to-r from-pink-400 to-rose-500 text-white font-black text-sm rounded-xl shadow-lg shadow-pink-200 hover:shadow-xl hover:-translate-y-0.5 transition-all duration-300 disabled:opacity-50">
               {backupLoading ? 'Downloading...' : 'Download Backup'}
             </button>
+          </div>
+
+          <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm">
+            <h3 className="font-black text-gray-900 text-lg mb-2 flex items-center gap-2">
+              <span>📞</span> Contact Info
+            </h3>
+            <p className="text-sm font-semibold text-gray-500 mb-4">Update email & phone shown on the website footer.</p>
+            <form onSubmit={handleContactSave} className="space-y-3">
+              <div>
+                <label className="block text-xs font-black text-gray-400 uppercase tracking-widest mb-1">Email</label>
+                <input type="email" value={contactForm.contact_email}
+                  onChange={(e) => setContactForm({ ...contactForm, contact_email: e.target.value })} required
+                  className="w-full h-11 px-4 rounded-xl border border-gray-200 text-sm font-semibold focus:outline-none focus:border-pink-400" />
+              </div>
+              <div>
+                <label className="block text-xs font-black text-gray-400 uppercase tracking-widest mb-1">Phone</label>
+                <input type="tel" value={contactForm.contact_phone}
+                  onChange={(e) => setContactForm({ ...contactForm, contact_phone: e.target.value })} required
+                  className="w-full h-11 px-4 rounded-xl border border-gray-200 text-sm font-semibold focus:outline-none focus:border-pink-400" />
+              </div>
+              <button type="submit" disabled={contactSaving}
+                className="h-11 px-8 bg-gradient-to-r from-pink-400 to-rose-500 text-white font-black text-sm rounded-xl shadow-lg shadow-pink-200 hover:shadow-xl hover:-translate-y-0.5 transition-all duration-300 disabled:opacity-50">
+                {contactSaving ? 'Saving...' : 'Save Contact Info'}
+              </button>
+              {contactMsg.text && <p className={`text-sm font-bold ${contactMsg.type === 'error' ? 'text-red-500' : 'text-green-600'}`}>{contactMsg.text}</p>}
+            </form>
           </div>
 
           <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm">

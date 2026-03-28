@@ -7,6 +7,7 @@ const orderItemSchema = new mongoose.Schema(
     productNameSnapshot: { type: String, required: true },
     priceSnapshot: { type: Number, required: true },
     qty: { type: Number, required: true, min: 1 },
+    costPriceSnapshot: { type: Number, default: 0 },
     imageSnapshot: { type: String, default: '' },
   },
   { _id: false }
@@ -17,6 +18,9 @@ const orderSchema = new mongoose.Schema(
     name: { type: String, required: true },
     phone: { type: String, required: true },
     address: { type: String, required: true },
+    governorate: { type: String, default: '' },
+    area: { type: String, default: '' },
+    shippingCost: { type: Number, default: 0 },
     email: { type: String, default: '' },
     notes: { type: String, default: '' },
     items: [orderItemSchema],

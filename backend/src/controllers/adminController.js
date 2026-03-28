@@ -159,4 +159,160 @@ const backupDatabase = async (req, res, next) => {
   }
 };
 
-module.exports = { login, getMe, getDashboard, updateRelatedProducts, changePassword, backupDatabase };
+// Admin: profit report
+const getProfitReport = async (req, res, next) => {
+  try {
+    const { period, dateFrom, dateTo } = req.query;
+    const now = moment().tz('Africa/Cairo');
+
+    let startDate, endDate;
+
+    if (dateFrom && dateTo) {
+      startDate = new Date(dateFrom);
+      endDate = new Date(dateTo);
+      endDate.setHours(23, 59, 59, 999);
+    } else {
+      switch (period) {
+        case 'today':
+          startDate = now.clone().startOf('day').toDate();
+          endDate = now.clone().endOf('day').toDate();
+          break;
+        case 'week':
+          startDate = now.clone().startOf('isoWeek').toDate();
+          endDate = now.clone().endOf('day').toDate();
+          break;
+        case 'month':
+          startDate = now.clone().startOf('month').toDate();
+          endDate = now.clone().endOf('day').toDate();
+          break;
+        default: // all time
+          startDate = null;
+          endDate = null;
+      }
+    }
+
+    const matchFilter = { status: { $ne: 'canceled' } };
+    if (startDate && endDate) {
+      matchFilter.createdAt = { $gte: startDate, $lte: endDate };
+    }
+
+    // Overall stats
+    const overallResult = await Order.aggregate([
+      { $match: matchFilter },
+      { $unwind: '$items' },
+      {
+        $group: {
+          _id: null,
+          totalRevenue: { $sum: { $multiply: ['$items.priceSnapshot', '$items.qty'] } },
+          totalCost: { $sum: { $multiply: ['$items.costPriceSnapshot', '$items.qty'] } },
+          totalItemsSold: { $sum: '$items.qty' },
+          totalOrders: { $addToSet: '$_id' },
+          totalShipping: { $sum: '$shippingCost' },
+          totalDiscount: { $sum: '$discount' },
+        },
+      },
+    ]);
+
+    const overall = overallResult.length > 0
+      ? {
+          revenue: overallResult[0].totalRevenue,
+          cost: overallResult[0].totalCost,
+          profit: overallResult[0].totalRevenue - overallResult[0].totalCost,
+          itemsSold: overallResult[0].totalItemsSold,
+          ordersCount: overallResult[0].totalOrders.length,
+          shipping: overallResult[0].totalShipping / overallResult[0].totalOrders.length * overallResult[0].totalOrders.length || 0,
+          discount: overallResult[0].totalDiscount / overallResult[0].totalOrders.length * overallResult[0].totalOrders.length || 0,
+        }
+      : { revenue: 0, cost: 0, profit: 0, itemsSold: 0, ordersCount: 0, shipping: 0, discount: 0 };
+
+    // Fix shipping/discount aggregation
+    const shippingResult = await Order.aggregate([
+      { $match: matchFilter },
+      { $group: { _id: null, totalShipping: { $sum: '$shippingCost' }, totalDiscount: { $sum: '$discount' } } },
+    ]);
+    if (shippingResult.length > 0) {
+      overall.shipping = shippingResult[0].totalShipping;
+      overall.discount = shippingResult[0].totalDiscount;
+    }
+
+    // Per-order breakdown
+    const orders = await Order.find(matchFilter).sort({ createdAt: -1 }).limit(50).lean();
+    const orderProfits = orders.map((o) => {
+      const itemRevenue = o.items.reduce((sum, i) => sum + i.priceSnapshot * i.qty, 0);
+      const itemCost = o.items.reduce((sum, i) => sum + (i.costPriceSnapshot || 0) * i.qty, 0);
+      return {
+        _id: o._id,
+        name: o.name,
+        createdAt: o.createdAt,
+        revenue: itemRevenue,
+        cost: itemCost,
+        profit: itemRevenue - itemCost,
+        shippingCost: o.shippingCost || 0,
+        discount: o.discount || 0,
+        total: o.total,
+        itemsSold: o.items.reduce((sum, i) => sum + i.qty, 0),
+      };
+    });
+
+    // Daily breakdown for chart
+    const dailyResult = await Order.aggregate([
+      { $match: matchFilter },
+      { $unwind: '$items' },
+      {
+        $group: {
+          _id: { $dateToString: { format: '%Y-%m-%d', date: '$createdAt', timezone: 'Africa/Cairo' } },
+          revenue: { $sum: { $multiply: ['$items.priceSnapshot', '$items.qty'] } },
+          cost: { $sum: { $multiply: ['$items.costPriceSnapshot', '$items.qty'] } },
+          itemsSold: { $sum: '$items.qty' },
+        },
+      },
+      { $sort: { _id: 1 } },
+    ]);
+
+    const daily = dailyResult.map((d) => ({
+      date: d._id,
+      revenue: d.revenue,
+      cost: d.cost,
+      profit: d.revenue - d.cost,
+      itemsSold: d.itemsSold,
+    }));
+
+    res.json({ overall, orders: orderProfits, daily });
+  } catch (err) {
+    next(err);
+  }
+};
+
+// Admin: get site settings (contact info)
+const getSiteSettings = async (req, res, next) => {
+  try {
+    const keys = ['contact_email', 'contact_phone'];
+    const settings = await AdminSettings.find({ key: { $in: keys } });
+    const result = {};
+    settings.forEach((s) => { result[s.key] = s.value; });
+    // Defaults
+    if (!result.contact_email) result.contact_email = 'tookaheadband@gmail.com';
+    if (!result.contact_phone) result.contact_phone = '+201557788876';
+    res.json(result);
+  } catch (err) {
+    next(err);
+  }
+};
+
+// Admin: update site settings (contact info)
+const updateSiteSettings = async (req, res, next) => {
+  try {
+    const { contact_email, contact_phone } = req.body;
+    if (contact_email !== undefined) {
+      await AdminSettings.findOneAndUpdate({ key: 'contact_email' }, { value: contact_email }, { upsert: true });
+    }
+    if (contact_phone !== undefined) {
+      await AdminSettings.findOneAndUpdate({ key: 'contact_phone' }, { value: contact_phone }, { upsert: true });
+    }
+    res.json({ message: 'Settings updated' });
+  } catch (err) {
+    next(err);
+  }
+};
+
+module.exports = { login, getMe, getDashboard, updateRelatedProducts, changePassword, backupDatabase, getProfitReport, getSiteSettings, updateSiteSettings };

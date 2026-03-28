@@ -184,6 +184,14 @@ export function LanguageProvider({ children }) {
       featureMadeWithLoveDesc: 'Care in every detail',
       featureEasyReturns: 'Easy Returns',
       featureEasyReturnsDesc: '14-day return policy',
+      // Shipping
+      governorate: 'Governorate',
+      area: 'Area',
+      selectGovernorate: 'Select Governorate',
+      selectArea: 'Select Area',
+      shipping: 'Shipping',
+      free: 'Free',
+      addressDetails: 'Street, building, floor...',
     },
     ar: {
       home: 'الرئيسية',
@@ -343,6 +351,14 @@ export function LanguageProvider({ children }) {
       featureMadeWithLoveDesc: 'عناية في كل تفصيلة',
       featureEasyReturns: 'استرجاع سهل',
       featureEasyReturnsDesc: 'سياسة استرجاع 14 يوم',
+      // Shipping
+      governorate: 'المحافظة',
+      area: 'المنطقة',
+      selectGovernorate: 'اختر المحافظة',
+      selectArea: 'اختر المنطقة',
+      shipping: 'الشحن',
+      free: 'مجاناً',
+      addressDetails: 'الشارع، المبنى، الطابق...',
     },
   };
 

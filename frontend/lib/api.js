@@ -32,6 +32,10 @@ export const adminGetMe = () => api.get('/admin/me');
 export const adminDashboard = () => api.get('/admin/dashboard');
 export const adminChangePassword = (data) => api.put('/admin/change-password', data);
 export const adminBackupDatabase = () => api.get('/admin/backup');
+export const adminGetSiteSettings = () => api.get('/admin/site-settings');
+export const adminUpdateSiteSettings = (data) => api.put('/admin/site-settings', data);
+export const fetchSiteSettings = () => api.get('/site-settings');
+export const adminGetProfitReport = (params) => api.get('/admin/profit', { params });
 
 export const adminGetProducts = (params) => api.get('/admin/products', { params });
 export const adminCreateProduct = (formData) =>
@@ -73,6 +77,15 @@ export const adminDeleteReview = (id) => api.delete(`/admin/reviews/${id}`);
 
 // Back in Stock
 export const subscribeNotifyMe = (productId, email) => api.post(`/products/${productId}/notify-me`, { email });
+
+// Shipping Zones (public)
+export const fetchShippingZones = () => api.get('/shipping-zones');
+
+// Shipping Zones (admin)
+export const adminGetShippingZones = () => api.get('/admin/shipping-zones');
+export const adminCreateShippingZone = (data) => api.post('/admin/shipping-zones', data);
+export const adminUpdateShippingZone = (id, data) => api.put(`/admin/shipping-zones/${id}`, data);
+export const adminDeleteShippingZone = (id) => api.delete(`/admin/shipping-zones/${id}`);
 
 // Order Tracking (public)
 export const trackOrder = (orderId, phone) => api.get("/orders/track", { params: { orderId, phone } });

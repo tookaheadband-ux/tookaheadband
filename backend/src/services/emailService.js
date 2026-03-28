@@ -14,11 +14,13 @@ const sendOrderConfirmationToAdmin = async (order) => {
         <h2>New Order Received!</h2>
         <p><strong>Name:</strong> ${order.name}</p>
         <p><strong>Phone:</strong> ${order.phone}</p>
+        ${order.governorate ? `<p><strong>Governorate:</strong> ${order.governorate} — ${order.area}</p>` : ''}
         <p><strong>Address:</strong> ${order.address}</p>
         ${order.email ? `<p><strong>Email:</strong> ${order.email}</p>` : ''}
         ${order.notes ? `<p><strong>Notes:</strong> ${order.notes}</p>` : ''}
         <h3>Items:</h3>
         <pre>${itemsList}</pre>
+        ${order.shippingCost > 0 ? `<p><strong>Shipping: ${order.shippingCost} EGP</strong></p>` : ''}
         <p><strong>Total: ${order.total} EGP</strong></p>
       `,
     });
@@ -84,12 +86,19 @@ const sendOrderConfirmationToCustomer = async (order) => {
 
             <!-- Totals -->
             <div style="margin-top:16px;border-top:2px solid #f0f0f0;padding-top:16px;">
-              ${order.discount > 0 ? `
+              ${order.discount > 0 || order.shippingCost > 0 ? `
                 <div style="display:flex;justify-content:space-between;margin-bottom:6px;">
                   <span style="color:#666;">Subtotal</span><span style="color:#666;">${order.subtotal} EGP</span>
                 </div>
+              ` : ''}
+              ${order.discount > 0 ? `
                 <div style="display:flex;justify-content:space-between;margin-bottom:6px;">
                   <span style="color:#16a34a;">Discount (${order.couponCode})</span><span style="color:#16a34a;">-${order.discount} EGP</span>
+                </div>
+              ` : ''}
+              ${order.shippingCost > 0 ? `
+                <div style="display:flex;justify-content:space-between;margin-bottom:6px;">
+                  <span style="color:#666;">Shipping (${order.area})</span><span style="color:#666;">${order.shippingCost} EGP</span>
                 </div>
               ` : ''}
               <div style="display:flex;justify-content:space-between;font-size:18px;font-weight:bold;color:#333;">
@@ -100,7 +109,9 @@ const sendOrderConfirmationToCustomer = async (order) => {
             <!-- Delivery Info -->
             <div style="margin-top:24px;background:#f9f9f9;border-radius:12px;padding:16px;">
               <p style="margin:0 0 8px;font-size:12px;color:#999;text-transform:uppercase;letter-spacing:2px;">Delivery Details</p>
+              ${order.governorate ? `<p style="margin:0 0 4px;color:#333;"><strong>Governorate:</strong> ${order.governorate} — ${order.area}</p>` : ''}
               <p style="margin:0 0 4px;color:#333;"><strong>Address:</strong> ${order.address}</p>
+              ${order.shippingCost > 0 ? `<p style="margin:0 0 4px;color:#333;"><strong>Shipping:</strong> ${order.shippingCost} EGP</p>` : ''}
               <p style="margin:0;color:#333;"><strong>Payment:</strong> Cash on Delivery</p>
             </div>
           </div>

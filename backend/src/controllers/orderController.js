@@ -1,6 +1,7 @@
 const Order = require('../models/Order');
 const Product = require('../models/Product');
 const Coupon = require('../models/Coupon');
+const ShippingZone = require('../models/ShippingZone');
 const { sendOrderConfirmationToAdmin, sendOrderConfirmationToCustomer, sendOrderStatusUpdateToCustomer } = require('../services/emailService');
 const { sendNewOrderNotification, sendLowStockAlert } = require('../services/telegramService');
 const { generateDailyReport } = require('../services/pdfService');
@@ -8,7 +9,7 @@ const { generateDailyReport } = require('../services/pdfService');
 // Public: create order
 const createOrder = async (req, res, next) => {
   try {
-    const { name, phone, address, email, notes, items, couponCode } = req.body;
+    const { name, phone, address, email, notes, items, couponCode, governorate, area } = req.body;
 
     if (!name || !phone || !address) {
       return res.status(400).json({ message: 'Name, phone, and address are required' });
@@ -38,6 +39,7 @@ const createOrder = async (req, res, next) => {
         skuSnapshot: product.sku || '',
         productNameSnapshot: product.nameEn || product.nameAr,
         priceSnapshot: product.price,
+        costPriceSnapshot: product.costPrice || 0,
         qty: item.qty,
         imageSnapshot: product.images[0] || '',
       });
@@ -71,12 +73,31 @@ const createOrder = async (req, res, next) => {
       }
     }
 
-    const total = subtotal - discount;
+    // Calculate shipping cost
+    let shippingCost = 0;
+    let resolvedGovernorate = '';
+    let resolvedArea = '';
+    if (governorate && area) {
+      const zone = await ShippingZone.findOne({ governorate });
+      if (zone) {
+        resolvedGovernorate = zone.governorate;
+        const areaDoc = zone.areas.find((a) => a.name === area);
+        if (areaDoc) {
+          shippingCost = areaDoc.cost;
+          resolvedArea = areaDoc.name;
+        }
+      }
+    }
+
+    const total = subtotal - discount + shippingCost;
 
     const order = await Order.create({
       name,
       phone,
       address,
+      governorate: resolvedGovernorate,
+      area: resolvedArea,
+      shippingCost,
       email: email || '',
       notes: notes || '',
       items: orderItems,
@@ -239,6 +260,9 @@ const trackOrder = async (req, res, next) => {
       status: order.status,
       createdAt: order.createdAt,
       name: order.name,
+      governorate: order.governorate,
+      area: order.area,
+      shippingCost: order.shippingCost,
       items: order.items.map(item => ({
         productNameSnapshot: item.productNameSnapshot,
         priceSnapshot: item.priceSnapshot,

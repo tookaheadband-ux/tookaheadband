@@ -187,6 +187,12 @@ export default function TrackOrder() {
                     <span className="font-bold text-green-600">-{order.discount} {ui.egp}</span>
                   </div>
                 )}
+                {order.shippingCost > 0 && (
+                  <div className="flex justify-between text-sm">
+                    <span className="text-gray-500 font-bold">{ui.shipping || 'Shipping'} {order.governorate && `(${order.area})`}</span>
+                    <span className="font-bold text-gray-700">{order.shippingCost} {ui.egp}</span>
+                  </div>
+                )}
                 <div className="flex justify-between text-base pt-1 border-t border-gray-100">
                   <span className="font-black text-gray-900">{ui.total}</span>
                   <span className="font-black text-gray-900">{order.total} {ui.egp}</span>

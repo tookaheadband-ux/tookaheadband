@@ -19,7 +19,7 @@ export default function AdminProducts() {
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
   const [editProduct, setEditProduct] = useState(null);
-  const [form, setForm] = useState({ nameAr: '', nameEn: '', descriptionAr: '', descriptionEn: '', price: '', categoryId: '', stock: '', isFeatured: '', colors: '', sizes: '' });
+  const [form, setForm] = useState({ nameAr: '', nameEn: '', descriptionAr: '', descriptionEn: '', price: '', costPrice: '', categoryId: '', stock: '', isFeatured: '', colors: '', sizes: '' });
   const [files, setFiles] = useState([]);
   const [existingImages, setExistingImages] = useState([]); // Cloudinary URLs to keep
   const [saving, setSaving] = useState(false);
@@ -32,8 +32,8 @@ export default function AdminProducts() {
   const loadProducts = async () => { setLoading(true); try { const r = await adminGetProducts({ page, limit: 10 }); setProducts(r.data.products); setTotalPages(r.data.totalPages); } catch {} finally { setLoading(false); } };
   useEffect(() => { loadProducts(); }, [page]);
 
-  const openCreate = () => { setEditProduct(null); setForm({ nameAr: '', nameEn: '', descriptionAr: '', descriptionEn: '', price: '', categoryId: categories[0]?._id || '', stock: '', isFeatured: false }); setFiles([]); setExistingImages([]); setShowModal(true); };
-  const openEdit = (p) => { setEditProduct(p); setForm({ nameAr: p.nameAr || '', nameEn: p.nameEn || '', descriptionAr: p.descriptionAr || '', descriptionEn: p.descriptionEn || '', price: p.price, categoryId: p.categoryId?._id || p.categoryId || '', stock: p.stock, isFeatured: p.isFeatured, colors: (p.colors || []).join(', '), sizes: (p.sizes || []).join(', ') }); setFiles([]); setExistingImages(p.images || []); setShowModal(true); };
+  const openCreate = () => { setEditProduct(null); setForm({ nameAr: '', nameEn: '', descriptionAr: '', descriptionEn: '', price: '', costPrice: '', categoryId: categories[0]?._id || '', stock: '', isFeatured: false }); setFiles([]); setExistingImages([]); setShowModal(true); };
+  const openEdit = (p) => { setEditProduct(p); setForm({ nameAr: p.nameAr || '', nameEn: p.nameEn || '', descriptionAr: p.descriptionAr || '', descriptionEn: p.descriptionEn || '', price: p.price, costPrice: p.costPrice || '', categoryId: p.categoryId?._id || p.categoryId || '', stock: p.stock, isFeatured: p.isFeatured, colors: (p.colors || []).join(', '), sizes: (p.sizes || []).join(', ') }); setFiles([]); setExistingImages(p.images || []); setShowModal(true); };
 
   const handleSave = async (e) => {
     e.preventDefault(); setSaving(true);
@@ -145,8 +145,9 @@ export default function AdminProducts() {
                 <div><label className="block text-xs font-black text-gray-500 uppercase tracking-wider mb-2">Description (EN)</label><textarea value={form.descriptionEn} onChange={(e) => setForm({ ...form, descriptionEn: e.target.value })} rows={3} className="w-full p-4 rounded-xl border-2 border-gray-100 focus:border-pink-400 outline-none text-gray-600 font-medium transition-all resize-none bg-gray-50 focus:bg-white" placeholder="Product description..." /></div>
                 <div><label className="block text-xs font-black text-gray-500 uppercase tracking-wider mb-2 text-right">Description (AR)</label><textarea value={form.descriptionAr} onChange={(e) => setForm({ ...form, descriptionAr: e.target.value })} rows={3} className="w-full p-4 rounded-xl border-2 border-gray-100 focus:border-pink-400 outline-none text-gray-600 font-medium transition-all resize-none bg-gray-50 focus:bg-white text-right" dir="rtl" placeholder="وصف المنتج..." /></div>
               </div>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-5 p-5 bg-gray-50 rounded-2xl border border-gray-100">
-                <div><label className="block text-xs font-black text-gray-500 uppercase tracking-wider mb-2">{ui.price}</label><input type="number" value={form.price} onChange={(e) => setForm({ ...form, price: e.target.value })} className="w-full h-11 px-4 rounded-xl border-2 border-white focus:border-pink-400 outline-none text-pink-600 text-lg font-black transition-all bg-white shadow-sm" required /></div>
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-5 p-5 bg-gray-50 rounded-2xl border border-gray-100">
+                <div><label className="block text-xs font-black text-gray-500 uppercase tracking-wider mb-2">Sell Price</label><input type="number" value={form.price} onChange={(e) => setForm({ ...form, price: e.target.value })} className="w-full h-11 px-4 rounded-xl border-2 border-white focus:border-pink-400 outline-none text-pink-600 text-lg font-black transition-all bg-white shadow-sm" required /></div>
+                <div><label className="block text-xs font-black text-gray-500 uppercase tracking-wider mb-2">Cost Price</label><input type="number" value={form.costPrice} onChange={(e) => setForm({ ...form, costPrice: e.target.value })} placeholder="0" className="w-full h-11 px-4 rounded-xl border-2 border-white focus:border-orange-400 outline-none text-orange-600 text-lg font-black transition-all bg-white shadow-sm" /></div>
                 <div><label className="block text-xs font-black text-gray-500 uppercase tracking-wider mb-2">{ui.stock}</label><input type="number" value={form.stock} onChange={(e) => setForm({ ...form, stock: e.target.value })} className="w-full h-11 px-4 rounded-xl border-2 border-white focus:border-pink-400 outline-none text-gray-900 font-black transition-all bg-white shadow-sm" /></div>
                 <div><label className="block text-xs font-black text-gray-500 uppercase tracking-wider mb-2">{ui.category}</label>
                   <select value={form.categoryId} onChange={(e) => setForm({ ...form, categoryId: e.target.value })} className="w-full h-11 px-4 rounded-xl border-2 border-white focus:border-pink-400 outline-none text-gray-900 font-bold transition-all bg-white shadow-sm cursor-pointer">

@@ -1,9 +1,9 @@
 import Head from 'next/head';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import { useLang } from '@/context/LanguageContext';
 import { useCart } from '@/context/CartContext';
-import { createOrder, validateCoupon } from '@/lib/api';
+import { createOrder, validateCoupon, fetchShippingZones } from '@/lib/api';
 
 export default function Checkout() {
   const { ui } = useLang();
@@ -12,6 +12,32 @@ export default function Checkout() {
   const [form, setForm] = useState({ name: '', phone: '', address: '', email: '', notes: '' });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [shippingZones, setShippingZones] = useState([]);
+  const [selectedGovernorate, setSelectedGovernorate] = useState('');
+  const [selectedArea, setSelectedArea] = useState('');
+  const [shippingCost, setShippingCost] = useState(0);
+
+  useEffect(() => {
+    fetchShippingZones().then((r) => setShippingZones(r.data)).catch(() => {});
+  }, []);
+
+  const currentZone = shippingZones.find((z) => z.governorate === selectedGovernorate);
+  const areas = currentZone ? currentZone.areas : [];
+
+  const handleGovernorateChange = (gov) => {
+    setSelectedGovernorate(gov);
+    setSelectedArea('');
+    setShippingCost(0);
+  };
+
+  const handleAreaChange = (areaName) => {
+    setSelectedArea(areaName);
+    const zone = shippingZones.find((z) => z.governorate === selectedGovernorate);
+    if (zone) {
+      const areaDoc = zone.areas.find((a) => a.name === areaName);
+      setShippingCost(areaDoc ? areaDoc.cost : 0);
+    }
+  };
   const [couponCode, setCouponCode] = useState('');
   const [couponResult, setCouponResult] = useState(null);
   const [couponError, setCouponError] = useState('');
@@ -30,16 +56,17 @@ export default function Checkout() {
     } finally { setApplyingCoupon(false); }
   };
 
-  const finalTotal = couponResult ? Math.max(0, total - couponResult.discount) : total;
+  const discountAmount = couponResult ? couponResult.discount : 0;
+  const finalTotal = Math.max(0, total - discountAmount) + shippingCost;
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
-    if (!form.name || !form.phone || !form.address) { setError(ui.fillRequired); return; }
+    if (!form.name || !form.phone || !form.address || !selectedGovernorate || !selectedArea) { setError(ui.fillRequired); return; }
     if (items.length === 0) { setError(ui.cartEmpty); return; }
     setLoading(true);
     try {
-      const orderRes = await createOrder({ ...form, couponCode: couponResult ? couponResult.code : '', items: items.map((i) => ({ productId: i.productId, qty: i.qty })) });
+      const orderRes = await createOrder({ ...form, governorate: selectedGovernorate, area: selectedArea, couponCode: couponResult ? couponResult.code : '', items: items.map((i) => ({ productId: i.productId, qty: i.qty })) });
       clearCart();
       router.push(`/order-success?orderId=${orderRes.data._id}`);
     } catch (err) { setError(err.response?.data?.message || 'Something went wrong'); }
@@ -80,9 +107,32 @@ export default function Checkout() {
               <input name="email" value={form.email} onChange={handleChange} type="email" className="w-full h-[48px] px-4 rounded-xl border-2 border-white focus:border-brand-primary outline-none text-brand-text font-body transition-colors bg-white/60 backdrop-blur-md shadow-sm" />
             </div>
 
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+              <div>
+                <label className="block text-xs font-bold tracking-widest uppercase text-brand-700 mb-2 pl-1">{ui.governorate || 'Governorate'} *</label>
+                <select value={selectedGovernorate} onChange={(e) => handleGovernorateChange(e.target.value)} required
+                  className="w-full h-[48px] px-4 rounded-xl border-2 border-white focus:border-brand-primary outline-none text-brand-text font-body transition-colors bg-white/60 backdrop-blur-md shadow-sm">
+                  <option value="">{ui.selectGovernorate || 'Select Governorate'}</option>
+                  {shippingZones.map((z) => (
+                    <option key={z._id} value={z.governorate}>{z.governorate}</option>
+                  ))}
+                </select>
+              </div>
+              <div>
+                <label className="block text-xs font-bold tracking-widest uppercase text-brand-700 mb-2 pl-1">{ui.area || 'Area'} *</label>
+                <select value={selectedArea} onChange={(e) => handleAreaChange(e.target.value)} required disabled={!selectedGovernorate}
+                  className="w-full h-[48px] px-4 rounded-xl border-2 border-white focus:border-brand-primary outline-none text-brand-text font-body transition-colors bg-white/60 backdrop-blur-md shadow-sm disabled:opacity-50">
+                  <option value="">{ui.selectArea || 'Select Area'}</option>
+                  {areas.map((a) => (
+                    <option key={a._id} value={a.name}>{a.name}</option>
+                  ))}
+                </select>
+              </div>
+            </div>
+
             <div>
               <label className="block text-xs font-bold tracking-widest uppercase text-brand-700 mb-2 pl-1">{ui.address} *</label>
-              <textarea name="address" value={form.address} onChange={handleChange} required rows={3} className="w-full p-4 rounded-xl border-2 border-white focus:border-brand-primary outline-none text-brand-text font-body transition-colors bg-white/60 backdrop-blur-md shadow-sm resize-none" />
+              <textarea name="address" value={form.address} onChange={handleChange} required rows={3} placeholder={ui.addressDetails || 'Street, building, floor...'} className="w-full p-4 rounded-xl border-2 border-white focus:border-brand-primary outline-none text-brand-text font-body transition-colors bg-white/60 backdrop-blur-md shadow-sm resize-none" />
             </div>
 
             <div>
@@ -140,19 +190,21 @@ export default function Checkout() {
                   )}
                 </div>
 
-                {couponResult && (
-                  <div className="flex justify-between items-center text-sm mb-3">
-                    <span className="text-gray-500 font-bold">{ui.subtotal}</span>
-                    <span className="text-gray-500 font-bold">{total} {ui.egp}</span>
-                  </div>
-                )}
+                <div className="flex justify-between items-center text-sm mb-3">
+                  <span className="text-gray-500 font-bold">{ui.subtotal}</span>
+                  <span className="text-gray-500 font-bold">{total} {ui.egp}</span>
+                </div>
                 {couponResult && (
                   <div className="flex justify-between items-center text-sm mb-3">
                     <span className="text-green-600 font-bold">{ui.discount}</span>
                     <span className="text-green-600 font-bold">-{couponResult.discount} {ui.egp}</span>
                   </div>
                 )}
-                <div className="flex justify-between items-center font-bold text-lg">
+                <div className="flex justify-between items-center text-sm mb-3">
+                  <span className="text-gray-500 font-bold">{ui.shipping || 'Shipping'}</span>
+                  <span className="text-gray-500 font-bold">{shippingCost > 0 ? `${shippingCost} ${ui.egp}` : (selectedArea ? (ui.free || 'Free') : '—')}</span>
+                </div>
+                <div className="flex justify-between items-center font-bold text-lg border-t border-brand-200/60 pt-3">
                   <span className="text-brand-700 uppercase tracking-widest text-sm font-body">{ui.total}</span>
                   <span className="text-2xl font-heading font-bold text-gray-900">{finalTotal} <span className="text-sm tracking-wider text-gray-600">{ui.egp}</span></span>
                 </div>

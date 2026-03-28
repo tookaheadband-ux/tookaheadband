@@ -151,7 +151,9 @@ export default function AdminOrders() {
                 <tr key={o._id} className="border-b border-gray-50 hover:bg-pink-50/30 transition-colors group">
                   <td className="p-6">
                     <p className="font-black text-gray-900 text-base mb-1">{o.name}</p>
+                    {o.governorate && <p className="text-xs text-pink-600 font-bold mb-0.5">{o.governorate} — {o.area}</p>}
                     <p className="text-xs text-gray-500 font-semibold truncate max-w-[220px] bg-gray-50 px-2 py-1 rounded inline-block">{o.address}</p>
+                    {o.shippingCost > 0 && <p className="text-xs text-blue-600 font-bold mt-1">Shipping: {o.shippingCost} EGP</p>}
                   </td>
                   <td className="p-6 text-gray-700 text-base font-bold whitespace-nowrap">{o.phone}</td>
                   <td className="p-6">
@@ -191,7 +193,9 @@ export default function AdminOrders() {
                 </div>
                 <span className={`text-xs font-black px-3 py-1.5 rounded-lg border shadow-sm flex-shrink-0 ${statusColors[o.status]}`}>{ui[o.status]}</span>
               </div>
-              <p className="text-xs text-gray-500 font-semibold mb-4 bg-gray-50 p-2 rounded-lg">{o.address}</p>
+              {o.governorate && <p className="text-xs text-pink-600 font-bold mb-1">{o.governorate} — {o.area}</p>}
+              <p className="text-xs text-gray-500 font-semibold mb-2 bg-gray-50 p-2 rounded-lg">{o.address}</p>
+              {o.shippingCost > 0 && <p className="text-xs text-blue-600 font-bold mb-4">Shipping: {o.shippingCost} EGP</p>}
               
               <div className="text-sm text-gray-700 font-bold space-y-2 mb-4">
                 {o.items.map((i, idx) => (

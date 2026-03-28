@@ -1,8 +1,15 @@
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useLang } from '@/context/LanguageContext';
+import { fetchSiteSettings } from '@/lib/api';
 
 export default function Footer() {
   const { ui } = useLang();
+  const [settings, setSettings] = useState({ contact_email: 'tookaheadband@gmail.com', contact_phone: '+201557788876' });
+
+  useEffect(() => {
+    fetchSiteSettings().then((r) => setSettings(r.data)).catch(() => {});
+  }, []);
 
   return (
     <>
@@ -38,8 +45,8 @@ export default function Footer() {
             {/* Section 3: Contact */}
             <div className="flex flex-col gap-4">
               <h4 className="text-lg font-bold font-heading text-brand-text mb-2">{ui.contactUs}</h4>
-              <p className="text-sm font-body text-brand-700">Email: hello@tooka.com</p>
-              <p className="text-sm font-body text-brand-700">Phone: +20 100 208 4496</p>
+              <p className="text-sm font-body text-brand-700">Email: {settings.contact_email}</p>
+              <p className="text-sm font-body text-brand-700">Phone: {settings.contact_phone}</p>
               <p className="text-sm font-body text-brand-700">Cairo, Egypt</p>
             </div>
 

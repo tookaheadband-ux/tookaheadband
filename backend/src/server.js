@@ -13,6 +13,7 @@ const adminRoutes = require('./routes/adminRoutes');
 const pageRoutes = require('./routes/pageRoutes');
 const reportRoutes = require('./routes/reportRoutes');
 const couponRoutes = require('./routes/couponRoutes');
+const shippingRoutes = require('./routes/shippingRoutes');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -48,6 +49,23 @@ app.use('/api/admin', adminRoutes);
 app.use('/api/pages', pageRoutes);
 app.use('/api/admin/reports', reportRoutes);
 app.use('/api/coupons', couponRoutes);
+app.use('/api/shipping-zones', shippingRoutes);
+
+// Public: site settings (contact info for footer)
+app.get('/api/site-settings', async (req, res) => {
+  try {
+    const AdminSettings = require('./models/AdminSettings');
+    const keys = ['contact_email', 'contact_phone'];
+    const settings = await AdminSettings.find({ key: { $in: keys } });
+    const result = {};
+    settings.forEach((s) => { result[s.key] = s.value; });
+    if (!result.contact_email) result.contact_email = 'tookaheadband@gmail.com';
+    if (!result.contact_phone) result.contact_phone = '+201557788876';
+    res.json(result);
+  } catch (err) {
+    res.json({ contact_email: 'tookaheadband@gmail.com', contact_phone: '+201557788876' });
+  }
+});
 
 // Health check
 app.get('/api/health', (req, res) => {

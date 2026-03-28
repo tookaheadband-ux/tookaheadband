@@ -95,7 +95,7 @@ const getBestSellers = async (req, res, next) => {
 // Admin: create product
 const createProduct = async (req, res, next) => {
   try {
-    const { nameAr, nameEn, descriptionAr, descriptionEn, price, categoryId, stock, isFeatured, colors, sizes } = req.body;
+    const { nameAr, nameEn, descriptionAr, descriptionEn, price, costPrice, categoryId, stock, isFeatured, colors, sizes } = req.body;
     const images = req.files ? req.files.map((f) => f.path) : [];
 
     const product = await Product.create({
@@ -104,6 +104,7 @@ const createProduct = async (req, res, next) => {
       descriptionAr,
       descriptionEn,
       price,
+      costPrice: costPrice || 0,
       images,
       categoryId,
       stock: stock || 0,
@@ -124,13 +125,14 @@ const updateProduct = async (req, res, next) => {
     const product = await Product.findById(req.params.id);
     if (!product) return res.status(404).json({ message: 'Product not found' });
 
-    const { nameAr, nameEn, descriptionAr, descriptionEn, price, categoryId, stock, isFeatured, existingImages, colors, sizes } = req.body;
+    const { nameAr, nameEn, descriptionAr, descriptionEn, price, costPrice, categoryId, stock, isFeatured, existingImages, colors, sizes } = req.body;
 
     if (nameAr !== undefined) product.nameAr = nameAr;
     if (nameEn !== undefined) product.nameEn = nameEn;
     if (descriptionAr !== undefined) product.descriptionAr = descriptionAr;
     if (descriptionEn !== undefined) product.descriptionEn = descriptionEn;
     if (price !== undefined) product.price = price;
+    if (costPrice !== undefined) product.costPrice = costPrice;
     if (categoryId !== undefined) product.categoryId = categoryId;
     const oldStock = product.stock;
     if (stock !== undefined) product.stock = stock;

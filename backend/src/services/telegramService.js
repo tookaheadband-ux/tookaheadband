@@ -9,6 +9,7 @@ const sendNewOrderNotification = async (order) => {
 
 <b>Name:</b> ${order.name}
 <b>Phone:</b> ${order.phone}
+${order.governorate ? `<b>Governorate:</b> ${order.governorate} — ${order.area}` : ''}
 <b>Address:</b> ${order.address}
 ${order.email ? `<b>Email:</b> ${order.email}` : ''}
 ${order.notes ? `<b>Notes:</b> ${order.notes}` : ''}
@@ -16,7 +17,7 @@ ${order.notes ? `<b>Notes:</b> ${order.notes}` : ''}
 <b>Items:</b>
 ${itemsList}
 
-<b>Total: ${order.total} EGP</b>`;
+${order.shippingCost > 0 ? `<b>Shipping: ${order.shippingCost} EGP</b>\n` : ''}<b>Total: ${order.total} EGP</b>`;
 
   await sendTelegramMessage(message);
 };
