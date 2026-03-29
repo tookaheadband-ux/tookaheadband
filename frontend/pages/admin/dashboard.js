@@ -10,11 +10,15 @@ const navItems = (ui, active) => [
   { href: '/admin/categories', label: ui.manageCategories, icon: '📂', active: active === 'categories' },
   { href: '/admin/orders', label: ui.manageOrders, icon: '📦', active: active === 'orders' },
   { href: '/admin/pages', label: ui.pages, icon: '📄', active: active === 'pages' },
-  { href: '/admin/coupons', label: 'Coupons', icon: '🏷️', active: active === 'coupons' },
-  { href: '/admin/reviews', label: 'Reviews', icon: '⭐', active: active === 'reviews' },
-  { href: '/admin/profit', label: 'Profit', icon: '📈', active: active === 'profit' },
-  { href: '/admin/shipping', label: 'Shipping', icon: '🚚', active: active === 'shipping' },
-  { href: '/admin/sku-search', label: 'SKU Search', icon: '🔍', active: active === 'sku-search' },
+  { href: '/admin/coupons', label: ui.coupons, icon: '🏷️', active: active === 'coupons' },
+  { href: '/admin/reviews', label: ui.reviews, icon: '⭐', active: active === 'reviews' },
+  { href: '/admin/profit', label: ui.profitNav, icon: '📈', active: active === 'profit' },
+  { href: '/admin/shipping', label: ui.shippingNav, icon: '🚚', active: active === 'shipping' },
+  { href: '/admin/customers', label: ui.customers, icon: '👥', active: active === 'customers' },
+  { href: '/admin/flash-sales', label: ui.flashSalesLabel, icon: '⚡', active: active === 'flash-sales' },
+  { href: '/admin/bundles', label: ui.bundlesLabel, icon: '🎁', active: active === 'bundles' },
+  { href: '/admin/settings', label: ui.settings, icon: '⚙️', active: active === 'settings' },
+  { href: '/admin/sku-search', label: ui.skuSearch, icon: '🔍', active: active === 'sku-search' },
 ];
 
 function AdminNav({ ui, active, onLogout }) {
@@ -152,8 +156,8 @@ export default function Dashboard() {
 
         {/* Welcome */}
         <div className="mb-8">
-          <h1 className="text-3xl font-black text-gray-900">Welcome back! 👋</h1>
-          <p className="text-gray-600 font-semibold text-base mt-1">Here's what's happening with your store today.</p>
+          <h1 className="text-3xl font-black text-gray-900">{ui.welcomeBack} 👋</h1>
+          <p className="text-gray-600 font-semibold text-base mt-1">{ui.storeToday}</p>
         </div>
 
         {/* Stat Cards */}
@@ -171,92 +175,75 @@ export default function Dashboard() {
           </div>
         )}
 
-        {/* Quick Actions */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm">
-            <h3 className="font-black text-gray-900 text-lg mb-2 flex items-center gap-2">
-              <span>📊</span> {ui.sendDailyReport}
-            </h3>
-            <p className="text-sm font-semibold text-gray-500 mb-4">Generate and send a daily sales report to your Telegram.</p>
-            <button onClick={handleReport} disabled={reportLoading}
-              className="h-11 px-8 bg-gradient-to-r from-pink-400 to-rose-500 text-white font-black text-sm rounded-xl shadow-lg shadow-pink-200 hover:shadow-xl hover:shadow-pink-300 hover:-translate-y-0.5 transition-all duration-300 disabled:opacity-50">
-              {reportLoading ? 'Sending...' : ui.sendDailyReport}
-            </button>
-            {reportMsg && <p className="mt-3 text-sm text-green-600 font-bold">{reportMsg}</p>}
-          </div>
-
-          <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm">
-            <h3 className="font-black text-gray-900 text-lg mb-2 flex items-center gap-2">
-              <span>🔒</span> Change Password
-            </h3>
-            <form onSubmit={handleChangePassword} className="space-y-3">
-              <input type="password" placeholder="Current Password" value={pwForm.currentPassword}
-                onChange={(e) => setPwForm({ ...pwForm, currentPassword: e.target.value })} required
-                className="w-full h-11 px-4 rounded-xl border border-gray-200 text-sm font-semibold focus:outline-none focus:border-pink-400" />
-              <input type="password" placeholder="New Password" value={pwForm.newPassword}
-                onChange={(e) => setPwForm({ ...pwForm, newPassword: e.target.value })} required minLength={6}
-                className="w-full h-11 px-4 rounded-xl border border-gray-200 text-sm font-semibold focus:outline-none focus:border-pink-400" />
-              <input type="password" placeholder="Confirm New Password" value={pwForm.confirmPassword}
-                onChange={(e) => setPwForm({ ...pwForm, confirmPassword: e.target.value })} required minLength={6}
-                className="w-full h-11 px-4 rounded-xl border border-gray-200 text-sm font-semibold focus:outline-none focus:border-pink-400" />
-              <button type="submit" disabled={pwLoading}
-                className="h-11 px-8 bg-gradient-to-r from-pink-400 to-rose-500 text-white font-black text-sm rounded-xl shadow-lg shadow-pink-200 hover:shadow-xl hover:-translate-y-0.5 transition-all duration-300 disabled:opacity-50">
-                {pwLoading ? 'Saving...' : 'Change Password'}
-              </button>
-              {pwMsg.text && <p className={`text-sm font-bold ${pwMsg.type === 'error' ? 'text-red-500' : 'text-green-600'}`}>{pwMsg.text}</p>}
-            </form>
-          </div>
+        {/* Quick Links */}
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2 mb-8">
+          <Link href="/admin/products" className="h-12 flex items-center justify-center bg-white text-gray-700 font-bold text-sm rounded-xl hover:bg-pink-50 border border-gray-100 hover:border-pink-200 transition-all shadow-sm gap-2">🛍️ {ui.manageProducts}</Link>
+          <Link href="/admin/orders" className="h-12 flex items-center justify-center bg-white text-gray-700 font-bold text-sm rounded-xl hover:bg-violet-50 border border-gray-100 hover:border-violet-200 transition-all shadow-sm gap-2">📦 {ui.manageOrders}</Link>
+          <Link href="/admin/profit" className="h-12 flex items-center justify-center bg-white text-gray-700 font-bold text-sm rounded-xl hover:bg-green-50 border border-gray-100 hover:border-green-200 transition-all shadow-sm gap-2">📈 {ui.profitNav}</Link>
+          <Link href="/admin/shipping" className="h-12 flex items-center justify-center bg-white text-gray-700 font-bold text-sm rounded-xl hover:bg-blue-50 border border-gray-100 hover:border-blue-200 transition-all shadow-sm gap-2">🚚 {ui.shippingNav}</Link>
+          <Link href="/admin/categories" className="h-12 flex items-center justify-center bg-white text-gray-700 font-bold text-sm rounded-xl hover:bg-amber-50 border border-gray-100 hover:border-amber-200 transition-all shadow-sm gap-2">📂 {ui.manageCategories}</Link>
+          <Link href="/admin/coupons" className="h-12 flex items-center justify-center bg-white text-gray-700 font-bold text-sm rounded-xl hover:bg-emerald-50 border border-gray-100 hover:border-emerald-200 transition-all shadow-sm gap-2">🏷️ {ui.coupons}</Link>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
-          <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm">
-            <h3 className="font-black text-gray-900 text-lg mb-2 flex items-center gap-2">
-              <span>💾</span> Database Backup
-            </h3>
-            <p className="text-sm font-semibold text-gray-500 mb-4">Download a full backup of all your data as a JSON file.</p>
-            <button onClick={handleBackup} disabled={backupLoading}
-              className="h-11 px-8 bg-gradient-to-r from-pink-400 to-rose-500 text-white font-black text-sm rounded-xl shadow-lg shadow-pink-200 hover:shadow-xl hover:-translate-y-0.5 transition-all duration-300 disabled:opacity-50">
-              {backupLoading ? 'Downloading...' : 'Download Backup'}
-            </button>
-          </div>
+        {/* Quick Actions Row */}
+        <div className="flex flex-wrap gap-3 mb-8">
+          <button onClick={handleReport} disabled={reportLoading}
+            className="h-11 px-6 bg-white text-gray-700 font-bold text-sm rounded-xl border border-gray-100 hover:border-pink-200 hover:bg-pink-50 transition-all shadow-sm flex items-center gap-2 disabled:opacity-50">
+            📊 {reportLoading ? ui.saving : ui.sendReport}
+          </button>
+          <button onClick={handleBackup} disabled={backupLoading}
+            className="h-11 px-6 bg-white text-gray-700 font-bold text-sm rounded-xl border border-gray-100 hover:border-pink-200 hover:bg-pink-50 transition-all shadow-sm flex items-center gap-2 disabled:opacity-50">
+            💾 {backupLoading ? ui.saving : ui.downloadBackup}
+          </button>
+          {reportMsg && <span className="self-center text-sm text-green-600 font-bold">{reportMsg}</span>}
+        </div>
 
-          <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm">
-            <h3 className="font-black text-gray-900 text-lg mb-2 flex items-center gap-2">
-              <span>📞</span> Contact Info
-            </h3>
-            <p className="text-sm font-semibold text-gray-500 mb-4">Update email & phone shown on the website footer.</p>
+        {/* Settings — Collapsible Panels */}
+        <div className="space-y-3">
+          <SettingsPanel title={`📞 ${ui.contactInfo}`} desc={ui.contactInfoDesc}>
             <form onSubmit={handleContactSave} className="space-y-3">
-              <div>
-                <label className="block text-xs font-black text-gray-400 uppercase tracking-widest mb-1">Email</label>
-                <input type="email" value={contactForm.contact_email}
-                  onChange={(e) => setContactForm({ ...contactForm, contact_email: e.target.value })} required
-                  className="w-full h-11 px-4 rounded-xl border border-gray-200 text-sm font-semibold focus:outline-none focus:border-pink-400" />
-              </div>
-              <div>
-                <label className="block text-xs font-black text-gray-400 uppercase tracking-widest mb-1">Phone</label>
-                <input type="tel" value={contactForm.contact_phone}
-                  onChange={(e) => setContactForm({ ...contactForm, contact_phone: e.target.value })} required
-                  className="w-full h-11 px-4 rounded-xl border border-gray-200 text-sm font-semibold focus:outline-none focus:border-pink-400" />
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-xs font-black text-gray-400 uppercase tracking-widest mb-1">Email</label>
+                  <input type="email" value={contactForm.contact_email}
+                    onChange={(e) => setContactForm({ ...contactForm, contact_email: e.target.value })} required
+                    className="w-full h-10 px-4 rounded-xl border border-gray-200 text-sm font-semibold focus:outline-none focus:border-pink-400" />
+                </div>
+                <div>
+                  <label className="block text-xs font-black text-gray-400 uppercase tracking-widest mb-1">Phone</label>
+                  <input type="tel" value={contactForm.contact_phone}
+                    onChange={(e) => setContactForm({ ...contactForm, contact_phone: e.target.value })} required
+                    className="w-full h-10 px-4 rounded-xl border border-gray-200 text-sm font-semibold focus:outline-none focus:border-pink-400" />
+                </div>
               </div>
               <button type="submit" disabled={contactSaving}
-                className="h-11 px-8 bg-gradient-to-r from-pink-400 to-rose-500 text-white font-black text-sm rounded-xl shadow-lg shadow-pink-200 hover:shadow-xl hover:-translate-y-0.5 transition-all duration-300 disabled:opacity-50">
-                {contactSaving ? 'Saving...' : 'Save Contact Info'}
+                className="h-10 px-6 bg-gray-900 text-white font-black text-sm rounded-xl hover:-translate-y-0.5 transition-all disabled:opacity-50">
+                {contactSaving ? ui.saving : ui.save}
               </button>
               {contactMsg.text && <p className={`text-sm font-bold ${contactMsg.type === 'error' ? 'text-red-500' : 'text-green-600'}`}>{contactMsg.text}</p>}
             </form>
-          </div>
+          </SettingsPanel>
 
-          <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm">
-            <h3 className="font-black text-gray-900 text-lg mb-3 flex items-center gap-2">
-              <span>🚀</span> Quick Links
-            </h3>
-            <div className="grid grid-cols-2 gap-2">
-              <Link href="/admin/products" className="h-11 flex items-center justify-center bg-pink-50 text-gray-700 font-bold text-sm rounded-xl hover:bg-pink-100 border border-pink-100 transition-colors">🛍️ Products</Link>
-              <Link href="/admin/orders" className="h-11 flex items-center justify-center bg-violet-50 text-gray-700 font-bold text-sm rounded-xl hover:bg-violet-100 border border-violet-100 transition-colors">📦 Orders</Link>
-              <Link href="/admin/categories" className="h-11 flex items-center justify-center bg-amber-50 text-gray-700 font-bold text-sm rounded-xl hover:bg-amber-100 border border-amber-100 transition-colors">📂 Categories</Link>
-              <Link href="/admin/pages" className="h-11 flex items-center justify-center bg-emerald-50 text-gray-700 font-bold text-sm rounded-xl hover:bg-emerald-100 border border-emerald-100 transition-colors">📄 Pages</Link>
-            </div>
-          </div>
+          <SettingsPanel title={`🔒 ${ui.changePassword}`} desc={ui.changePasswordDesc}>
+            <form onSubmit={handleChangePassword} className="space-y-3">
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                <input type="password" placeholder={ui.currentPassword} value={pwForm.currentPassword}
+                  onChange={(e) => setPwForm({ ...pwForm, currentPassword: e.target.value })} required
+                  className="w-full h-10 px-4 rounded-xl border border-gray-200 text-sm font-semibold focus:outline-none focus:border-pink-400" />
+                <input type="password" placeholder={ui.newPassword} value={pwForm.newPassword}
+                  onChange={(e) => setPwForm({ ...pwForm, newPassword: e.target.value })} required minLength={6}
+                  className="w-full h-10 px-4 rounded-xl border border-gray-200 text-sm font-semibold focus:outline-none focus:border-pink-400" />
+                <input type="password" placeholder={ui.confirmPassword} value={pwForm.confirmPassword}
+                  onChange={(e) => setPwForm({ ...pwForm, confirmPassword: e.target.value })} required minLength={6}
+                  className="w-full h-10 px-4 rounded-xl border border-gray-200 text-sm font-semibold focus:outline-none focus:border-pink-400" />
+              </div>
+              <button type="submit" disabled={pwLoading}
+                className="h-10 px-6 bg-gray-900 text-white font-black text-sm rounded-xl hover:-translate-y-0.5 transition-all disabled:opacity-50">
+                {pwLoading ? ui.saving : ui.changePassword}
+              </button>
+              {pwMsg.text && <p className={`text-sm font-bold ${pwMsg.type === 'error' ? 'text-red-500' : 'text-green-600'}`}>{pwMsg.text}</p>}
+            </form>
+          </SettingsPanel>
         </div>
 
       </div>
@@ -264,5 +251,22 @@ export default function Dashboard() {
   );
 }
 Dashboard.isAdmin = true;
+
+function SettingsPanel({ title, desc, children }) {
+  const [open, setOpen] = useState(false);
+  return (
+    <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+      <button onClick={() => setOpen(!open)}
+        className="w-full flex items-center justify-between p-5 hover:bg-gray-50 transition-colors text-left">
+        <div>
+          <h3 className="font-black text-gray-900 text-base">{title}</h3>
+          <p className="text-xs font-semibold text-gray-400 mt-0.5">{desc}</p>
+        </div>
+        <span className="text-gray-400 text-lg flex-shrink-0">{open ? '▲' : '▼'}</span>
+      </button>
+      {open && <div className="px-5 pb-5 border-t border-gray-50 pt-4">{children}</div>}
+    </div>
+  );
+}
 
 export { AdminNav, navItems };

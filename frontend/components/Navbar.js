@@ -30,6 +30,7 @@ export default function Navbar() {
   const navLinks = [
     { href: '/', label: ui.home },
     { href: '/products', label: ui.products },
+    { href: '/bundles', label: ui.bundlesLabel || 'Bundles' },
     { href: '/track-order', label: ui.trackOrder },
     { href: '/about', label: ui.about },
   ];

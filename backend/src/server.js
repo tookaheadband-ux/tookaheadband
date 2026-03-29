@@ -51,6 +51,40 @@ app.use('/api/admin/reports', reportRoutes);
 app.use('/api/coupons', couponRoutes);
 app.use('/api/shipping-zones', shippingRoutes);
 
+// Public: flash sales
+const flashSaleRoutes = require('./routes/flashSaleRoutes');
+app.use('/api/flash-sales', flashSaleRoutes);
+
+// Public: bundles
+const bundleRoutes = require('./routes/bundleRoutes');
+app.use('/api/bundles', bundleRoutes);
+
+// Public: social proof
+app.get('/api/social-proof', async (req, res) => {
+  try {
+    const Order = require('./models/Order');
+    const since = new Date(Date.now() - 24 * 60 * 60 * 1000);
+    const orders = await Order.find({ status: { $ne: 'canceled' }, createdAt: { $gte: since } })
+      .sort({ createdAt: -1 }).limit(10).lean();
+    const data = orders.map((o) => ({
+      name: o.name.split(' ')[0],
+      governorate: o.governorate || '',
+      productName: o.items[0]?.productNameSnapshot || '',
+      productImage: o.items[0]?.imageSnapshot || '',
+      createdAt: o.createdAt,
+    }));
+    res.json(data);
+  } catch { res.json([]); }
+});
+
+// Public: feature flags
+app.get('/api/feature-flags', async (req, res) => {
+  try {
+    const { getFeatureFlags } = require('./controllers/featureFlagController');
+    await getFeatureFlags(req, res, (err) => res.json({}));
+  } catch { res.json({}); }
+});
+
 // Public: site settings (contact info for footer)
 app.get('/api/site-settings', async (req, res) => {
   try {

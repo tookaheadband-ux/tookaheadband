@@ -6,7 +6,7 @@ import ProductCard from '@/components/ProductCard';
 import Pagination from '@/components/Pagination';
 import Breadcrumb from '@/components/Breadcrumb';
 import FilterPanel from '@/components/FilterPanel';
-import { fetchProducts, fetchCategories } from '@/lib/api';
+import { fetchProducts, fetchCategories, fetchActiveFlashSales } from '@/lib/api';
 import { motion } from 'framer-motion';
 import SkeletonCard from '@/components/SkeletonCard';
 
@@ -25,6 +25,7 @@ export default function Products() {
   const [selectedCategory, setSelectedCategory] = useState('');
   const [filters, setFilters] = useState(DEFAULT_FILTERS);
   const [loading, setLoading] = useState(true);
+  const [flashSales, setFlashSales] = useState([]);
 
   useEffect(() => {
     const timer = setTimeout(() => setDebouncedSearch(search), 400);
@@ -38,6 +39,7 @@ export default function Products() {
 
   useEffect(() => {
     fetchCategories().then((res) => setCategories(res.data)).catch(console.error);
+    fetchActiveFlashSales().then((res) => setFlashSales(res.data || [])).catch(() => {});
   }, []);
 
   useEffect(() => {
@@ -158,7 +160,7 @@ export default function Products() {
                 transition={{ duration: 0.6, delay: idx * 0.05 }}
               >
                 <div className="group hover:-translate-y-2 transition-transform duration-300 h-full">
-                  <ProductCard product={product} />
+                  <ProductCard product={product} flashSale={flashSales.find(fs => fs.productId?._id === product._id || fs.productId === product._id)} />
                 </div>
               </motion.div>
             ))}

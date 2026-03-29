@@ -2,6 +2,8 @@ const Order = require('../models/Order');
 const Product = require('../models/Product');
 const Coupon = require('../models/Coupon');
 const ShippingZone = require('../models/ShippingZone');
+const FlashSale = require('../models/FlashSale');
+const AdminSettings = require('../models/AdminSettings');
 const { sendOrderConfirmationToAdmin, sendOrderConfirmationToCustomer, sendOrderStatusUpdateToCustomer } = require('../services/emailService');
 const { sendNewOrderNotification, sendLowStockAlert } = require('../services/telegramService');
 const { generateDailyReport } = require('../services/pdfService');
@@ -9,7 +11,7 @@ const { generateDailyReport } = require('../services/pdfService');
 // Public: create order
 const createOrder = async (req, res, next) => {
   try {
-    const { name, phone, address, email, notes, items, couponCode, governorate, area } = req.body;
+    const { name, phone, address, email, notes, items, couponCode, governorate, area, giftWrap } = req.body;
 
     if (!name || !phone || !address) {
       return res.status(400).json({ message: 'Name, phone, and address are required' });
@@ -34,17 +36,25 @@ const createOrder = async (req, res, next) => {
         return res.status(400).json({ message: `Insufficient stock for "${productName}"` });
       }
 
+      // Check for active flash sale
+      const now = new Date();
+      const flashSale = await FlashSale.findOne({
+        productId: product._id, isActive: true,
+        startTime: { $lte: now }, endTime: { $gt: now },
+      });
+      const effectivePrice = flashSale ? flashSale.discountedPrice : product.price;
+
       orderItems.push({
         productId: product._id,
         skuSnapshot: product.sku || '',
         productNameSnapshot: product.nameEn || product.nameAr,
-        priceSnapshot: product.price,
+        priceSnapshot: effectivePrice,
         costPriceSnapshot: product.costPrice || 0,
         qty: item.qty,
         imageSnapshot: product.images[0] || '',
       });
 
-      subtotal += product.price * item.qty;
+      subtotal += effectivePrice * item.qty;
 
       // Decrease stock and increment sold count
       product.stock -= item.qty;
@@ -75,6 +85,7 @@ const createOrder = async (req, res, next) => {
 
     // Calculate shipping cost
     let shippingCost = 0;
+    let shippingActualCost = 0;
     let resolvedGovernorate = '';
     let resolvedArea = '';
     if (governorate && area) {
@@ -84,12 +95,20 @@ const createOrder = async (req, res, next) => {
         const areaDoc = zone.areas.find((a) => a.name === area);
         if (areaDoc) {
           shippingCost = areaDoc.cost;
+          shippingActualCost = areaDoc.actualCost || 0;
           resolvedArea = areaDoc.name;
         }
       }
     }
 
-    const total = subtotal - discount + shippingCost;
+    // Gift wrap
+    let giftWrapCost = 0;
+    if (giftWrap) {
+      const giftSetting = await AdminSettings.findOne({ key: 'gift_wrap_price' });
+      giftWrapCost = giftSetting ? Number(giftSetting.value) || 20 : 20;
+    }
+
+    const total = subtotal - discount + shippingCost + giftWrapCost;
 
     const order = await Order.create({
       name,
@@ -98,6 +117,9 @@ const createOrder = async (req, res, next) => {
       governorate: resolvedGovernorate,
       area: resolvedArea,
       shippingCost,
+      shippingActualCost,
+      giftWrap: !!giftWrap,
+      giftWrapCost,
       email: email || '',
       notes: notes || '',
       items: orderItems,

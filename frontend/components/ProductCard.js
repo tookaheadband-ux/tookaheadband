@@ -4,10 +4,11 @@ import { useLang } from '@/context/LanguageContext';
 import { useCart } from '@/context/CartContext';
 import { useWishlist } from '@/context/WishlistContext';
 import { useState } from 'react';
-import { Eye, Heart, Check } from 'lucide-react';
+import { Eye, Heart, Check, Zap } from 'lucide-react';
 import QuickViewModal from './QuickViewModal';
+import CountdownTimer from './CountdownTimer';
 
-export default function ProductCard({ product }) {
+export default function ProductCard({ product, flashSale }) {
   const { t, ui } = useLang();
   const { addItem } = useCart();
   const { toggleItem, isInWishlist } = useWishlist();
@@ -51,7 +52,12 @@ export default function ProductCard({ product }) {
           <Eye size={18} />
         </button>
 
-        {product.isFeatured && (
+        {flashSale && (
+          <div className="absolute top-4 left-1/2 -translate-x-1/2 z-20 bg-red-500 text-white text-xs font-black px-3 py-1 rounded-full flex items-center gap-1.5 shadow-md pointer-events-none">
+            <Zap size={12} fill="currentColor" /> <CountdownTimer endTime={flashSale.endTime} />
+          </div>
+        )}
+        {product.isFeatured && !flashSale && (
           <span className="absolute bottom-4 left-4 badge badge-brand shadow-sm pointer-events-none">Featured</span>
         )}
         {product.stock <= 0 && (
@@ -66,9 +72,17 @@ export default function ProductCard({ product }) {
         <h3 className="font-heading font-bold text-brand-text text-[15px] md:text-[17px] tracking-wide line-clamp-1 transition-colors group-hover:text-brand-primary">
           {name}
         </h3>
-        <p className="text-brand-900 text-[15px] md:text-[18px] font-body font-black flex items-baseline gap-1">
-          {product.price} <span className="text-[10px] md:text-[11px] uppercase tracking-wider text-brand-700">{ui.egp}</span>
-        </p>
+        {flashSale ? (
+          <p className="text-brand-900 text-[15px] md:text-[18px] font-body font-black flex items-baseline gap-2">
+            <span className="text-red-500">{flashSale.discountedPrice}</span>
+            <span className="text-[12px] line-through text-brand-700/50">{product.price}</span>
+            <span className="text-[10px] md:text-[11px] uppercase tracking-wider text-brand-700">{ui.egp}</span>
+          </p>
+        ) : (
+          <p className="text-brand-900 text-[15px] md:text-[18px] font-body font-black flex items-baseline gap-1">
+            {product.price} <span className="text-[10px] md:text-[11px] uppercase tracking-wider text-brand-700">{ui.egp}</span>
+          </p>
+        )}
         {product.stock > 0 ? (
           <p className="text-green-600 text-[12px] md:text-[13px] font-bold flex items-center gap-1">
             <Check size={14} strokeWidth={3} /> In Stock ({product.stock})

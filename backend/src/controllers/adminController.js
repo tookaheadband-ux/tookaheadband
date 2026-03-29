@@ -159,9 +159,11 @@ const backupDatabase = async (req, res, next) => {
   }
 };
 
-// Admin: profit report
+// Admin: profit report (online + offline + shipping + expenses)
 const getProfitReport = async (req, res, next) => {
   try {
+    const OfflineSale = require('../models/OfflineSale');
+    const Expense = require('../models/Expense');
     const { period, dateFrom, dateTo } = req.query;
     const now = moment().tz('Africa/Cairo');
 
@@ -185,99 +187,149 @@ const getProfitReport = async (req, res, next) => {
           startDate = now.clone().startOf('month').toDate();
           endDate = now.clone().endOf('day').toDate();
           break;
-        default: // all time
+        default:
           startDate = null;
           endDate = null;
       }
     }
 
-    const matchFilter = { status: { $ne: 'canceled' } };
-    if (startDate && endDate) {
-      matchFilter.createdAt = { $gte: startDate, $lte: endDate };
-    }
+    // --- ONLINE ORDERS ---
+    const orderFilter = { status: { $ne: 'canceled' } };
+    if (startDate && endDate) orderFilter.createdAt = { $gte: startDate, $lte: endDate };
 
-    // Overall stats
-    const overallResult = await Order.aggregate([
-      { $match: matchFilter },
-      { $unwind: '$items' },
+    const [onlineItemsAgg, onlineShippingAgg] = await Promise.all([
+      Order.aggregate([
+        { $match: orderFilter },
+        { $unwind: '$items' },
+        {
+          $group: {
+            _id: null,
+            revenue: { $sum: { $multiply: ['$items.priceSnapshot', '$items.qty'] } },
+            cost: { $sum: { $multiply: ['$items.costPriceSnapshot', '$items.qty'] } },
+            itemsSold: { $sum: '$items.qty' },
+            orderIds: { $addToSet: '$_id' },
+          },
+        },
+      ]),
+      Order.aggregate([
+        { $match: orderFilter },
+        {
+          $group: {
+            _id: null,
+            shippingCharged: { $sum: '$shippingCost' },
+            shippingActual: { $sum: '$shippingActualCost' },
+            discount: { $sum: '$discount' },
+            ordersCount: { $sum: 1 },
+          },
+        },
+      ]),
+    ]);
+
+    const online = {
+      revenue: onlineItemsAgg[0]?.revenue || 0,
+      cost: onlineItemsAgg[0]?.cost || 0,
+      profit: (onlineItemsAgg[0]?.revenue || 0) - (onlineItemsAgg[0]?.cost || 0),
+      itemsSold: onlineItemsAgg[0]?.itemsSold || 0,
+      ordersCount: onlineShippingAgg[0]?.ordersCount || 0,
+      shippingCharged: onlineShippingAgg[0]?.shippingCharged || 0,
+      shippingActual: onlineShippingAgg[0]?.shippingActual || 0,
+      shippingProfit: (onlineShippingAgg[0]?.shippingCharged || 0) - (onlineShippingAgg[0]?.shippingActual || 0),
+      discount: onlineShippingAgg[0]?.discount || 0,
+    };
+
+    // --- OFFLINE SALES ---
+    const offlineFilter = {};
+    if (startDate && endDate) offlineFilter.createdAt = { $gte: startDate, $lte: endDate };
+
+    const offlineAgg = await OfflineSale.aggregate([
+      { $match: offlineFilter },
       {
         $group: {
           _id: null,
-          totalRevenue: { $sum: { $multiply: ['$items.priceSnapshot', '$items.qty'] } },
-          totalCost: { $sum: { $multiply: ['$items.costPriceSnapshot', '$items.qty'] } },
-          totalItemsSold: { $sum: '$items.qty' },
-          totalOrders: { $addToSet: '$_id' },
-          totalShipping: { $sum: '$shippingCost' },
-          totalDiscount: { $sum: '$discount' },
+          revenue: { $sum: { $multiply: ['$sellPrice', '$qty'] } },
+          cost: { $sum: { $multiply: ['$costPrice', '$qty'] } },
+          itemsSold: { $sum: '$qty' },
+          salesCount: { $sum: 1 },
         },
       },
     ]);
 
-    const overall = overallResult.length > 0
-      ? {
-          revenue: overallResult[0].totalRevenue,
-          cost: overallResult[0].totalCost,
-          profit: overallResult[0].totalRevenue - overallResult[0].totalCost,
-          itemsSold: overallResult[0].totalItemsSold,
-          ordersCount: overallResult[0].totalOrders.length,
-          shipping: overallResult[0].totalShipping / overallResult[0].totalOrders.length * overallResult[0].totalOrders.length || 0,
-          discount: overallResult[0].totalDiscount / overallResult[0].totalOrders.length * overallResult[0].totalOrders.length || 0,
-        }
-      : { revenue: 0, cost: 0, profit: 0, itemsSold: 0, ordersCount: 0, shipping: 0, discount: 0 };
+    const offline = {
+      revenue: offlineAgg[0]?.revenue || 0,
+      cost: offlineAgg[0]?.cost || 0,
+      profit: (offlineAgg[0]?.revenue || 0) - (offlineAgg[0]?.cost || 0),
+      itemsSold: offlineAgg[0]?.itemsSold || 0,
+      salesCount: offlineAgg[0]?.salesCount || 0,
+    };
 
-    // Fix shipping/discount aggregation
-    const shippingResult = await Order.aggregate([
-      { $match: matchFilter },
-      { $group: { _id: null, totalShipping: { $sum: '$shippingCost' }, totalDiscount: { $sum: '$discount' } } },
+    // --- EXPENSES ---
+    const expenseFilter = {};
+    if (startDate && endDate) expenseFilter.date = { $gte: startDate, $lte: endDate };
+
+    const expenseAgg = await Expense.aggregate([
+      { $match: expenseFilter },
+      { $group: { _id: null, total: { $sum: '$amount' }, count: { $sum: 1 } } },
     ]);
-    if (shippingResult.length > 0) {
-      overall.shipping = shippingResult[0].totalShipping;
-      overall.discount = shippingResult[0].totalDiscount;
-    }
 
-    // Per-order breakdown
-    const orders = await Order.find(matchFilter).sort({ createdAt: -1 }).limit(50).lean();
+    const expenses = {
+      total: expenseAgg[0]?.total || 0,
+      count: expenseAgg[0]?.count || 0,
+    };
+
+    // --- GRAND TOTAL ---
+    const grandTotal = {
+      totalRevenue: online.revenue + offline.revenue,
+      totalCost: online.cost + offline.cost,
+      productProfit: online.profit + offline.profit,
+      shippingProfit: online.shippingProfit,
+      grossProfit: online.profit + offline.profit + online.shippingProfit,
+      expenses: expenses.total,
+      discount: online.discount,
+      netProfit: online.profit + offline.profit + online.shippingProfit - expenses.total,
+    };
+
+    // --- PER-ORDER BREAKDOWN (latest 50) ---
+    const orders = await Order.find(orderFilter).sort({ createdAt: -1 }).limit(50).lean();
     const orderProfits = orders.map((o) => {
       const itemRevenue = o.items.reduce((sum, i) => sum + i.priceSnapshot * i.qty, 0);
       const itemCost = o.items.reduce((sum, i) => sum + (i.costPriceSnapshot || 0) * i.qty, 0);
+      const shipProfit = (o.shippingCost || 0) - (o.shippingActualCost || 0);
       return {
         _id: o._id,
+        type: 'online',
         name: o.name,
         createdAt: o.createdAt,
         revenue: itemRevenue,
         cost: itemCost,
         profit: itemRevenue - itemCost,
-        shippingCost: o.shippingCost || 0,
+        shippingProfit: shipProfit,
         discount: o.discount || 0,
         total: o.total,
         itemsSold: o.items.reduce((sum, i) => sum + i.qty, 0),
       };
     });
 
-    // Daily breakdown for chart
-    const dailyResult = await Order.aggregate([
-      { $match: matchFilter },
-      { $unwind: '$items' },
-      {
-        $group: {
-          _id: { $dateToString: { format: '%Y-%m-%d', date: '$createdAt', timezone: 'Africa/Cairo' } },
-          revenue: { $sum: { $multiply: ['$items.priceSnapshot', '$items.qty'] } },
-          cost: { $sum: { $multiply: ['$items.costPriceSnapshot', '$items.qty'] } },
-          itemsSold: { $sum: '$items.qty' },
-        },
-      },
-      { $sort: { _id: 1 } },
-    ]);
-
-    const daily = dailyResult.map((d) => ({
-      date: d._id,
-      revenue: d.revenue,
-      cost: d.cost,
-      profit: d.revenue - d.cost,
-      itemsSold: d.itemsSold,
+    // --- OFFLINE SALES BREAKDOWN (latest 50) ---
+    const offlineSales = await OfflineSale.find(offlineFilter).sort({ createdAt: -1 }).limit(50).lean();
+    const offlineProfits = offlineSales.map((s) => ({
+      _id: s._id,
+      type: 'offline',
+      name: s.productName,
+      createdAt: s.createdAt,
+      revenue: s.sellPrice * s.qty,
+      cost: s.costPrice * s.qty,
+      profit: (s.sellPrice - s.costPrice) * s.qty,
+      shippingProfit: 0,
+      discount: 0,
+      total: s.sellPrice * s.qty,
+      itemsSold: s.qty,
+      notes: s.notes,
     }));
 
-    res.json({ overall, orders: orderProfits, daily });
+    // Merge and sort by date
+    const allTransactions = [...orderProfits, ...offlineProfits].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)).slice(0, 50);
+
+    res.json({ online, offline, expenses, grandTotal, transactions: allTransactions });
   } catch (err) {
     next(err);
   }

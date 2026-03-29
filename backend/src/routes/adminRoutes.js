@@ -11,6 +11,12 @@ const { updatePage } = require('../controllers/pageController');
 const { getCoupons, createCoupon, updateCoupon, deleteCoupon } = require('../controllers/couponController');
 const { getAllReviews, deleteReview } = require('../controllers/reviewController');
 const { getShippingZones, createShippingZone, updateShippingZone, deleteShippingZone } = require('../controllers/shippingController');
+const { getFeatureFlags, updateFeatureFlags } = require('../controllers/featureFlagController');
+const { getCustomers } = require('../controllers/customerController');
+const { adminGetFlashSales, adminCreateFlashSale, adminUpdateFlashSale, adminDeleteFlashSale } = require('../controllers/flashSaleController');
+const { adminGetBundles, adminCreateBundle, adminUpdateBundle, adminDeleteBundle } = require('../controllers/bundleController');
+const { getOfflineSales, createOfflineSale, deleteOfflineSale } = require('../controllers/offlineSaleController');
+const { getExpenses, createExpense, deleteExpense } = require('../controllers/expenseController');
 
 // Auth
 router.post('/login', login);
@@ -19,6 +25,8 @@ router.get('/dashboard', auth, getDashboard);
 router.put('/change-password', auth, changePassword);
 router.get('/backup', auth, backupDatabase);
 router.get('/profit', auth, getProfitReport);
+router.get('/feature-flags', auth, getFeatureFlags);
+router.put('/feature-flags', auth, updateFeatureFlags);
 router.get('/site-settings', auth, getSiteSettings);
 router.put('/site-settings', auth, updateSiteSettings);
 
@@ -57,6 +65,31 @@ router.get('/shipping-zones', auth, getShippingZones);
 router.post('/shipping-zones', auth, createShippingZone);
 router.put('/shipping-zones/:id', auth, updateShippingZone);
 router.delete('/shipping-zones/:id', auth, deleteShippingZone);
+
+// Offline Sales (admin)
+router.get('/offline-sales', auth, getOfflineSales);
+router.post('/offline-sales', auth, createOfflineSale);
+router.delete('/offline-sales/:id', auth, deleteOfflineSale);
+
+// Expenses (admin)
+router.get('/expenses', auth, getExpenses);
+router.post('/expenses', auth, createExpense);
+router.delete('/expenses/:id', auth, deleteExpense);
+
+// Customers (admin)
+router.get('/customers', auth, getCustomers);
+
+// Flash Sales (admin)
+router.get('/flash-sales', auth, adminGetFlashSales);
+router.post('/flash-sales', auth, adminCreateFlashSale);
+router.put('/flash-sales/:id', auth, adminUpdateFlashSale);
+router.delete('/flash-sales/:id', auth, adminDeleteFlashSale);
+
+// Bundles (admin)
+router.get('/bundles', auth, adminGetBundles);
+router.post('/bundles', auth, adminCreateBundle);
+router.put('/bundles/:id', auth, adminUpdateBundle);
+router.delete('/bundles/:id', auth, adminDeleteBundle);
 
 // Related Products (admin)
 router.put('/products/:id/related', auth, updateRelatedProducts);

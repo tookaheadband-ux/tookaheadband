@@ -3,6 +3,7 @@ import { LanguageProvider } from '@/context/LanguageContext';
 import { CartProvider } from '@/context/CartContext';
 import { WishlistProvider } from '@/context/WishlistContext';
 import { ToastProvider } from '@/context/ToastContext';
+import { FeatureFlagProvider } from '@/context/FeatureFlagContext';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import CartDrawer from '@/components/CartDrawer';
@@ -12,12 +13,14 @@ import Head from 'next/head';
 // Lazy-load below-fold components to reduce initial bundle size
 const FloatingWhatsApp = dynamic(() => import('@/components/FloatingWhatsApp'), { ssr: false });
 const BackToTop = dynamic(() => import('@/components/BackToTop'), { ssr: false });
+const SocialProofPopup = dynamic(() => import('@/components/SocialProofPopup'), { ssr: false });
 
 export default function App({ Component, pageProps }) {
   const isAdmin = Component.isAdmin;
 
   return (
     <LanguageProvider>
+      <FeatureFlagProvider>
       <CartProvider>
         <WishlistProvider>
         <ToastProvider>
@@ -48,9 +51,11 @@ export default function App({ Component, pageProps }) {
         {!isAdmin && <Footer />}
         {!isAdmin && <FloatingWhatsApp />}
         {!isAdmin && <BackToTop />}
+        {!isAdmin && <SocialProofPopup />}
         </ToastProvider>
         </WishlistProvider>
       </CartProvider>
+      </FeatureFlagProvider>
     </LanguageProvider>
   );
 }

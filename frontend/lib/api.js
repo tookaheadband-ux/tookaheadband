@@ -35,6 +35,9 @@ export const adminBackupDatabase = () => api.get('/admin/backup');
 export const adminGetSiteSettings = () => api.get('/admin/site-settings');
 export const adminUpdateSiteSettings = (data) => api.put('/admin/site-settings', data);
 export const fetchSiteSettings = () => api.get('/site-settings');
+export const fetchFeatureFlags = () => api.get('/feature-flags');
+export const adminGetFeatureFlags = () => api.get('/admin/feature-flags');
+export const adminUpdateFeatureFlags = (data) => api.put('/admin/feature-flags', data);
 export const adminGetProfitReport = (params) => api.get('/admin/profit', { params });
 
 export const adminGetProducts = (params) => api.get('/admin/products', { params });
@@ -86,6 +89,37 @@ export const adminGetShippingZones = () => api.get('/admin/shipping-zones');
 export const adminCreateShippingZone = (data) => api.post('/admin/shipping-zones', data);
 export const adminUpdateShippingZone = (id, data) => api.put(`/admin/shipping-zones/${id}`, data);
 export const adminDeleteShippingZone = (id) => api.delete(`/admin/shipping-zones/${id}`);
+
+// Customers (admin)
+export const adminGetCustomers = (params) => api.get('/admin/customers', { params });
+
+// Flash Sales
+export const fetchActiveFlashSales = () => api.get('/flash-sales');
+export const fetchFlashSaleForProduct = (productId) => api.get(`/flash-sales/product/${productId}`);
+export const adminGetFlashSales = () => api.get('/admin/flash-sales');
+export const adminCreateFlashSale = (data) => api.post('/admin/flash-sales', data);
+export const adminUpdateFlashSale = (id, data) => api.put(`/admin/flash-sales/${id}`, data);
+export const adminDeleteFlashSale = (id) => api.delete(`/admin/flash-sales/${id}`);
+
+// Bundles
+export const fetchActiveBundles = () => api.get('/bundles');
+export const adminGetBundles = () => api.get('/admin/bundles');
+export const adminCreateBundle = (data) => api.post('/admin/bundles', data);
+export const adminUpdateBundle = (id, data) => api.put(`/admin/bundles/${id}`, data);
+export const adminDeleteBundle = (id) => api.delete(`/admin/bundles/${id}`);
+
+// Social Proof
+export const fetchSocialProof = () => api.get('/social-proof');
+
+// Offline Sales (admin)
+export const adminGetOfflineSales = (params) => api.get('/admin/offline-sales', { params });
+export const adminCreateOfflineSale = (data) => api.post('/admin/offline-sales', data);
+export const adminDeleteOfflineSale = (id) => api.delete(`/admin/offline-sales/${id}`);
+
+// Expenses (admin)
+export const adminGetExpenses = (params) => api.get('/admin/expenses', { params });
+export const adminCreateExpense = (data) => api.post('/admin/expenses', data);
+export const adminDeleteExpense = (id) => api.delete(`/admin/expenses/${id}`);
 
 // Order Tracking (public)
 export const trackOrder = (orderId, phone) => api.get("/orders/track", { params: { orderId, phone } });

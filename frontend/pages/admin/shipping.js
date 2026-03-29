@@ -17,6 +17,7 @@ export default function AdminShipping() {
   const [newGov, setNewGov] = useState('');
   const [newAreaName, setNewAreaName] = useState('');
   const [newAreaCost, setNewAreaCost] = useState('');
+  const [newAreaActualCost, setNewAreaActualCost] = useState('');
   const [saving, setSaving] = useState(false);
 
   useEffect(() => { adminGetMe().catch(() => router.push('/admin/login')); }, [router]);
@@ -54,21 +55,22 @@ export default function AdminShipping() {
     if (!newAreaName.trim()) return;
     setSaving(true);
     try {
-      const updatedAreas = [...zone.areas, { name: newAreaName.trim(), cost: Number(newAreaCost) || 0 }];
+      const updatedAreas = [...zone.areas, { name: newAreaName.trim(), cost: Number(newAreaCost) || 0, actualCost: Number(newAreaActualCost) || 0 }];
       await adminUpdateShippingZone(zone._id, { areas: updatedAreas });
       setNewAreaName('');
       setNewAreaCost('');
+      setNewAreaActualCost('');
       load();
       toast.success('Area added');
     } catch (err) { toast.error(err.response?.data?.message || 'Error'); }
     finally { setSaving(false); }
   };
 
-  const handleUpdateArea = async (zone, areaIndex, newName, newCost) => {
+  const handleUpdateArea = async (zone, areaIndex, newName, newCost, newActualCost) => {
     setSaving(true);
     try {
       const updatedAreas = zone.areas.map((a, i) =>
-        i === areaIndex ? { ...a, name: newName, cost: Number(newCost) || 0 } : a
+        i === areaIndex ? { ...a, name: newName, cost: Number(newCost) || 0, actualCost: Number(newActualCost) || 0 } : a
       );
       await adminUpdateShippingZone(zone._id, { areas: updatedAreas });
       setEditingArea(null);
@@ -97,19 +99,19 @@ export default function AdminShipping() {
 
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-8 gap-4">
           <div>
-            <h1 className="text-3xl font-black text-gray-900 mb-1">Shipping Zones</h1>
-            <p className="text-sm font-bold text-gray-500 mt-1">{zones.length} governorates</p>
+            <h1 className="text-3xl font-black text-gray-900 mb-1">{ui.shippingZones}</h1>
+            <p className="text-sm font-bold text-gray-500 mt-1">{zones.length} {ui.governorates}</p>
           </div>
           <button onClick={() => setShowAddGov(true)}
             className="h-12 px-6 bg-gradient-to-r from-pink-500 to-rose-500 text-white font-black text-sm rounded-xl shadow-[0_4px_14px_0_rgba(244,114,182,0.4)] hover:shadow-lg hover:-translate-y-0.5 transition-all flex items-center gap-2 whitespace-nowrap">
-            + Add Governorate
+            {ui.addGovernorate}
           </button>
         </div>
 
         {showAddGov && (
           <form onSubmit={handleAddGovernorate} className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5 mb-6 flex flex-col sm:flex-row gap-3 sm:items-end">
             <div className="flex-1">
-              <label className="block text-xs font-black text-gray-400 uppercase tracking-widest mb-2">Governorate Name</label>
+              <label className="block text-xs font-black text-gray-400 uppercase tracking-widest mb-2">{ui.governorateName}</label>
               <input value={newGov} onChange={(e) => setNewGov(e.target.value)} placeholder="e.g. القاهرة"
                 className="w-full h-12 px-4 rounded-xl border-2 border-gray-100 focus:border-pink-400 outline-none text-gray-900 font-bold text-sm bg-gray-50" required />
             </div>
@@ -135,7 +137,7 @@ export default function AdminShipping() {
                       <span className="text-xl">{isExpanded ? '▼' : '▶'}</span>
                       <div>
                         <h3 className="text-lg font-black text-gray-900">{zone.governorate}</h3>
-                        <p className="text-xs font-bold text-gray-400">{zone.areas.length} areas</p>
+                        <p className="text-xs font-bold text-gray-400">{zone.areas.length} {ui.areas}</p>
                       </div>
                     </div>
                     <button onClick={(e) => { e.stopPropagation(); handleDeleteZone(zone._id); }}
@@ -150,9 +152,11 @@ export default function AdminShipping() {
                       {zone.areas.length > 0 && (
                         <div className="mb-4">
                           <div className="hidden sm:grid grid-cols-12 gap-3 text-xs font-black text-gray-400 uppercase tracking-widest mb-3 px-2">
-                            <span className="col-span-5">Area</span>
-                            <span className="col-span-3">Cost (EGP)</span>
-                            <span className="col-span-4 text-right">Actions</span>
+                            <span className="col-span-3">{ui.area}</span>
+                            <span className="col-span-2">{ui.customerPrice}</span>
+                            <span className="col-span-2">{ui.actualCost}</span>
+                            <span className="col-span-2">{ui.profit}</span>
+                            <span className="col-span-3 text-right">Actions</span>
                           </div>
                           <div className="space-y-2">
                             {zone.areas.map((area, idx) => {
@@ -164,15 +168,17 @@ export default function AdminShipping() {
                                     {isEditing ? (
                                       <EditAreaRow
                                         area={area}
-                                        onSave={(name, cost) => handleUpdateArea(zone, idx, name, cost)}
+                                        onSave={(name, cost, actualCost) => handleUpdateArea(zone, idx, name, cost, actualCost)}
                                         onCancel={() => setEditingArea(null)}
                                         saving={saving}
                                       />
                                     ) : (
                                       <>
-                                        <span className="col-span-5 text-sm font-bold text-gray-900">{area.name}</span>
-                                        <span className="col-span-3 text-sm font-black text-gray-700">{area.cost} EGP</span>
-                                        <div className="col-span-4 flex gap-2 justify-end">
+                                        <span className="col-span-3 text-sm font-bold text-gray-900">{area.name}</span>
+                                        <span className="col-span-2 text-sm font-black text-gray-700">{area.cost} EGP</span>
+                                        <span className="col-span-2 text-sm font-bold text-orange-500">{area.actualCost || 0} EGP</span>
+                                        <span className="col-span-2 text-sm font-black text-green-600">{(area.cost || 0) - (area.actualCost || 0)} EGP</span>
+                                        <div className="col-span-3 flex gap-2 justify-end">
                                           <button onClick={() => setEditingArea(`${zone._id}-${idx}`)}
                                             className="h-7 px-3 rounded-lg bg-blue-50 text-blue-600 text-xs font-black hover:bg-blue-100 border border-blue-100 transition-colors">Edit</button>
                                           <button onClick={() => handleDeleteArea(zone, idx)}
@@ -186,7 +192,7 @@ export default function AdminShipping() {
                                     {isEditing ? (
                                       <EditAreaMobile
                                         area={area}
-                                        onSave={(name, cost) => handleUpdateArea(zone, idx, name, cost)}
+                                        onSave={(name, cost, actualCost) => handleUpdateArea(zone, idx, name, cost, actualCost)}
                                         onCancel={() => setEditingArea(null)}
                                         saving={saving}
                                       />
@@ -194,7 +200,7 @@ export default function AdminShipping() {
                                       <div className="flex items-center justify-between">
                                         <div>
                                           <p className="text-sm font-bold text-gray-900">{area.name}</p>
-                                          <p className="text-xs font-black text-gray-500 mt-0.5">{area.cost} EGP</p>
+                                          <p className="text-xs font-black text-gray-500 mt-0.5">Price: {area.cost} | Cost: {area.actualCost || 0} | <span className="text-green-600">Profit: {(area.cost || 0) - (area.actualCost || 0)}</span></p>
                                         </div>
                                         <div className="flex gap-1.5">
                                           <button onClick={() => setEditingArea(`${zone._id}-${idx}`)}
@@ -215,14 +221,19 @@ export default function AdminShipping() {
                       {/* Add Area */}
                       <div className="flex flex-col sm:flex-row gap-3 sm:items-end pt-3 border-t border-gray-100">
                         <div className="flex-1">
-                          <label className="block text-xs font-black text-gray-400 uppercase tracking-widest mb-1">New Area</label>
+                          <label className="block text-xs font-black text-gray-400 uppercase tracking-widest mb-1">{ui.newArea}</label>
                           <input value={expandedZone === zone._id ? newAreaName : ''} onChange={(e) => setNewAreaName(e.target.value)} placeholder="Area name"
                             className="w-full h-10 px-3 rounded-xl border-2 border-gray-100 focus:border-pink-400 outline-none text-gray-900 font-bold text-sm bg-white" />
                         </div>
                         <div className="w-full sm:w-32">
-                          <label className="block text-xs font-black text-gray-400 uppercase tracking-widest mb-1">Cost</label>
+                          <label className="block text-xs font-black text-gray-400 uppercase tracking-widest mb-1">{ui.customerPrice}</label>
                           <input type="number" value={expandedZone === zone._id ? newAreaCost : ''} onChange={(e) => setNewAreaCost(e.target.value)} placeholder="0"
                             className="w-full h-10 px-3 rounded-xl border-2 border-gray-100 focus:border-pink-400 outline-none text-gray-900 font-bold text-sm bg-white" />
+                        </div>
+                        <div className="w-full sm:w-32">
+                          <label className="block text-xs font-black text-gray-400 uppercase tracking-widest mb-1">{ui.actualCost}</label>
+                          <input type="number" value={expandedZone === zone._id ? newAreaActualCost : ''} onChange={(e) => setNewAreaActualCost(e.target.value)} placeholder="0"
+                            className="w-full h-10 px-3 rounded-xl border-2 border-gray-100 focus:border-orange-400 outline-none text-gray-900 font-bold text-sm bg-white" />
                         </div>
                         <button onClick={() => handleAddArea(zone)} disabled={saving}
                           className="h-10 px-5 bg-gray-900 text-white font-black text-sm rounded-xl hover:-translate-y-0.5 transition-all disabled:opacity-50 whitespace-nowrap w-full sm:w-auto">
@@ -244,14 +255,19 @@ export default function AdminShipping() {
 function EditAreaMobile({ area, onSave, onCancel, saving }) {
   const [name, setName] = useState(area.name);
   const [cost, setCost] = useState(area.cost);
+  const [actualCost, setActualCost] = useState(area.actualCost || 0);
   return (
     <div className="space-y-2">
-      <input value={name} onChange={(e) => setName(e.target.value)}
+      <input value={name} onChange={(e) => setName(e.target.value)} placeholder="Area name"
         className="w-full h-9 px-3 rounded-lg border-2 border-pink-300 outline-none text-gray-900 font-bold text-sm bg-white" />
-      <input type="number" value={cost} onChange={(e) => setCost(e.target.value)} placeholder="Cost"
-        className="w-full h-9 px-3 rounded-lg border-2 border-pink-300 outline-none text-gray-900 font-bold text-sm bg-white" />
+      <div className="grid grid-cols-2 gap-2">
+        <input type="number" value={cost} onChange={(e) => setCost(e.target.value)} placeholder="Customer Price"
+          className="h-9 px-3 rounded-lg border-2 border-pink-300 outline-none text-gray-900 font-bold text-sm bg-white" />
+        <input type="number" value={actualCost} onChange={(e) => setActualCost(e.target.value)} placeholder="Actual Cost"
+          className="h-9 px-3 rounded-lg border-2 border-orange-300 outline-none text-gray-900 font-bold text-sm bg-white" />
+      </div>
       <div className="flex gap-2">
-        <button onClick={() => onSave(name, cost)} disabled={saving}
+        <button onClick={() => onSave(name, cost, actualCost)} disabled={saving}
           className="flex-1 h-8 rounded-lg bg-green-50 text-green-600 text-xs font-black hover:bg-green-100 border border-green-100 disabled:opacity-50">Save</button>
         <button onClick={onCancel}
           className="flex-1 h-8 rounded-lg bg-gray-100 text-gray-600 text-xs font-black hover:bg-gray-200">Cancel</button>
@@ -263,14 +279,18 @@ function EditAreaMobile({ area, onSave, onCancel, saving }) {
 function EditAreaRow({ area, onSave, onCancel, saving }) {
   const [name, setName] = useState(area.name);
   const [cost, setCost] = useState(area.cost);
+  const [actualCost, setActualCost] = useState(area.actualCost || 0);
   return (
     <>
       <input value={name} onChange={(e) => setName(e.target.value)}
-        className="col-span-5 h-8 px-2 rounded-lg border-2 border-pink-300 outline-none text-gray-900 font-bold text-sm bg-white" />
-      <input type="number" value={cost} onChange={(e) => setCost(e.target.value)}
         className="col-span-3 h-8 px-2 rounded-lg border-2 border-pink-300 outline-none text-gray-900 font-bold text-sm bg-white" />
-      <div className="col-span-4 flex gap-2 justify-end">
-        <button onClick={() => onSave(name, cost)} disabled={saving}
+      <input type="number" value={cost} onChange={(e) => setCost(e.target.value)}
+        className="col-span-2 h-8 px-2 rounded-lg border-2 border-pink-300 outline-none text-gray-900 font-bold text-sm bg-white" />
+      <input type="number" value={actualCost} onChange={(e) => setActualCost(e.target.value)}
+        className="col-span-2 h-8 px-2 rounded-lg border-2 border-orange-300 outline-none text-gray-900 font-bold text-sm bg-white" />
+      <span className="col-span-2"></span>
+      <div className="col-span-3 flex gap-2 justify-end">
+        <button onClick={() => onSave(name, cost, actualCost)} disabled={saving}
           className="h-7 px-3 rounded-lg bg-green-50 text-green-600 text-xs font-black hover:bg-green-100 border border-green-100 transition-colors disabled:opacity-50">Save</button>
         <button onClick={onCancel}
           className="h-7 px-3 rounded-lg bg-gray-100 text-gray-600 text-xs font-black hover:bg-gray-200 transition-colors">Cancel</button>

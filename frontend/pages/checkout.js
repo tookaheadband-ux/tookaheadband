@@ -4,10 +4,15 @@ import { useRouter } from 'next/router';
 import { useLang } from '@/context/LanguageContext';
 import { useCart } from '@/context/CartContext';
 import { createOrder, validateCoupon, fetchShippingZones } from '@/lib/api';
+import { useFeatureFlags } from '@/context/FeatureFlagContext';
 
 export default function Checkout() {
   const { ui } = useLang();
   const { items, total, clearCart } = useCart();
+  const { isEnabled, getFlag } = useFeatureFlags();
+  const [giftWrap, setGiftWrap] = useState(false);
+  const giftWrapPrice = isEnabled('feature_gift_wrap') ? (getFlag('gift_wrap_price') || 20) : 0;
+  const giftWrapCost = giftWrap ? giftWrapPrice : 0;
   const router = useRouter();
   const [form, setForm] = useState({ name: '', phone: '', address: '', email: '', notes: '' });
   const [loading, setLoading] = useState(false);
@@ -57,7 +62,7 @@ export default function Checkout() {
   };
 
   const discountAmount = couponResult ? couponResult.discount : 0;
-  const finalTotal = Math.max(0, total - discountAmount) + shippingCost;
+  const finalTotal = Math.max(0, total - discountAmount) + shippingCost + giftWrapCost;
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -66,7 +71,7 @@ export default function Checkout() {
     if (items.length === 0) { setError(ui.cartEmpty); return; }
     setLoading(true);
     try {
-      const orderRes = await createOrder({ ...form, governorate: selectedGovernorate, area: selectedArea, couponCode: couponResult ? couponResult.code : '', items: items.map((i) => ({ productId: i.productId, qty: i.qty })) });
+      const orderRes = await createOrder({ ...form, governorate: selectedGovernorate, area: selectedArea, giftWrap, couponCode: couponResult ? couponResult.code : '', items: items.map((i) => ({ productId: i.productId, qty: i.qty })) });
       clearCart();
       router.push(`/order-success?orderId=${orderRes.data._id}`);
     } catch (err) { setError(err.response?.data?.message || 'Something went wrong'); }
@@ -140,6 +145,17 @@ export default function Checkout() {
               <textarea name="notes" value={form.notes} onChange={handleChange} rows={2} className="w-full p-4 rounded-xl border-2 border-white focus:border-brand-primary outline-none text-brand-text font-body transition-colors bg-white/60 backdrop-blur-md shadow-sm resize-none" />
             </div>
 
+            {isEnabled('feature_gift_wrap') && (
+              <label className="flex items-center gap-3 p-4 border-2 border-brand-primary/20 rounded-xl bg-pink-50/50 cursor-pointer hover:bg-pink-50 transition-colors">
+                <input type="checkbox" checked={giftWrap} onChange={(e) => setGiftWrap(e.target.checked)}
+                  className="rounded border-brand-primary/30 text-brand-primary focus:ring-brand-primary w-5 h-5" />
+                <div>
+                  <span className="text-sm font-bold text-brand-text">{ui.giftWrapping} 🎁 (+{giftWrapPrice} {ui.egp})</span>
+                  <p className="text-xs text-brand-700 mt-0.5">{ui.giftWrapDesc}</p>
+                </div>
+              </label>
+            )}
+
             <div className="mt-8 border-t border-brand-200/60 pt-8">
               <h2 className="text-lg font-heading font-bold text-brand-text mb-6">{ui.paymentMethod}</h2>
               <div className="border-2 border-brand-primary p-6 bg-brand-50/50 rounded-2xl flex items-center justify-between shadow-sm">
@@ -201,9 +217,15 @@ export default function Checkout() {
                   </div>
                 )}
                 <div className="flex justify-between items-center text-sm mb-3">
-                  <span className="text-gray-500 font-bold">{ui.shipping || 'Shipping'}</span>
-                  <span className="text-gray-500 font-bold">{shippingCost > 0 ? `${shippingCost} ${ui.egp}` : (selectedArea ? (ui.free || 'Free') : '—')}</span>
+                  <span className="text-gray-500 font-bold">{ui.shipping}</span>
+                  <span className="text-gray-500 font-bold">{shippingCost > 0 ? `${shippingCost} ${ui.egp}` : (selectedArea ? (ui.free) : '—')}</span>
                 </div>
+                {giftWrap && (
+                  <div className="flex justify-between items-center text-sm mb-3">
+                    <span className="text-pink-500 font-bold">🎁 {ui.giftWrapping}</span>
+                    <span className="text-pink-500 font-bold">{giftWrapCost} {ui.egp}</span>
+                  </div>
+                )}
                 <div className="flex justify-between items-center font-bold text-lg border-t border-brand-200/60 pt-3">
                   <span className="text-brand-700 uppercase tracking-widest text-sm font-body">{ui.total}</span>
                   <span className="text-2xl font-heading font-bold text-gray-900">{finalTotal} <span className="text-sm tracking-wider text-gray-600">{ui.egp}</span></span>

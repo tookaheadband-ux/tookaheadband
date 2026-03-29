@@ -4,11 +4,12 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { useLang } from '@/context/LanguageContext';
 import ProductCard from '@/components/ProductCard';
-import { fetchProducts, fetchCategories } from '@/lib/api';
+import BundleCard from '@/components/BundleCard';
+import { fetchProducts, fetchCategories, fetchActiveBundles, fetchActiveFlashSales } from '@/lib/api';
 import { motion } from 'framer-motion';
 import { Sparkles, Heart, Gift, ArrowRight } from 'lucide-react';
 
-export default function Home({ featured = [], categories = [] }) {
+export default function Home({ featured = [], categories = [], bundles = [], flashSales = [] }) {
   const { t, ui } = useLang();
 
   return (
@@ -178,8 +179,7 @@ export default function Home({ featured = [], categories = [] }) {
             <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 md:gap-5 xl:gap-6">
               {featured.map((product) => (
                 <div key={product._id} className="group hover:-translate-y-2 transition-transform duration-300">
-                  <ProductCard product={product} />
-                  {/* The actual product card internally handles the rounded corners and sizing, we just wrap it with the hover lift */}
+                  <ProductCard product={product} flashSale={flashSales.find(fs => fs.productId?._id === product._id || fs.productId === product._id)} />
                 </div>
               ))}
             </div>
@@ -188,6 +188,33 @@ export default function Home({ featured = [], categories = [] }) {
               <Link href="/products" className="inline-block py-3 px-8 bg-white border-2 border-brand-surface rounded-2xl font-bold text-brand-text text-sm shadow-sm hover:shadow-md hover:-translate-y-1 transition-all duration-300">
                 {ui.viewAllProducts}
               </Link>
+            </div>
+          </div>
+        </motion.section>
+      )}
+
+      {/* BUNDLE DEALS SECTION */}
+      {bundles.length > 0 && (
+        <motion.section
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-100px" }}
+          transition={{ duration: 0.8 }}
+          className="py-[40px] md:py-[60px] xl:py-[80px] bg-white"
+        >
+          <div className="max-w-screen-2xl mx-auto px-4 md:px-5 lg:px-6">
+            <div className="text-center mb-8">
+              <span className="inline-block py-1.5 px-5 bg-brand-primary/15 text-brand-primary font-bold tracking-wide rounded-full text-sm mb-3 border border-brand-primary/30">
+                🎁 {ui.bundlesLabel || 'Bundle Deals'}
+              </span>
+              <h2 className="text-[24px] xl:text-[32px] font-heading font-bold text-brand-text">
+                {ui.youSave || 'Save More'} 💰
+              </h2>
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
+              {bundles.map((bundle) => (
+                <BundleCard key={bundle._id} bundle={bundle} />
+              ))}
             </div>
           </div>
         </motion.section>
@@ -286,21 +313,25 @@ export default function Home({ featured = [], categories = [] }) {
 
 export async function getStaticProps() {
   try {
-    const [featRes, catRes] = await Promise.all([
+    const [featRes, catRes, bundlesRes, flashRes] = await Promise.all([
       fetchProducts({ limit: 4 }),
       fetchCategories(),
+      fetchActiveBundles().catch(() => ({ data: [] })),
+      fetchActiveFlashSales().catch(() => ({ data: [] })),
     ]);
     return {
       props: {
         featured: featRes.data.products || [],
         categories: catRes.data || [],
+        bundles: bundlesRes.data || [],
+        flashSales: flashRes.data || [],
       },
       revalidate: 60, // ISR: regenerate page every 60 seconds
     };
   } catch (err) {
     console.error('getStaticProps error:', err);
     return {
-      props: { featured: [], categories: [] },
+      props: { featured: [], categories: [], bundles: [], flashSales: [] },
       revalidate: 30,
     };
   }

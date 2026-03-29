@@ -5,7 +5,8 @@ import Image from 'next/image';
 import { motion } from 'framer-motion';
 import { useLang } from '@/context/LanguageContext';
 import { useCart } from '@/context/CartContext';
-import { fetchProduct, getProductReviews, createProductReview, subscribeNotifyMe } from '@/lib/api';
+import { fetchProduct, getProductReviews, createProductReview, subscribeNotifyMe, fetchFlashSaleForProduct } from '@/lib/api';
+import CountdownTimer from '@/components/CountdownTimer';
 import { Star } from 'lucide-react';
 import Breadcrumb from '@/components/Breadcrumb';
 import SkeletonProductDetail from '@/components/SkeletonProductDetail';
@@ -40,6 +41,9 @@ export default function ProductDetail() {
   const [reviewForm, setReviewForm] = useState({ name: '', rating: 5, comment: '' });
   const [submittingReview, setSubmittingReview] = useState(false);
 
+  // Flash Sale
+  const [flashSale, setFlashSale] = useState(null);
+
   // Notify Me
   const [notifyEmail, setNotifyEmail] = useState('');
   const [notifyMsg, setNotifyMsg] = useState('');
@@ -56,6 +60,9 @@ export default function ProductDetail() {
     getProductReviews(id)
       .then((res) => { setReviews(res.data.reviews); setAvgRating(res.data.avgRating); setReviewCount(res.data.count); })
       .catch(console.error);
+    fetchFlashSaleForProduct(id)
+      .then((res) => { if (res.data) setFlashSale(res.data); })
+      .catch(() => {});
   }, [id]);
 
   useEffect(() => {
@@ -284,9 +291,21 @@ export default function ProductDetail() {
                   )}
                 </div>
                 <h1 className="text-xl sm:text-3xl font-bold font-[var(--font-family-heading)] text-brand-900 mb-3 md:mb-6 uppercase tracking-wider">{name}</h1>
-                <p className="text-lg sm:text-2xl font-medium text-brand-900">
-                  {product.price} <span className="text-xs sm:text-sm font-normal text-gray-600 tracking-widest uppercase">{ui.egp}</span>
-                </p>
+                {flashSale ? (
+                  <div className="flex items-center gap-3 flex-wrap">
+                    <p className="text-lg sm:text-2xl font-bold text-red-500">
+                      {flashSale.discountedPrice} <span className="text-xs sm:text-sm font-normal tracking-widest uppercase">{ui.egp}</span>
+                    </p>
+                    <p className="text-base sm:text-lg text-gray-400 line-through">{product.price} {ui.egp}</p>
+                    <span className="inline-flex items-center gap-1 bg-red-50 text-red-600 text-xs font-black px-3 py-1 rounded-full border border-red-200">
+                      <CountdownTimer endTime={flashSale.endTime} />
+                    </span>
+                  </div>
+                ) : (
+                  <p className="text-lg sm:text-2xl font-medium text-brand-900">
+                    {product.price} <span className="text-xs sm:text-sm font-normal text-gray-600 tracking-widest uppercase">{ui.egp}</span>
+                  </p>
+                )}
               </div>
 
               {description && (
@@ -422,7 +441,7 @@ export default function ProductDetail() {
       >
         <div className="flex flex-col min-w-0 flex-1">
           <p className="font-bold text-sm text-gray-900 truncate">{name}</p>
-          <p className="font-bold text-brand-primary text-sm">{product.price} {ui.egp}</p>
+          <p className="font-bold text-brand-primary text-sm">{flashSale ? flashSale.discountedPrice : product.price} {ui.egp}</p>
         </div>
         <button
           onClick={handleAddToCart}
