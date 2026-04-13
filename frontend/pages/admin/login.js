@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useRouter } from 'next/router';
+import Link from 'next/link';
 import { useLang } from '@/context/LanguageContext';
 import { adminLogin } from '@/lib/api';
 
@@ -51,6 +52,11 @@ export default function AdminLogin() {
             {loading ? 'Loading...' : ui.login}
           </button>
         </form>
+        <div className="text-center mt-4">
+          <Link href="/admin/reset-password" className="text-sm font-bold text-pink-500 hover:text-pink-600 transition-colors">
+            {ui.forgotPassword || 'Forgot Password?'}
+          </Link>
+        </div>
       </div>
     </div>
   );

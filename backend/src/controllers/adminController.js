@@ -15,10 +15,11 @@ const FlashSale = require('../models/FlashSale');
 const Bundle = require('../models/Bundle');
 const moment = require('moment-timezone');
 
-// Helper: get current admin password (DB first, then env fallback)
+// Helper: get current admin password from DB
 const getAdminPassword = async () => {
   const setting = await AdminSettings.findOne({ key: 'admin_password' });
-  return setting ? setting.value : process.env.ADMIN_PASS;
+  if (!setting) throw new Error('Admin password not set in database');
+  return setting.value;
 };
 
 // Admin: login
@@ -380,4 +381,77 @@ const updateSiteSettings = async (req, res, next) => {
   }
 };
 
-module.exports = { login, getMe, getDashboard, updateRelatedProducts, changePassword, backupDatabase, getProfitReport, getSiteSettings, updateSiteSettings };
+// Admin: request password reset via Telegram
+const requestPasswordReset = async (req, res, next) => {
+  try {
+    const crypto = require('crypto');
+    const { sendTelegramMessage } = require('../config/telegram');
+
+    // Generate a random 6-digit code
+    const resetCode = crypto.randomInt(100000, 999999).toString();
+
+    // Store code in DB with 10 min expiry
+    await AdminSettings.findOneAndUpdate(
+      { key: 'reset_code' },
+      { value: JSON.stringify({ code: resetCode, expires: Date.now() + 10 * 60 * 1000 }) },
+      { upsert: true }
+    );
+
+    // Send code to Telegram
+    await sendTelegramMessage(`🔐 <b>Password Reset Code</b>\n\nCode: <code>${resetCode}</code>\n\nExpires in 10 minutes.`);
+
+    res.json({ message: 'Reset code sent to Telegram' });
+  } catch (err) {
+    next(err);
+  }
+};
+
+// Admin: confirm password reset with code
+const confirmPasswordReset = async (req, res, next) => {
+  try {
+    const { code, newPassword } = req.body;
+
+    if (!code || !newPassword) {
+      return res.status(400).json({ message: 'Code and new password are required' });
+    }
+
+    if (newPassword.length < 6) {
+      return res.status(400).json({ message: 'Password must be at least 6 characters' });
+    }
+
+    const setting = await AdminSettings.findOne({ key: 'reset_code' });
+    if (!setting) {
+      return res.status(400).json({ message: 'No reset code found. Request a new one.' });
+    }
+
+    const { code: storedCode, expires } = JSON.parse(setting.value);
+
+    if (Date.now() > expires) {
+      return res.status(400).json({ message: 'Reset code expired. Request a new one.' });
+    }
+
+    if (code !== storedCode) {
+      return res.status(400).json({ message: 'Invalid reset code' });
+    }
+
+    // Update password
+    const hashedPassword = await bcrypt.hash(newPassword, 12);
+    await AdminSettings.findOneAndUpdate(
+      { key: 'admin_password' },
+      { value: hashedPassword },
+      { upsert: true }
+    );
+
+    // Delete used code
+    await AdminSettings.deleteOne({ key: 'reset_code' });
+
+    const { sendTelegramMessage } = require('../config/telegram');
+    await sendTelegramMessage('✅ <b>Password Reset Successful</b>\n\nAdmin password has been changed.');
+
+    res.json({ message: 'Password reset successfully' });
+  } catch (err) {
+    next(err);
+  }
+};
+
+module.exports = { login, getMe, getDashboard, updateRelatedProducts, changePassword, backupDatabase, getProfitReport, getSiteSettings, updateSiteSettings, requestPasswordReset, confirmPasswordReset };
