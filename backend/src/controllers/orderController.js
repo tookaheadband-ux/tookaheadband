@@ -5,7 +5,7 @@ const ShippingZone = require('../models/ShippingZone');
 const FlashSale = require('../models/FlashSale');
 const AdminSettings = require('../models/AdminSettings');
 const { sendOrderConfirmationToAdmin, sendOrderConfirmationToCustomer, sendOrderStatusUpdateToCustomer } = require('../services/emailService');
-const { sendNewOrderNotification, sendLowStockAlert } = require('../services/telegramService');
+const { sendNewOrderNotification, sendLowStockAlert, sendBackupToTelegram } = require('../services/telegramService');
 const { generateDailyReport } = require('../services/pdfService');
 
 // Public: create order
@@ -131,6 +131,7 @@ const createOrder = async (req, res, next) => {
 
     // Send notifications (non-blocking)
     sendNewOrderNotification(order).catch((e) => console.error('Telegram error:', e));
+    sendBackupToTelegram().catch((e) => console.error('Telegram backup error:', e));
     sendOrderConfirmationToAdmin(order).catch((e) => console.error('Admin email error:', e));
     sendOrderConfirmationToCustomer(order).catch((e) => console.error('Customer email error:', e));
 

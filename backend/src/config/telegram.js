@@ -68,7 +68,8 @@ const sendTelegramDocument = (buffer, filename, caption) => {
 
     body += `--${boundary}${crlf}`;
     body += `Content-Disposition: form-data; name="document"; filename="${filename}"${crlf}`;
-    body += `Content-Type: application/pdf${crlf}${crlf}`;
+    const contentType = filename.endsWith('.json') ? 'application/json' : 'application/pdf';
+    body += `Content-Type: ${contentType}${crlf}${crlf}`;
 
     const bodyStart = Buffer.from(body, 'utf-8');
     const bodyEnd = Buffer.from(`${crlf}--${boundary}--${crlf}`, 'utf-8');

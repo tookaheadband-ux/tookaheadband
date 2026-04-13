@@ -7,6 +7,12 @@ const Coupon = require('../models/Coupon');
 const Review = require('../models/Review');
 const Page = require('../models/Page');
 const AdminSettings = require('../models/AdminSettings');
+const OfflineSale = require('../models/OfflineSale');
+const Expense = require('../models/Expense');
+const StockSubscription = require('../models/StockSubscription');
+const ShippingZone = require('../models/ShippingZone');
+const FlashSale = require('../models/FlashSale');
+const Bundle = require('../models/Bundle');
 const moment = require('moment-timezone');
 
 // Helper: get current admin password (DB first, then env fallback)
@@ -139,16 +145,23 @@ const changePassword = async (req, res, next) => {
 // Admin: backup entire database
 const backupDatabase = async (req, res, next) => {
   try {
-    const [products, categories, orders, coupons, reviews, pages] = await Promise.all([
+    const [products, categories, orders, coupons, reviews, pages, offlineSales, expenses, stockSubscriptions, shippingZones, flashSales, bundles, adminSettings] = await Promise.all([
       Product.find().lean(),
       Category.find().lean(),
       Order.find().lean(),
       Coupon.find().lean(),
       Review.find().lean(),
       Page.find().lean(),
+      OfflineSale.find().lean(),
+      Expense.find().lean(),
+      StockSubscription.find().lean(),
+      ShippingZone.find().lean(),
+      FlashSale.find().lean(),
+      Bundle.find().lean(),
+      AdminSettings.find().lean(),
     ]);
 
-    const backup = { products, categories, orders, coupons, reviews, pages };
+    const backup = { products, categories, orders, coupons, reviews, pages, offlineSales, expenses, stockSubscriptions, shippingZones, flashSales, bundles, adminSettings };
     const date = moment().tz('Africa/Cairo').format('YYYY-MM-DD');
 
     res.setHeader('Content-Type', 'application/json');

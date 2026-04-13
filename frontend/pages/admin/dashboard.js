@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import Link from 'next/link';
 import { useLang } from '@/context/LanguageContext';
+import LanguageSwitcher from '@/components/LanguageSwitcher';
 import { adminDashboard, adminGetMe, adminSendDailyReport, adminChangePassword, adminBackupDatabase, adminGetSiteSettings, adminUpdateSiteSettings } from '@/lib/api';
 
 const navItems = (ui, active) => [
@@ -31,6 +32,7 @@ function AdminNav({ ui, active, onLogout }) {
             TOOKA Admin
           </Link>
           <div className="flex items-center gap-3">
+            <LanguageSwitcher />
             <Link href="/" className="text-sm font-bold text-gray-500 hover:text-pink-500 transition-colors">View Store →</Link>
             <button onClick={onLogout} className="h-9 px-5 rounded-xl bg-gray-100 text-gray-700 text-sm font-bold hover:bg-gray-200 transition-colors">{ui.logout}</button>
           </div>
