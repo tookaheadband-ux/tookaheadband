@@ -69,9 +69,7 @@ export default function Navbar() {
 
           {/* Right Actions */}
           <div className="flex items-center gap-2 md:gap-3">
-            <div className="hidden sm:block">
-              <LanguageSwitcher />
-            </div>
+            <LanguageSwitcher />
 
             {/* Wishlist */}
             <Link href="/wishlist" className="relative w-9 h-9 flex items-center justify-center rounded-xl hover:bg-brand-50 transition-colors" aria-label="Wishlist">
@@ -124,21 +122,25 @@ export default function Navbar() {
         </div>
 
         {/* Mobile Menu Dropdown */}
-        <div className={`md:hidden overflow-hidden transition-all duration-300 ease-in-out ${mobileOpen ? 'max-h-64 opacity-100 mt-4' : 'max-h-0 opacity-0'}`}>
-          <div className="bg-white border border-brand-200 p-6 flex flex-col gap-6">
+        <div className={`lg:hidden overflow-hidden transition-all duration-300 ease-in-out ${mobileOpen ? 'max-h-[500px] opacity-100 mt-4' : 'max-h-0 opacity-0'}`}>
+          <div className="bg-white border border-brand-200 rounded-xl p-6 flex flex-col gap-4 shadow-lg">
             {navLinks.map((link) => (
               <Link
                 key={link.href}
                 href={link.href}
                 onClick={() => setMobileOpen(false)}
-                className="text-sm tracking-[0.1em] uppercase font-medium text-brand-900 transition-colors"
+                className="text-sm tracking-[0.1em] uppercase font-medium text-brand-900 hover:text-brand-primary transition-colors"
               >
                 {link.label}
               </Link>
             ))}
-            <div className="pt-4 border-t border-brand-100">
-              <LanguageSwitcher />
-            </div>
+            <Link
+              href="/products"
+              onClick={() => setMobileOpen(false)}
+              className="flex items-center justify-center bg-brand-primary text-white hover:bg-brand-primary/90 transition-all font-bold rounded-xl text-sm h-[42px] px-5 md:hidden"
+            >
+              {ui.shopNow}
+            </Link>
           </div>
         </div>
       </div>
