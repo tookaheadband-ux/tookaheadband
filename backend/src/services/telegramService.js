@@ -35,6 +35,19 @@ ${order.shippingCost > 0 ? `<b>Shipping: ${order.shippingCost} EGP</b>\n` : ''}<
   await sendTelegramMessage(message);
 };
 
+const sendNewProductNotification = async (product) => {
+  const name = product.nameEn || product.nameAr || 'Unknown';
+  const message = `🆕 <b>NEW PRODUCT ADDED</b>
+
+<b>Name:</b> ${name}
+<b>SKU:</b> ${product.sku || '—'}
+<b>Price:</b> ${product.price} EGP
+<b>Stock:</b> ${product.stock}
+${product.colors?.length ? `<b>Colors:</b> ${product.colors.join(', ')}\n` : ''}${product.sizes?.length ? `<b>Sizes:</b> ${product.sizes.join(', ')}\n` : ''}<i>A backup will follow shortly.</i>`;
+
+  await sendTelegramMessage(message);
+};
+
 const sendLowStockAlert = async (product) => {
   const name = product.nameEn || product.nameAr || 'Unknown';
   const message = `🚨 <b>LOW STOCK</b>
@@ -74,4 +87,4 @@ const sendBackupToTelegram = async () => {
   await sendTelegramDocument(buffer, `tooka-backup-${today}.json`, `💾 Auto Backup — ${today} (${orders.length} orders)`);
 };
 
-module.exports = { sendNewOrderNotification, sendLowStockAlert, sendDailyReportToTelegram, sendBackupToTelegram };
+module.exports = { sendNewOrderNotification, sendNewProductNotification, sendLowStockAlert, sendDailyReportToTelegram, sendBackupToTelegram };

@@ -20,6 +20,14 @@ const productSchema = new mongoose.Schema(
     soldCount: { type: Number, default: 0 },
     colors: [{ type: String }],
     sizes: [{ type: String }],
+    variants: [
+      {
+        _id: false,
+        color: { type: String, default: '' },
+        size: { type: String, default: '' },
+        stock: { type: Number, default: 0, min: 0 },
+      },
+    ],
     relatedProducts: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Product' }],
   },
   { timestamps: true }

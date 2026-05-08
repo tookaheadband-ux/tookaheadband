@@ -22,6 +22,9 @@ export default function ProductDetail() {
   const [loading, setLoading] = useState(true);
   const [qty, setQty] = useState(1);
   const [added, setAdded] = useState(false);
+  const [selectedColor, setSelectedColor] = useState('');
+  const [selectedSize, setSelectedSize] = useState('');
+  const [variantError, setVariantError] = useState('');
   const [mainImage, setMainImage] = useState('');
   const [imgLoaded, setImgLoaded] = useState(false);
   const [lightboxOpen, setLightboxOpen] = useState(false);
@@ -77,8 +80,45 @@ export default function ProductDetail() {
     return () => observer.disconnect();
   }, [product, loading]);
 
+  const variants = product?.variants || [];
+  const hasVariants = variants.length > 0;
+
+  const stockForColor = (color) => {
+    if (!hasVariants) return Infinity;
+    return variants
+      .filter((v) => (v.color || '') === color)
+      .reduce((s, v) => s + (Number(v.stock) || 0), 0);
+  };
+  const stockForSize = (size) => {
+    if (!hasVariants) return Infinity;
+    return variants
+      .filter((v) => (v.size || '') === size && (!selectedColor || (v.color || '') === selectedColor))
+      .reduce((s, v) => s + (Number(v.stock) || 0), 0);
+  };
+  const selectedVariant = hasVariants
+    ? variants.find((v) => (v.color || '') === (selectedColor || '') && (v.size || '') === (selectedSize || ''))
+    : null;
+  const variantStock = hasVariants ? (selectedVariant ? selectedVariant.stock : null) : product?.stock;
+
   const handleAddToCart = () => {
-    addItem(product, qty);
+    if (product.colors?.length > 0 && !selectedColor) {
+      setVariantError(ui.pleaseSelectColor);
+      return;
+    }
+    if (product.sizes?.length > 0 && !selectedSize) {
+      setVariantError(ui.pleaseSelectSize);
+      return;
+    }
+    if (hasVariants && (!selectedVariant || selectedVariant.stock <= 0)) {
+      setVariantError(ui.outOfStock);
+      return;
+    }
+    if (hasVariants && qty > selectedVariant.stock) {
+      setVariantError((ui.onlyXAvailable || 'Only {n} available').replace('{n}', selectedVariant.stock));
+      return;
+    }
+    setVariantError('');
+    addItem(product, qty, { color: selectedColor, size: selectedSize });
     setAdded(true);
     setTimeout(() => setAdded(false), 1500);
   };
@@ -93,7 +133,7 @@ export default function ProductDetail() {
   }
 
   if (!product) {
-    return <div className="text-center py-32"><p className="text-gray-500">Product not found</p></div>;
+    return <div className="text-center py-32"><p className="text-gray-500">{ui.productNotFound}</p></div>;
   }
 
   return (
@@ -181,7 +221,7 @@ export default function ProductDetail() {
                 {/* Zoom hint */}
                 <div className="absolute top-4 right-4 bg-white/80 backdrop-blur-md text-gray-600 text-[10px] font-bold px-3 py-1.5 rounded-full opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none hidden md:flex items-center gap-1">
                   <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v3m0 0v3m0-3h3m-3 0H7" /></svg>
-                  Hover to zoom
+                  {ui.hoverToZoom}
                 </div>
                 </div>
               </div>
@@ -316,26 +356,112 @@ export default function ProductDetail() {
 
               {product.stock > 0 && (
                 <div className="mb-4 flex items-center gap-2 text-green-600 text-sm font-bold">
-                  <span>✔</span> In Stock ({product.stock})
+                  <span>✔</span> {(ui.inStockX || 'In Stock ({n})').replace('{n}', product.stock)}
                 </div>
               )}
 
               {product.stock > 0 && product.stock <= 5 && (
                 <div className="mb-4 flex items-center gap-2 bg-orange-50 border border-orange-200 text-orange-700 text-xs font-black px-4 py-2.5 rounded-xl">
                   <span>🔥</span>
-                  <span>Only {product.stock} left in stock — order soon!</span>
+                  <span>{(ui.onlyXLeft || 'Only {n} left in stock — order soon!').replace('{n}', product.stock)}</span>
                 </div>
               )}
 
               {product.stock > 0 ? (
                 <div className="space-y-6 mt-auto">
+
+                  {(product.colors?.length > 0 || product.sizes?.length > 0) && (
+                    <div className="space-y-5">
+                      {product.colors?.length > 0 && (
+                        <div>
+                          <div className="flex items-center justify-between mb-3">
+                            <span className="text-xs uppercase tracking-widest font-semibold text-brand-900">{ui.chooseColor}</span>
+                            {selectedColor && <span className="text-xs font-bold text-brand-primary">{selectedColor}</span>}
+                          </div>
+                          <div className="flex flex-wrap gap-2">
+                            {product.colors.map((c) => {
+                              const colorStock = stockForColor(c);
+                              const disabled = hasVariants && colorStock <= 0;
+                              return (
+                                <button
+                                  key={c}
+                                  type="button"
+                                  disabled={disabled}
+                                  onClick={() => {
+                                    setSelectedColor(c);
+                                    setVariantError('');
+                                    if (selectedSize && hasVariants) {
+                                      const v = variants.find((x) => x.color === c && x.size === selectedSize);
+                                      if (!v || v.stock <= 0) setSelectedSize('');
+                                    }
+                                  }}
+                                  className={`min-w-[64px] h-10 px-4 rounded-full text-xs font-bold tracking-wide uppercase border-2 transition-all ${
+                                    disabled
+                                      ? 'bg-gray-100 text-gray-400 border-gray-200 line-through cursor-not-allowed'
+                                      : selectedColor === c
+                                        ? 'bg-brand-primary text-white border-brand-primary shadow-md scale-[1.02]'
+                                        : 'bg-white text-brand-900 border-brand-100 hover:border-brand-primary'
+                                  }`}
+                                >
+                                  {c}
+                                </button>
+                              );
+                            })}
+                          </div>
+                        </div>
+                      )}
+
+                      {product.sizes?.length > 0 && (
+                        <div>
+                          <div className="flex items-center justify-between mb-3">
+                            <span className="text-xs uppercase tracking-widest font-semibold text-brand-900">{ui.chooseSize}</span>
+                            {selectedSize && <span className="text-xs font-bold text-brand-primary">{selectedSize}</span>}
+                          </div>
+                          <div className="flex flex-wrap gap-2">
+                            {product.sizes.map((s) => {
+                              const sizeStock = stockForSize(s);
+                              const disabled = hasVariants && sizeStock <= 0;
+                              return (
+                                <button
+                                  key={s}
+                                  type="button"
+                                  disabled={disabled}
+                                  onClick={() => { setSelectedSize(s); setVariantError(''); }}
+                                  className={`min-w-[48px] h-10 px-4 rounded-full text-xs font-bold tracking-wide uppercase border-2 transition-all ${
+                                    disabled
+                                      ? 'bg-gray-100 text-gray-400 border-gray-200 line-through cursor-not-allowed'
+                                      : selectedSize === s
+                                        ? 'bg-brand-primary text-white border-brand-primary shadow-md scale-[1.02]'
+                                        : 'bg-white text-brand-900 border-brand-100 hover:border-brand-primary'
+                                  }`}
+                                >
+                                  {s}
+                                </button>
+                              );
+                            })}
+                          </div>
+                        </div>
+                      )}
+
+                      {hasVariants && selectedVariant && selectedVariant.stock > 0 && (
+                        <p className="text-xs font-bold text-green-600">
+                          ✔ {selectedVariant.stock} {ui.availableInVariant} {[selectedColor, selectedSize].filter(Boolean).join(' / ')}
+                        </p>
+                      )}
+
+                      {variantError && (
+                        <p className="text-xs font-bold text-red-500">{variantError}</p>
+                      )}
+                    </div>
+                  )}
+
                   <div className="flex items-center justify-between border-y border-brand-100 py-4 md:py-6">
                     <span className="text-xs uppercase tracking-widest font-semibold text-brand-900">{ui.qty}</span>
                     <div className="flex items-center">
                       <button onClick={() => setQty(Math.max(1, qty - 1))}
                         className="w-10 h-10 flex items-center justify-center text-brand-900 text-lg focus:outline-none hover:bg-brand-50 transition-colors">-</button>
                       <span className="w-12 text-center font-medium text-sm text-brand-900">{qty}</span>
-                      <button onClick={() => setQty(Math.min(product.stock, qty + 1))}
+                      <button onClick={() => setQty(Math.min(hasVariants && selectedVariant ? selectedVariant.stock : product.stock, qty + 1))}
                         className="w-10 h-10 flex items-center justify-center text-brand-900 text-lg hover:bg-brand-50 transition-colors">+</button>
                     </div>
                   </div>
@@ -362,12 +488,12 @@ export default function ProductDetail() {
                 <div className="mt-auto pt-8 border-t border-brand-100">
                   <p className="text-red-800 font-medium uppercase tracking-widest text-sm mb-4">{ui.outOfStock}</p>
                   <div className="bg-gray-50 rounded-xl p-4">
-                    <p className="text-sm font-bold text-gray-700 mb-2">🔔 Notify me when back in stock</p>
+                    <p className="text-sm font-bold text-gray-700 mb-2">{ui.notifyMeWhenBack}</p>
                     <div className="flex gap-2">
                       <input type="email" value={notifyEmail} onChange={(e) => setNotifyEmail(e.target.value)} placeholder="your@email.com"
                         className="flex-1 h-10 px-4 rounded-lg border-2 border-gray-200 focus:border-pink-400 outline-none text-sm text-gray-900 font-bold" />
                       <button onClick={async () => { if (!notifyEmail) return; try { const r = await subscribeNotifyMe(id, notifyEmail); setNotifyMsg(r.data.message); setNotifyEmail(''); } catch { setNotifyMsg('Error'); } }}
-                        className="h-10 px-5 bg-pink-500 text-white font-bold text-sm rounded-lg hover:-translate-y-0.5 transition-all">Notify Me</button>
+                        className="h-10 px-5 bg-pink-500 text-white font-bold text-sm rounded-lg hover:-translate-y-0.5 transition-all">{ui.notifyMeBtn}</button>
                     </div>
                     {notifyMsg && <p className="text-xs text-green-600 font-bold mt-2">{notifyMsg}</p>}
                   </div>
@@ -376,14 +502,14 @@ export default function ProductDetail() {
 
             {/* Reviews Section — inside right column so gallery stays sticky */}
             <div className="mt-12 border-t border-brand-100 pt-10">
-              <h2 className="text-xl font-bold text-gray-900 mb-2">⭐ Reviews ({reviewCount})</h2>
-              {avgRating > 0 && <p className="text-sm text-gray-600 font-bold mb-6">Average: {avgRating}/5 stars</p>}
+              <h2 className="text-xl font-bold text-gray-900 mb-2">⭐ {ui.reviewsTitle} ({reviewCount})</h2>
+              {avgRating > 0 && <p className="text-sm text-gray-600 font-bold mb-6">{(ui.averageRating || 'Average: {n}/5 stars').replace('{n}', avgRating)}</p>}
 
             {/* Leave Review Form */}
             <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5 mb-8">
-              <h3 className="text-sm font-black text-gray-700 mb-4">Leave a Review</h3>
+              <h3 className="text-sm font-black text-gray-700 mb-4">{ui.leaveReview}</h3>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-3">
-                <input value={reviewForm.name} onChange={(e) => setReviewForm({...reviewForm, name: e.target.value})} placeholder="Your name"
+                <input value={reviewForm.name} onChange={(e) => setReviewForm({...reviewForm, name: e.target.value})} placeholder={ui.yourName}
                   className="h-10 px-4 rounded-xl border-2 border-gray-200 focus:border-pink-400 outline-none text-sm text-gray-900 font-bold bg-gray-50" />
                 <div className="flex items-center gap-1">
                   {[1,2,3,4,5].map((s) => (
@@ -392,7 +518,7 @@ export default function ProductDetail() {
                   ))}
                 </div>
               </div>
-              <textarea value={reviewForm.comment} onChange={(e) => setReviewForm({...reviewForm, comment: e.target.value})} placeholder="Your review (optional)"
+              <textarea value={reviewForm.comment} onChange={(e) => setReviewForm({...reviewForm, comment: e.target.value})} placeholder={ui.yourReviewOptional}
                 rows={2} className="w-full p-3 rounded-xl border-2 border-gray-200 focus:border-pink-400 outline-none text-sm text-gray-900 font-bold bg-gray-50 resize-none mb-3" />
               <button onClick={async () => {
                 if (!reviewForm.name) return;
@@ -404,7 +530,7 @@ export default function ProductDetail() {
                   setReviews(r.data.reviews); setAvgRating(r.data.avgRating); setReviewCount(r.data.count);
                 } catch {} finally { setSubmittingReview(false); }
               }} disabled={submittingReview}
-                className="h-10 px-6 bg-gray-900 text-white font-bold text-sm rounded-xl hover:-translate-y-0.5 transition-all disabled:opacity-50">Submit Review</button>
+                className="h-10 px-6 bg-gray-900 text-white font-bold text-sm rounded-xl hover:-translate-y-0.5 transition-all disabled:opacity-50">{ui.submitReview}</button>
             </div>
 
             {/* Review List */}
@@ -419,7 +545,7 @@ export default function ProductDetail() {
                   <p className="text-[10px] text-gray-400 font-bold mt-2">{new Date(r.createdAt).toLocaleDateString()}</p>
                 </div>
               ))}
-              {reviews.length === 0 && <p className="text-sm text-gray-400 text-center py-6">No reviews yet. Be the first!</p>}
+              {reviews.length === 0 && <p className="text-sm text-gray-400 text-center py-6">{ui.noReviewsYet}</p>}
             </div>
           </div>
         </div>

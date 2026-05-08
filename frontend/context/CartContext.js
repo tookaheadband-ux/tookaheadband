@@ -3,6 +3,9 @@ import { createContext, useContext, useState, useEffect } from 'react';
 
 const CartContext = createContext();
 
+const buildCartItemId = (productId, color, size) =>
+  `${productId}|${color || ''}|${size || ''}`;
+
 export function CartProvider({ children }) {
   const [items, setItems] = useState([]);
   const [isOpen, setIsOpen] = useState(false);
@@ -11,7 +14,15 @@ export function CartProvider({ children }) {
   useEffect(() => {
     try {
       const saved = localStorage.getItem('toka-cart');
-      if (saved) setItems(JSON.parse(saved));
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        // Backfill cartItemId for legacy items
+        const upgraded = parsed.map((i) => ({
+          ...i,
+          cartItemId: i.cartItemId || buildCartItemId(i.productId, i.color, i.size),
+        }));
+        setItems(upgraded);
+      }
     } catch (e) {
       console.error('Cart load error:', e);
     }
@@ -22,22 +33,29 @@ export function CartProvider({ children }) {
     localStorage.setItem('toka-cart', JSON.stringify(items));
   }, [items]);
 
-  const addItem = (product, qty = 1) => {
+  const addItem = (product, qty = 1, variant = {}) => {
+    const color = variant.color || '';
+    const size = variant.size || '';
+    const cartItemId = buildCartItemId(product._id, color, size);
+
     setItems((prev) => {
-      const existing = prev.find((i) => i.productId === product._id);
+      const existing = prev.find((i) => i.cartItemId === cartItemId);
       if (existing) {
         return prev.map((i) =>
-          i.productId === product._id ? { ...i, qty: i.qty + qty } : i
+          i.cartItemId === cartItemId ? { ...i, qty: i.qty + qty } : i
         );
       }
       return [
         ...prev,
         {
+          cartItemId,
           productId: product._id,
           productNameSnapshot: product.nameEn || product.nameAr,
           priceSnapshot: product.price,
           qty,
           imageSnapshot: product.images?.[0] || '',
+          color,
+          size,
         },
       ];
     });
@@ -48,18 +66,18 @@ export function CartProvider({ children }) {
     }
   };
 
-  const updateQty = (productId, qty) => {
+  const updateQty = (cartItemId, qty) => {
     if (qty <= 0) {
-      removeItem(productId);
+      removeItem(cartItemId);
       return;
     }
     setItems((prev) =>
-      prev.map((i) => (i.productId === productId ? { ...i, qty } : i))
+      prev.map((i) => (i.cartItemId === cartItemId ? { ...i, qty } : i))
     );
   };
 
-  const removeItem = (productId) => {
-    setItems((prev) => prev.filter((i) => i.productId !== productId));
+  const removeItem = (cartItemId) => {
+    setItems((prev) => prev.filter((i) => i.cartItemId !== cartItemId));
   };
 
   const clearCart = () => setItems([]);

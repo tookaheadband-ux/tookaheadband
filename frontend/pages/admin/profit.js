@@ -21,6 +21,7 @@ export default function AdminProfit() {
   const [saleForm, setSaleForm] = useState({ productId: '', productName: '', qty: 1, sellPrice: '', costPrice: '', deductStock: false, notes: '' });
   const [saleSaving, setSaleSaving] = useState(false);
   const [offlineSales, setOfflineSales] = useState([]);
+  const [saleMode, setSaleMode] = useState('existing'); // 'existing' | 'custom'
 
   // Expense form
   const [expForm, setExpForm] = useState({ description: '', amount: '', category: 'general', date: '' });
@@ -230,18 +231,36 @@ export default function AdminProfit() {
               <>
                 <form onSubmit={handleAddSale} className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5 mb-6">
                   <h3 className="text-lg font-black text-gray-900 mb-4">{ui.recordOfflineSale}</h3>
+
+                  {/* Mode toggle */}
+                  <div className="flex gap-2 mb-5">
+                    <button type="button"
+                      onClick={() => { setSaleMode('existing'); setSaleForm({ productId: '', productName: '', qty: 1, sellPrice: '', costPrice: '', deductStock: false, notes: '' }); }}
+                      className={`h-10 px-5 rounded-xl text-sm font-black transition-all ${saleMode === 'existing' ? 'bg-gray-900 text-white shadow-md' : 'bg-white text-gray-600 border border-gray-200 hover:border-gray-300'}`}>
+                      {ui.existingProduct}
+                    </button>
+                    <button type="button"
+                      onClick={() => { setSaleMode('custom'); setSaleForm({ productId: '', productName: '', qty: 1, sellPrice: '', costPrice: '', deductStock: false, notes: '' }); }}
+                      className={`h-10 px-5 rounded-xl text-sm font-black transition-all ${saleMode === 'custom' ? 'bg-pink-500 text-white shadow-md' : 'bg-white text-gray-600 border border-gray-200 hover:border-gray-300'}`}>
+                      {ui.customProduct}
+                    </button>
+                  </div>
+
                   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-4">
-                    <div>
-                      <label className="block text-xs font-black text-gray-400 uppercase tracking-widest mb-1">{ui.product}</label>
-                      <select value={saleForm.productId} onChange={(e) => handleProductSelect(e.target.value)}
-                        className="w-full h-10 px-3 rounded-xl border-2 border-gray-100 focus:border-pink-400 outline-none text-gray-900 font-bold text-sm bg-gray-50">
-                        <option value="">{ui.selectOrType}</option>
-                        {products.map((p) => <option key={p._id} value={p._id}>{t(p.nameAr, p.nameEn)} ({p.sku})</option>)}
-                      </select>
-                    </div>
+                    {saleMode === 'existing' && (
+                      <div>
+                        <label className="block text-xs font-black text-gray-400 uppercase tracking-widest mb-1">{ui.product}</label>
+                        <select value={saleForm.productId} onChange={(e) => handleProductSelect(e.target.value)}
+                          className="w-full h-10 px-3 rounded-xl border-2 border-gray-100 focus:border-pink-400 outline-none text-gray-900 font-bold text-sm bg-gray-50">
+                          <option value="">{ui.selectOrType}</option>
+                          {products.map((p) => <option key={p._id} value={p._id}>{t(p.nameAr, p.nameEn)} ({p.sku})</option>)}
+                        </select>
+                      </div>
+                    )}
                     <div>
                       <label className="block text-xs font-black text-gray-400 uppercase tracking-widest mb-1">{ui.productName}</label>
                       <input value={saleForm.productName} onChange={(e) => setSaleForm({ ...saleForm, productName: e.target.value })} required
+                        placeholder={saleMode === 'custom' ? ui.customProductHint : ''}
                         className="w-full h-10 px-3 rounded-xl border-2 border-gray-100 focus:border-pink-400 outline-none text-gray-900 font-bold text-sm bg-gray-50" />
                     </div>
                     <div>
@@ -262,15 +281,17 @@ export default function AdminProfit() {
                     <div>
                       <label className="block text-xs font-black text-gray-400 uppercase tracking-widest mb-1">{ui.notes}</label>
                       <input value={saleForm.notes} onChange={(e) => setSaleForm({ ...saleForm, notes: e.target.value })}
-                        className="w-full h-10 px-3 rounded-xl border-2 border-gray-100 focus:border-pink-400 outline-none text-gray-900 font-bold text-sm bg-gray-50" placeholder="Optional" />
+                        className="w-full h-10 px-3 rounded-xl border-2 border-gray-100 focus:border-pink-400 outline-none text-gray-900 font-bold text-sm bg-gray-50" placeholder={ui.notes} />
                     </div>
                   </div>
                   <div className="flex items-center gap-4">
-                    <label className="flex items-center gap-2 cursor-pointer">
-                      <input type="checkbox" checked={saleForm.deductStock} onChange={(e) => setSaleForm({ ...saleForm, deductStock: e.target.checked })}
-                        className="rounded border-gray-300 text-pink-500 focus:ring-pink-400 w-4 h-4" />
-                      <span className="text-sm font-bold text-gray-700">{ui.deductFromStock}</span>
-                    </label>
+                    {saleMode === 'existing' && (
+                      <label className="flex items-center gap-2 cursor-pointer">
+                        <input type="checkbox" checked={saleForm.deductStock} onChange={(e) => setSaleForm({ ...saleForm, deductStock: e.target.checked })}
+                          className="rounded border-gray-300 text-pink-500 focus:ring-pink-400 w-4 h-4" />
+                        <span className="text-sm font-bold text-gray-700">{ui.deductFromStock}</span>
+                      </label>
+                    )}
                     <button type="submit" disabled={saleSaving}
                       className="h-10 px-6 bg-gray-900 text-white font-black text-sm rounded-xl hover:-translate-y-0.5 transition-all disabled:opacity-50">
                       {saleSaving ? ui.saving : ui.recordSale}

@@ -71,7 +71,7 @@ export default function Checkout() {
     if (items.length === 0) { setError(ui.cartEmpty); return; }
     setLoading(true);
     try {
-      const orderRes = await createOrder({ ...form, governorate: selectedGovernorate, area: selectedArea, giftWrap, couponCode: couponResult ? couponResult.code : '', items: items.map((i) => ({ productId: i.productId, qty: i.qty })) });
+      const orderRes = await createOrder({ ...form, governorate: selectedGovernorate, area: selectedArea, giftWrap, couponCode: couponResult ? couponResult.code : '', items: items.map((i) => ({ productId: i.productId, qty: i.qty, color: i.color || '', size: i.size || '' })) });
       clearCart();
       router.push(`/order-success?orderId=${orderRes.data._id}`);
     } catch (err) { setError(err.response?.data?.message || 'Something went wrong'); }
@@ -179,8 +179,16 @@ export default function Checkout() {
 
               <div className="space-y-4 mb-6">
                 {items.map((item) => (
-                  <div key={item.productId} className="flex justify-between items-center text-sm">
-                    <span className="text-gray-700 font-body font-medium pr-4 leading-relaxed line-clamp-1">{item.productNameSnapshot} <span className="text-gray-500 font-bold ml-1">×{item.qty}</span></span>
+                  <div key={item.cartItemId || item.productId} className="flex justify-between items-start text-sm">
+                    <div className="pr-4 leading-relaxed">
+                      <span className="text-gray-700 font-body font-medium line-clamp-1">{item.productNameSnapshot} <span className="text-gray-500 font-bold ml-1">×{item.qty}</span></span>
+                      {(item.color || item.size) && (
+                        <p className="text-[10px] text-gray-500 font-bold mt-0.5">
+                          {item.color && <span className="mr-2">● {item.color}</span>}
+                          {item.size && <span>{item.size}</span>}
+                        </p>
+                      )}
+                    </div>
                     <span className="font-heading font-bold text-brand-900 flex-shrink-0">{item.priceSnapshot * item.qty} {ui.egp}</span>
                   </div>
                 ))}

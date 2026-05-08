@@ -8,6 +8,81 @@ import Pagination from '@/components/Pagination';
 import { AdminNav } from './dashboard';
 import { adminGetMe, adminGetProducts, adminCreateProduct, adminUpdateProduct, adminDeleteProduct, adminGetCategories, adminUpdateRelatedProducts } from '@/lib/api';
 
+function TagInput({ label, value, onChange, placeholder, chipColor = 'pink', hint }) {
+  // Parsing: split parent value by comma; last element is the in-progress draft, rest are committed tags.
+  // Keeping draft in the parent value means a save without pressing Enter still captures what was typed.
+  const parts = (value || '').split(',');
+  const draft = (parts[parts.length - 1] || '').trim();
+  const tags = parts.slice(0, -1).map((p) => p.trim()).filter(Boolean);
+
+  const buildValue = (nextTags, nextDraft) => {
+    if (nextTags.length === 0) return nextDraft;
+    return nextTags.join(', ') + ', ' + nextDraft;
+  };
+
+  const handleInputChange = (e) => {
+    const v = e.target.value;
+    if (v.includes(',')) {
+      const segs = v.split(',');
+      const newCommit = segs[0].trim();
+      const newDraft = segs.slice(1).join(',').trim();
+      const nextTags = newCommit && !tags.includes(newCommit) ? [...tags, newCommit] : tags;
+      onChange(buildValue(nextTags, newDraft));
+    } else {
+      onChange(buildValue(tags, v));
+    }
+  };
+
+  const commit = () => {
+    if (!draft) return;
+    if (tags.includes(draft)) {
+      onChange(buildValue(tags, ''));
+    } else {
+      onChange(buildValue([...tags, draft], ''));
+    }
+  };
+
+  const handleKeyDown = (e) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      commit();
+    } else if (e.key === 'Backspace' && !draft && tags.length > 0) {
+      onChange(buildValue(tags.slice(0, -1), ''));
+    }
+  };
+
+  const removeTag = (tag) => {
+    onChange(buildValue(tags.filter((t) => t !== tag), draft));
+  };
+
+  const chipClass = chipColor === 'purple'
+    ? 'bg-purple-100 text-purple-700 border-purple-200'
+    : 'bg-pink-100 text-pink-700 border-pink-200';
+
+  return (
+    <div>
+      <label className="block text-xs font-black text-gray-500 uppercase tracking-wider mb-2">{label}</label>
+      <div className="min-h-[44px] flex flex-wrap items-center gap-2 p-2 rounded-xl border-2 border-gray-100 focus-within:border-pink-400 bg-gray-50 focus-within:bg-white transition-colors">
+        {tags.map((tag) => (
+          <span key={tag} className={`inline-flex items-center gap-1.5 h-7 pl-3 pr-1 rounded-full text-xs font-black border ${chipClass}`}>
+            {tag}
+            <button type="button" onClick={() => removeTag(tag)}
+              className="w-5 h-5 flex items-center justify-center rounded-full hover:bg-white/60 transition-colors">×</button>
+          </span>
+        ))}
+        <input
+          value={draft}
+          onChange={handleInputChange}
+          onKeyDown={handleKeyDown}
+          placeholder={tags.length === 0 ? placeholder : ''}
+          className="flex-1 min-w-[140px] h-7 px-2 outline-none text-gray-900 font-bold bg-transparent text-sm"
+        />
+      </div>
+      {hint && <p className="text-[11px] text-gray-500 font-bold mt-1.5">{hint}</p>}
+    </div>
+  );
+}
+
 export default function AdminProducts() {
   const { t, ui } = useLang();
   const { toast, confirm } = useToast();
@@ -19,7 +94,7 @@ export default function AdminProducts() {
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
   const [editProduct, setEditProduct] = useState(null);
-  const [form, setForm] = useState({ nameAr: '', nameEn: '', descriptionAr: '', descriptionEn: '', price: '', costPrice: '', categoryId: '', stock: '', isFeatured: '', colors: '', sizes: '' });
+  const [form, setForm] = useState({ nameAr: '', nameEn: '', descriptionAr: '', descriptionEn: '', price: '', costPrice: '', categoryId: '', stock: '', isFeatured: '', colors: '', sizes: '', variants: [] });
   const [files, setFiles] = useState([]);
   const [existingImages, setExistingImages] = useState([]); // Cloudinary URLs to keep
   const [saving, setSaving] = useState(false);
@@ -32,16 +107,54 @@ export default function AdminProducts() {
   const loadProducts = async () => { setLoading(true); try { const r = await adminGetProducts({ page, limit: 10 }); setProducts(r.data.products); setTotalPages(r.data.totalPages); } catch {} finally { setLoading(false); } };
   useEffect(() => { loadProducts(); }, [page]);
 
-  const openCreate = () => { setEditProduct(null); setForm({ nameAr: '', nameEn: '', descriptionAr: '', descriptionEn: '', price: '', costPrice: '', categoryId: categories[0]?._id || '', stock: '', isFeatured: false }); setFiles([]); setExistingImages([]); setShowModal(true); };
-  const openEdit = (p) => { setEditProduct(p); setForm({ nameAr: p.nameAr || '', nameEn: p.nameEn || '', descriptionAr: p.descriptionAr || '', descriptionEn: p.descriptionEn || '', price: p.price, costPrice: p.costPrice || '', categoryId: p.categoryId?._id || p.categoryId || '', stock: p.stock, isFeatured: p.isFeatured, colors: (p.colors || []).join(', '), sizes: (p.sizes || []).join(', ') }); setFiles([]); setExistingImages(p.images || []); setShowModal(true); };
+  // Regenerate variant rows whenever colors/sizes change in the form, preserving existing per-variant stock.
+  const colorsArr = (form.colors || '').split(',').map((c) => c.trim()).filter(Boolean);
+  const sizesArr = (form.sizes || '').split(',').map((s) => s.trim()).filter(Boolean);
+  useEffect(() => {
+    if (!showModal) return;
+    let combos = [];
+    if (colorsArr.length > 0 && sizesArr.length > 0) {
+      combos = colorsArr.flatMap((c) => sizesArr.map((s) => ({ color: c, size: s })));
+    } else if (colorsArr.length > 0) {
+      combos = colorsArr.map((c) => ({ color: c, size: '' }));
+    } else if (sizesArr.length > 0) {
+      combos = sizesArr.map((s) => ({ color: '', size: s }));
+    }
+    const next = combos.map((c) => {
+      const existing = (form.variants || []).find((v) => v.color === c.color && v.size === c.size);
+      return { color: c.color, size: c.size, stock: existing ? existing.stock : 0 };
+    });
+    if (JSON.stringify(next) !== JSON.stringify(form.variants || [])) {
+      setForm((f) => ({ ...f, variants: next }));
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [form.colors, form.sizes, showModal]);
+
+  const updateVariantStock = (idx, val) => {
+    setForm((f) => {
+      const variants = [...(f.variants || [])];
+      variants[idx] = { ...variants[idx], stock: Math.max(0, Number(val) || 0) };
+      return { ...f, variants };
+    });
+  };
+
+  const openCreate = () => { setEditProduct(null); setForm({ nameAr: '', nameEn: '', descriptionAr: '', descriptionEn: '', price: '', costPrice: '', categoryId: categories[0]?._id || '', stock: '', isFeatured: false, colors: '', sizes: '', variants: [] }); setFiles([]); setExistingImages([]); setShowModal(true); };
+  const openEdit = (p) => {
+    const colorsStr = (p.colors || []).length > 0 ? (p.colors || []).join(', ') + ', ' : '';
+    const sizesStr = (p.sizes || []).length > 0 ? (p.sizes || []).join(', ') + ', ' : '';
+    setEditProduct(p);
+    setForm({ nameAr: p.nameAr || '', nameEn: p.nameEn || '', descriptionAr: p.descriptionAr || '', descriptionEn: p.descriptionEn || '', price: p.price, costPrice: p.costPrice || '', categoryId: p.categoryId?._id || p.categoryId || '', stock: p.stock, isFeatured: p.isFeatured, colors: colorsStr, sizes: sizesStr, variants: p.variants || [] });
+    setFiles([]); setExistingImages(p.images || []); setShowModal(true);
+  };
 
   const handleSave = async (e) => {
     e.preventDefault(); setSaving(true);
     try {
       const fd = new FormData();
-      Object.keys(form).forEach((k) => { if (k !== 'colors' && k !== 'sizes') fd.append(k, form[k]); });
-      fd.append('colors', form.colors);
-      fd.append('sizes', form.sizes);
+      Object.keys(form).forEach((k) => { if (!['colors', 'sizes', 'variants'].includes(k)) fd.append(k, form[k]); });
+      fd.append('colors', form.colors || '');
+      fd.append('sizes', form.sizes || '');
+      fd.append('variants', JSON.stringify(form.variants || []));
       files.forEach((f) => fd.append('images', f));
       if (editProduct) {
         if (existingImages.length > 0) { existingImages.forEach((img) => fd.append('existingImages', img)); }
@@ -146,9 +259,21 @@ export default function AdminProducts() {
                 <div><label className="block text-xs font-black text-gray-500 uppercase tracking-wider mb-2 text-right">Description (AR)</label><textarea value={form.descriptionAr} onChange={(e) => setForm({ ...form, descriptionAr: e.target.value })} rows={3} className="w-full p-4 rounded-xl border-2 border-gray-100 focus:border-pink-400 outline-none text-gray-600 font-medium transition-all resize-none bg-gray-50 focus:bg-white text-right" dir="rtl" placeholder="وصف المنتج..." /></div>
               </div>
               <div className="grid grid-cols-2 md:grid-cols-4 gap-5 p-5 bg-gray-50 rounded-2xl border border-gray-100">
-                <div><label className="block text-xs font-black text-gray-500 uppercase tracking-wider mb-2">Sell Price</label><input type="number" value={form.price} onChange={(e) => setForm({ ...form, price: e.target.value })} className="w-full h-11 px-4 rounded-xl border-2 border-white focus:border-pink-400 outline-none text-pink-600 text-lg font-black transition-all bg-white shadow-sm" required /></div>
-                <div><label className="block text-xs font-black text-gray-500 uppercase tracking-wider mb-2">Cost Price</label><input type="number" value={form.costPrice} onChange={(e) => setForm({ ...form, costPrice: e.target.value })} placeholder="0" className="w-full h-11 px-4 rounded-xl border-2 border-white focus:border-orange-400 outline-none text-orange-600 text-lg font-black transition-all bg-white shadow-sm" /></div>
-                <div><label className="block text-xs font-black text-gray-500 uppercase tracking-wider mb-2">{ui.stock}</label><input type="number" value={form.stock} onChange={(e) => setForm({ ...form, stock: e.target.value })} className="w-full h-11 px-4 rounded-xl border-2 border-white focus:border-pink-400 outline-none text-gray-900 font-black transition-all bg-white shadow-sm" /></div>
+                <div><label className="block text-xs font-black text-gray-500 uppercase tracking-wider mb-2">{ui.sellPrice}</label><input type="number" value={form.price} onChange={(e) => setForm({ ...form, price: e.target.value })} className="w-full h-11 px-4 rounded-xl border-2 border-white focus:border-pink-400 outline-none text-pink-600 text-lg font-black transition-all bg-white shadow-sm" required /></div>
+                <div><label className="block text-xs font-black text-gray-500 uppercase tracking-wider mb-2">{ui.costPriceLabel}</label><input type="number" value={form.costPrice} onChange={(e) => setForm({ ...form, costPrice: e.target.value })} placeholder="0" className="w-full h-11 px-4 rounded-xl border-2 border-white focus:border-orange-400 outline-none text-orange-600 text-lg font-black transition-all bg-white shadow-sm" /></div>
+                <div>
+                  <label className="block text-xs font-black text-gray-500 uppercase tracking-wider mb-2">
+                    {ui.stock}
+                    {(form.variants || []).length > 0 && <span className="ml-2 text-[10px] font-bold text-pink-500 normal-case tracking-normal">{ui.autoLabel}</span>}
+                  </label>
+                  <input
+                    type="number"
+                    value={(form.variants || []).length > 0 ? (form.variants || []).reduce((s, v) => s + (Number(v.stock) || 0), 0) : (form.stock ?? '')}
+                    onChange={(e) => setForm({ ...form, stock: e.target.value })}
+                    disabled={(form.variants || []).length > 0}
+                    className="w-full h-11 px-4 rounded-xl border-2 border-white focus:border-pink-400 outline-none text-gray-900 font-black transition-all bg-white shadow-sm disabled:bg-gray-100 disabled:text-gray-500"
+                  />
+                </div>
                 <div><label className="block text-xs font-black text-gray-500 uppercase tracking-wider mb-2">{ui.category}</label>
                   <select value={form.categoryId} onChange={(e) => setForm({ ...form, categoryId: e.target.value })} className="w-full h-11 px-4 rounded-xl border-2 border-white focus:border-pink-400 outline-none text-gray-900 font-bold transition-all bg-white shadow-sm cursor-pointer">
                     {categories.map((c) => <option key={c._id} value={c._id}>{t(c.nameAr, c.nameEn)}</option>)}
@@ -156,9 +281,83 @@ export default function AdminProducts() {
                 </div>
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-                <div><label className="block text-xs font-black text-gray-500 uppercase tracking-wider mb-2">Available Colors</label><input value={form.colors} onChange={(e) => setForm({ ...form, colors: e.target.value })} placeholder="e.g. Pink, Red, White" className="w-full h-11 px-4 rounded-xl border-2 border-gray-100 focus:border-pink-400 outline-none text-gray-900 font-bold bg-gray-50 focus:bg-white" /></div>
-                <div><label className="block text-xs font-black text-gray-500 uppercase tracking-wider mb-2">Available Sizes</label><input value={form.sizes} onChange={(e) => setForm({ ...form, sizes: e.target.value })} placeholder="e.g. S, M, L" className="w-full h-11 px-4 rounded-xl border-2 border-gray-100 focus:border-pink-400 outline-none text-gray-900 font-bold bg-gray-50 focus:bg-white" /></div>
+                <TagInput
+                  label={ui.availableColors}
+                  value={form.colors || ''}
+                  onChange={(val) => setForm({ ...form, colors: val })}
+                  placeholder={ui.colorPlaceholder}
+                  chipColor="pink"
+                  hint={ui.colorsHint}
+                />
+                <TagInput
+                  label={ui.availableSizes}
+                  value={form.sizes || ''}
+                  onChange={(val) => setForm({ ...form, sizes: val })}
+                  placeholder={ui.sizePlaceholder}
+                  chipColor="purple"
+                  hint={ui.sizesHint}
+                />
               </div>
+
+              {/* Variant Stock Matrix */}
+              {(form.variants || []).length > 0 && (
+                <div className="p-5 bg-gradient-to-br from-pink-50/50 to-purple-50/40 rounded-2xl border-2 border-pink-100">
+                  <div className="flex items-center justify-between mb-4">
+                    <div>
+                      <h3 className="text-sm font-black text-gray-900">{ui.stockPerVariant}</h3>
+                      <p className="text-[11px] text-gray-500 font-bold mt-0.5">{ui.stockPerVariantHint}</p>
+                    </div>
+                    <span className="text-xs font-black text-pink-700 bg-white px-3 py-1.5 rounded-lg border border-pink-100 shadow-sm">
+                      {ui.total}: {(form.variants || []).reduce((s, v) => s + (Number(v.stock) || 0), 0)}
+                    </span>
+                  </div>
+
+                  {colorsArr.length > 0 && sizesArr.length > 0 ? (
+                    <div className="overflow-x-auto">
+                      <table className="w-full text-sm">
+                        <thead>
+                          <tr className="border-b-2 border-pink-100">
+                            <th className="text-left p-2 text-xs font-black text-gray-500 uppercase tracking-wider">{ui.colorXSize}</th>
+                            {sizesArr.map((s) => (
+                              <th key={s} className="text-center p-2 text-xs font-black text-gray-500 uppercase tracking-wider">{s}</th>
+                            ))}
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {colorsArr.map((c) => (
+                            <tr key={c} className="border-b border-pink-50">
+                              <td className="p-2 text-xs font-black text-pink-700">{c}</td>
+                              {sizesArr.map((s) => {
+                                const idx = (form.variants || []).findIndex((v) => v.color === c && v.size === s);
+                                const variant = idx >= 0 ? form.variants[idx] : null;
+                                return (
+                                  <td key={s} className="p-1">
+                                    <input type="number" min="0" value={variant ? variant.stock : 0}
+                                      onChange={(e) => updateVariantStock(idx, e.target.value)}
+                                      className="w-full h-9 px-2 rounded-lg border-2 border-white focus:border-pink-400 outline-none text-center text-gray-900 font-black bg-white shadow-sm text-sm" />
+                                  </td>
+                                );
+                              })}
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  ) : (
+                    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
+                      {(form.variants || []).map((v, idx) => (
+                        <div key={`${v.color}-${v.size}-${idx}`} className="bg-white p-3 rounded-xl border border-pink-100 shadow-sm">
+                          <p className="text-xs font-black text-pink-700 mb-1.5">{v.color || v.size}</p>
+                          <input type="number" min="0" value={v.stock}
+                            onChange={(e) => updateVariantStock(idx, e.target.value)}
+                            className="w-full h-9 px-2 rounded-lg border-2 border-gray-100 focus:border-pink-400 outline-none text-center text-gray-900 font-black bg-gray-50 text-sm" />
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              )}
+
               <label className="flex items-center gap-3 p-4 border-2 border-pink-100 rounded-xl bg-pink-50/50 cursor-pointer w-fit hover:bg-pink-50 transition-colors">
                 <input type="checkbox" checked={form.isFeatured} onChange={(e) => setForm({ ...form, isFeatured: e.target.checked })} className="rounded border-pink-300 text-pink-500 focus:ring-pink-400 w-5 h-5" /> 
                 <span className="text-sm font-black text-pink-800 tracking-wide uppercase">{ui.featured} Product</span>
@@ -167,7 +366,7 @@ export default function AdminProducts() {
               <div className="p-5 border-2 border-dashed border-gray-200 rounded-2xl bg-gray-50/50">
                 {editProduct && existingImages.length > 0 && (
                   <div className="mb-4">
-                    <label className="block text-xs font-black text-gray-500 uppercase tracking-wider mb-3">Current Images</label>
+                    <label className="block text-xs font-black text-gray-500 uppercase tracking-wider mb-3">{ui.currentImagesLabel} ({existingImages.length})</label>
                     <div className="flex flex-wrap gap-3">
                       {existingImages.map((img, idx) => (
                         <div key={idx} className="relative group">
@@ -181,10 +380,39 @@ export default function AdminProducts() {
                     </div>
                   </div>
                 )}
-                <div><label className="block text-xs font-black text-gray-500 uppercase tracking-wider mb-2">{editProduct ? 'Upload New Images' : ui.images}</label>
-                  <input type="file" multiple accept="image/*" onChange={(e) => setFiles([...e.target.files])}
-                    className="w-full text-sm text-gray-600 font-bold file:mr-4 file:py-2.5 file:px-5 file:rounded-xl file:border-0 file:text-xs file:bg-white file:border-2 file:border-gray-200 file:text-gray-700 file:font-black file:shadow-sm cursor-pointer hover:file:border-pink-400 transition-all" />
-                </div>
+
+                {files.length > 0 && (
+                  <div className="mb-4">
+                    <label className="block text-xs font-black text-gray-500 uppercase tracking-wider mb-3">{ui.newImagesLabel} ({files.length})</label>
+                    <div className="flex flex-wrap gap-3">
+                      {files.map((f, idx) => (
+                        <div key={idx} className="relative group">
+                          <img src={URL.createObjectURL(f)} alt="" className="w-20 h-20 rounded-2xl object-cover border-2 border-pink-200 shadow-sm" />
+                          <button type="button" onClick={() => setFiles(files.filter((_, i) => i !== idx))}
+                            className="absolute -top-2 -right-2 w-6 h-6 bg-red-500 text-white rounded-full text-sm font-black flex items-center justify-center shadow-lg hover:bg-red-600 hover:scale-110 transition-all">
+                            ×
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                <label className="block text-xs font-black text-gray-500 uppercase tracking-wider mb-2">
+                  {editProduct ? ui.addMoreImages : ui.images}
+                  <span className="ml-2 text-[10px] font-bold text-pink-500 normal-case tracking-normal">{ui.tapMultipleHint}</span>
+                </label>
+                <input
+                  type="file"
+                  multiple
+                  accept="image/*"
+                  onChange={(e) => {
+                    const picked = Array.from(e.target.files || []);
+                    if (picked.length > 0) setFiles([...files, ...picked]);
+                    e.target.value = '';
+                  }}
+                  className="w-full text-sm text-gray-600 font-bold file:mr-4 file:py-2.5 file:px-5 file:rounded-xl file:border-0 file:text-xs file:bg-white file:border-2 file:border-gray-200 file:text-gray-700 file:font-black file:shadow-sm cursor-pointer hover:file:border-pink-400 transition-all"
+                />
               </div>
 
               <div className="flex gap-4 pt-4 mt-8 border-t border-gray-100">

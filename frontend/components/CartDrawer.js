@@ -53,7 +53,7 @@ export default function CartDrawer() {
                 <AnimatePresence>
                   {items.map((item) => (
                     <motion.div
-                      key={item.productId}
+                      key={item.cartItemId || item.productId}
                       layout
                       initial={{ opacity: 0, y: 10 }}
                       animate={{ opacity: 1, y: 0 }}
@@ -70,17 +70,23 @@ export default function CartDrawer() {
                       <div className="flex-1 min-w-0 py-1 flex flex-col justify-between">
                         <div>
                           <p className="font-heading font-bold text-brand-text truncate pr-6">{item.productNameSnapshot}</p>
+                          {(item.color || item.size) && (
+                            <p className="text-[11px] text-gray-500 font-bold mt-0.5">
+                              {item.color && <span className="mr-2">● {item.color}</span>}
+                              {item.size && <span>{item.size}</span>}
+                            </p>
+                          )}
                           <p className="text-sm font-body font-black text-gray-700 mt-1 uppercase tracking-wide">{item.priceSnapshot} {ui.egp}</p>
                         </div>
                         <div className="flex items-center gap-2 mt-2">
-                          <button onClick={() => updateQty(item.productId, item.qty - 1)}
+                          <button onClick={() => updateQty(item.cartItemId, item.qty - 1)}
                             className="w-7 h-7 rounded-sm bg-brand-50 text-brand-900 flex items-center justify-center hover:bg-brand-100 transition-colors shadow-sm">-</button>
                           <span className="text-sm font-bold w-6 text-center text-brand-900">{item.qty}</span>
-                          <button onClick={() => updateQty(item.productId, item.qty + 1)}
+                          <button onClick={() => updateQty(item.cartItemId, item.qty + 1)}
                             className="w-7 h-7 rounded-sm bg-brand-50 text-brand-900 flex items-center justify-center hover:bg-brand-100 transition-colors shadow-sm">+</button>
                         </div>
                       </div>
-                      <button onClick={() => removeItem(item.productId)} className="text-gray-400 hover:text-red-500 transition-colors self-start p-1 mt-1 -mr-1">
+                      <button onClick={() => removeItem(item.cartItemId)} className="text-gray-400 hover:text-red-500 transition-colors self-start p-1 mt-1 -mr-1">
                         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                         </svg>

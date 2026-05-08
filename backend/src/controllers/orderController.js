@@ -31,8 +31,19 @@ const createOrder = async (req, res, next) => {
         return res.status(400).json({ message: `Product ${item.productId} not found` });
       }
 
-      if (product.stock < item.qty) {
-        const productName = product.nameEn || product.nameAr;
+      const productName = product.nameEn || product.nameAr;
+
+      // If the product tracks per-variant stock, validate against the matching variant.
+      let variant = null;
+      if (product.variants && product.variants.length > 0) {
+        variant = product.variants.find((v) => (v.color || '') === (item.color || '') && (v.size || '') === (item.size || ''));
+        if (!variant) {
+          return res.status(400).json({ message: `Variant not available for "${productName}" — ${item.color || ''} ${item.size || ''}`.trim() });
+        }
+        if (variant.stock < item.qty) {
+          return res.status(400).json({ message: `Insufficient stock for "${productName}" — ${item.color || ''} ${item.size || ''}`.trim() });
+        }
+      } else if (product.stock < item.qty) {
         return res.status(400).json({ message: `Insufficient stock for "${productName}"` });
       }
 
@@ -52,12 +63,20 @@ const createOrder = async (req, res, next) => {
         costPriceSnapshot: product.costPrice || 0,
         qty: item.qty,
         imageSnapshot: product.images[0] || '',
+        color: item.color || '',
+        size: item.size || '',
       });
 
       subtotal += effectivePrice * item.qty;
 
       // Decrease stock and increment sold count
-      product.stock -= item.qty;
+      if (variant) {
+        variant.stock -= item.qty;
+        // Keep aggregate stock in sync with the sum of variant stocks.
+        product.stock = product.variants.reduce((s, v) => s + (Number(v.stock) || 0), 0);
+      } else {
+        product.stock -= item.qty;
+      }
       product.soldCount += item.qty;
       await product.save();
 

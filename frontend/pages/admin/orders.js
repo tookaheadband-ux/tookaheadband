@@ -160,8 +160,16 @@ export default function AdminOrders() {
                     <div className="text-sm text-gray-700 font-bold space-y-2">
                       {o.items.map((i, idx) => (
                         <div key={idx} className="flex gap-2 items-start">
-                          <span className="font-black text-pink-500 text-xs mt-0.5 bg-pink-50 px-1.5 py-0.5 rounded border border-pink-100">[{i.skuSnapshot || '—'}]</span> 
-                          <span className="leading-tight">{i.productNameSnapshot} <span className="text-gray-400 font-medium">x{i.qty}</span></span>
+                          <span className="font-black text-pink-500 text-xs mt-0.5 bg-pink-50 px-1.5 py-0.5 rounded border border-pink-100">[{i.skuSnapshot || '—'}]</span>
+                          <span className="leading-tight">
+                            {i.productNameSnapshot} <span className="text-gray-400 font-medium">x{i.qty}</span>
+                            {(i.color || i.size) && (
+                              <span className="block text-[10px] text-purple-600 font-bold mt-0.5">
+                                {i.color && <span className="mr-2">● {i.color}</span>}
+                                {i.size && <span>{i.size}</span>}
+                              </span>
+                            )}
+                          </span>
                         </div>
                       ))}
                     </div>
@@ -200,8 +208,16 @@ export default function AdminOrders() {
               <div className="text-sm text-gray-700 font-bold space-y-2 mb-4">
                 {o.items.map((i, idx) => (
                   <div key={idx} className="flex gap-2 items-start py-2 border-b border-gray-50 last:border-0 last:pb-0">
-                    <span className="font-black text-pink-500 text-xs mt-0.5 bg-pink-50 px-1.5 py-0.5 rounded border border-pink-100">[{i.skuSnapshot || '—'}]</span> 
-                    <span className="leading-tight flex-1">{i.productNameSnapshot} <span className="text-gray-400 font-medium whitespace-nowrap">x{i.qty}</span></span>
+                    <span className="font-black text-pink-500 text-xs mt-0.5 bg-pink-50 px-1.5 py-0.5 rounded border border-pink-100">[{i.skuSnapshot || '—'}]</span>
+                    <span className="leading-tight flex-1">
+                      {i.productNameSnapshot} <span className="text-gray-400 font-medium whitespace-nowrap">x{i.qty}</span>
+                      {(i.color || i.size) && (
+                        <span className="block text-[10px] text-purple-600 font-bold mt-0.5">
+                          {i.color && <span className="mr-2">● {i.color}</span>}
+                          {i.size && <span>{i.size}</span>}
+                        </span>
+                      )}
+                    </span>
                   </div>
                 ))}
               </div>

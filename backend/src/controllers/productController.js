@@ -2,6 +2,7 @@ const Product = require('../models/Product');
 const StockSubscription = require('../models/StockSubscription');
 const { cloudinary } = require('../config/cloudinary');
 const transporter = require('../config/mailer');
+const { sendNewProductNotification, sendBackupToTelegram } = require('../services/telegramService');
 
 // Public: get products with pagination, filtering, search
 const getProducts = async (req, res, next) => {
@@ -92,11 +93,33 @@ const getBestSellers = async (req, res, next) => {
   }
 };
 
+// Parse a JSON string of variants from a multipart form field.
+const parseVariants = (raw) => {
+  if (!raw) return [];
+  if (Array.isArray(raw)) return raw;
+  try {
+    const parsed = JSON.parse(raw);
+    if (!Array.isArray(parsed)) return [];
+    return parsed
+      .map((v) => ({
+        color: (v.color || '').toString(),
+        size: (v.size || '').toString(),
+        stock: Number(v.stock) || 0,
+      }))
+      .filter((v) => v.color || v.size);
+  } catch {
+    return [];
+  }
+};
+
 // Admin: create product
 const createProduct = async (req, res, next) => {
   try {
-    const { nameAr, nameEn, descriptionAr, descriptionEn, price, costPrice, categoryId, stock, isFeatured, colors, sizes } = req.body;
+    const { nameAr, nameEn, descriptionAr, descriptionEn, price, costPrice, categoryId, stock, isFeatured, colors, sizes, variants } = req.body;
     const images = req.files ? req.files.map((f) => f.path) : [];
+
+    const parsedVariants = parseVariants(variants);
+    const totalVariantStock = parsedVariants.reduce((s, v) => s + (Number(v.stock) || 0), 0);
 
     const product = await Product.create({
       nameAr,
@@ -107,11 +130,16 @@ const createProduct = async (req, res, next) => {
       costPrice: costPrice || 0,
       images,
       categoryId,
-      stock: stock || 0,
+      stock: parsedVariants.length > 0 ? totalVariantStock : (stock || 0),
       isFeatured: isFeatured === 'true' || isFeatured === true,
       colors: colors ? (Array.isArray(colors) ? colors : colors.split(',').map(c => c.trim()).filter(Boolean)) : [],
       sizes: sizes ? (Array.isArray(sizes) ? sizes : sizes.split(',').map(s => s.trim()).filter(Boolean)) : [],
+      variants: parsedVariants,
     });
+
+    // Telegram notification + auto backup (non-blocking)
+    sendNewProductNotification(product).catch((e) => console.error('Telegram new product error:', e));
+    sendBackupToTelegram().catch((e) => console.error('Telegram backup error:', e));
 
     res.status(201).json(product);
   } catch (err) {
@@ -125,7 +153,7 @@ const updateProduct = async (req, res, next) => {
     const product = await Product.findById(req.params.id);
     if (!product) return res.status(404).json({ message: 'Product not found' });
 
-    const { nameAr, nameEn, descriptionAr, descriptionEn, price, costPrice, categoryId, stock, isFeatured, existingImages, colors, sizes } = req.body;
+    const { nameAr, nameEn, descriptionAr, descriptionEn, price, costPrice, categoryId, stock, isFeatured, existingImages, colors, sizes, variants } = req.body;
 
     if (nameAr !== undefined) product.nameAr = nameAr;
     if (nameEn !== undefined) product.nameEn = nameEn;
@@ -135,10 +163,19 @@ const updateProduct = async (req, res, next) => {
     if (costPrice !== undefined) product.costPrice = costPrice;
     if (categoryId !== undefined) product.categoryId = categoryId;
     const oldStock = product.stock;
-    if (stock !== undefined) product.stock = stock;
     if (isFeatured !== undefined) product.isFeatured = isFeatured === 'true' || isFeatured === true;
     if (colors !== undefined) product.colors = Array.isArray(colors) ? colors : colors.split(',').map(c => c.trim()).filter(Boolean);
     if (sizes !== undefined) product.sizes = Array.isArray(sizes) ? sizes : sizes.split(',').map(s => s.trim()).filter(Boolean);
+
+    if (variants !== undefined) {
+      product.variants = parseVariants(variants);
+    }
+    // If variants are tracked, the overall stock = sum of variant stocks. Otherwise honor the stock field.
+    if (product.variants && product.variants.length > 0) {
+      product.stock = product.variants.reduce((s, v) => s + (Number(v.stock) || 0), 0);
+    } else if (stock !== undefined) {
+      product.stock = stock;
+    }
 
     let images = [];
     if (existingImages) {

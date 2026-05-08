@@ -5,12 +5,15 @@ import Image from 'next/image';
 import { useLang } from '@/context/LanguageContext';
 import ProductCard from '@/components/ProductCard';
 import BundleCard from '@/components/BundleCard';
-import { fetchProducts, fetchCategories, fetchActiveBundles, fetchActiveFlashSales } from '@/lib/api';
+import { fetchProducts, fetchCategories, fetchActiveBundles, fetchActiveFlashSales, fetchPage } from '@/lib/api';
 import { motion } from 'framer-motion';
 import { Sparkles, Heart, Gift, ArrowRight } from 'lucide-react';
 
-export default function Home({ featured = [], categories = [], bundles = [], flashSales = [] }) {
+export default function Home({ featured = [], categories = [], bundles = [], flashSales = [], banners = {} }) {
   const { t, ui } = useLang();
+  const heroPrimary = banners.heroPrimary || '/images/photo_2026-03-08_15-18-52.jpg';
+  const heroSecondary = banners.heroSecondary || '/images/photo_2026-03-08_15-18-47.jpg';
+  const aboutPreview = banners.aboutPreview || 'https://images.unsplash.com/photo-1515488042361-ee00e0ddd4e4?auto=format&fit=crop&w=800&q=80';
 
   return (
     <>
@@ -93,7 +96,7 @@ export default function Home({ featured = [], categories = [], bundles = [], fla
                   className="absolute top-0 right-0 left-auto w-[78%] h-[78%] z-20"
                 >
                   <div className="w-full h-full bg-white rounded-[24px] p-2 shadow-lg group hover:-translate-y-2 transition-transform duration-500 relative">
-                    <Image src="/images/photo_2026-03-08_15-18-52.jpg" alt="Kids accessories" fill sizes="(max-width: 768px) 60vw, 30vw" className="object-cover rounded-[16px]" priority />
+                    <Image src={heroPrimary} alt="Kids accessories" fill sizes="(max-width: 768px) 60vw, 30vw" className="object-cover rounded-[16px]" priority unoptimized={heroPrimary.startsWith('/')} />
                   </div>
                 </motion.div>
                 {/* Secondary Image */}
@@ -104,7 +107,7 @@ export default function Home({ featured = [], categories = [], bundles = [], fla
                   className="absolute bottom-0 left-0 right-auto w-[55%] h-[55%] z-30"
                 >
                   <div className="w-full h-full bg-white rounded-[20px] p-2 shadow-md hover:scale-105 transition-transform duration-500 relative">
-                    <Image src="/images/photo_2026-03-08_15-18-47.jpg" alt="Product detail" fill sizes="(max-width: 768px) 45vw, 20vw" className="object-cover rounded-[12px]" priority />
+                    <Image src={heroSecondary} alt="Product detail" fill sizes="(max-width: 768px) 45vw, 20vw" className="object-cover rounded-[12px]" priority unoptimized={heroSecondary.startsWith('/')} />
                   </div>
                 </motion.div>
               </div>
@@ -258,7 +261,7 @@ export default function Home({ featured = [], categories = [], bundles = [], fla
         <div className="max-w-screen-2xl mx-auto px-4 md:px-5 lg:px-6">
           <div className="flex flex-col md:flex-row items-center gap-8 lg:gap-16">
             <div className="w-full md:w-1/2 relative h-[260px] md:h-[380px] rounded-[16px] overflow-hidden">
-              <Image src="https://images.unsplash.com/photo-1515488042361-ee00e0ddd4e4?auto=format&fit=crop&w=800&q=80" alt="Making headbands" fill sizes="(max-width: 768px) 100vw, 50vw" className="object-cover" loading="lazy" />
+              <Image src={aboutPreview} alt="Making headbands" fill sizes="(max-width: 768px) 100vw, 50vw" className="object-cover" loading="lazy" unoptimized={aboutPreview.startsWith('/')} />
             </div>
             <div className="w-full md:w-1/2 flex flex-col items-center md:items-start text-center md:text-left">
               <h2 className="text-[24px] xl:text-[32px] font-heading font-bold text-brand-text mb-4">
@@ -313,11 +316,14 @@ export default function Home({ featured = [], categories = [], bundles = [], fla
 
 export async function getStaticProps() {
   try {
-    const [featRes, catRes, bundlesRes, flashRes] = await Promise.all([
+    const [featRes, catRes, bundlesRes, flashRes, hero1Res, hero2Res, aboutRes] = await Promise.all([
       fetchProducts({ limit: 4 }),
       fetchCategories(),
       fetchActiveBundles().catch(() => ({ data: [] })),
       fetchActiveFlashSales().catch(() => ({ data: [] })),
+      fetchPage('home-hero-1').catch(() => ({ data: null })),
+      fetchPage('home-hero-2').catch(() => ({ data: null })),
+      fetchPage('home-about').catch(() => ({ data: null })),
     ]);
     return {
       props: {
@@ -325,13 +331,18 @@ export async function getStaticProps() {
         categories: catRes.data || [],
         bundles: bundlesRes.data || [],
         flashSales: flashRes.data || [],
+        banners: {
+          heroPrimary: hero1Res.data?.images?.[0] || '',
+          heroSecondary: hero2Res.data?.images?.[0] || '',
+          aboutPreview: aboutRes.data?.images?.[0] || '',
+        },
       },
       revalidate: 60, // ISR: regenerate page every 60 seconds
     };
   } catch (err) {
     console.error('getStaticProps error:', err);
     return {
-      props: { featured: [], categories: [], bundles: [], flashSales: [] },
+      props: { featured: [], categories: [], bundles: [], flashSales: [], banners: {} },
       revalidate: 30,
     };
   }
