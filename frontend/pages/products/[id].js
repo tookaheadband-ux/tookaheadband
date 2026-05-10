@@ -5,6 +5,7 @@ import Image from 'next/image';
 import { motion } from 'framer-motion';
 import { useLang } from '@/context/LanguageContext';
 import { useCart } from '@/context/CartContext';
+import { translateVariant } from '@/lib/variantI18n';
 import { fetchProduct, getProductReviews, createProductReview, subscribeNotifyMe, fetchFlashSaleForProduct } from '@/lib/api';
 import CountdownTimer from '@/components/CountdownTimer';
 import { Star } from 'lucide-react';
@@ -16,7 +17,7 @@ import { Truck, ShieldCheck, HeartPulse, RefreshCw } from 'lucide-react';
 export default function ProductDetail() {
   const router = useRouter();
   const { id } = router.query;
-  const { t, ui } = useLang();
+  const { t, ui, lang } = useLang();
   const { addItem } = useCart();
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -80,7 +81,41 @@ export default function ProductDetail() {
     return () => observer.disconnect();
   }, [product, loading]);
 
-  const variants = product?.variants || [];
+  // Auto-select the admin-specified default (or the only option, when there's just one).
+  useEffect(() => {
+    if (!product) return;
+    const colors = (product.colors || []).filter((c) => c && c !== 'undefined');
+    const sizes = (product.sizes || []).filter((s) => s && s !== 'undefined');
+    if (!selectedColor && colors.length > 0) {
+      if (colors.length === 1) setSelectedColor(colors[0]);
+      else if (product.defaultColor && colors.includes(product.defaultColor)) setSelectedColor(product.defaultColor);
+    }
+    if (!selectedSize && sizes.length > 0) {
+      if (sizes.length === 1) setSelectedSize(sizes[0]);
+      else if (product.defaultSize && sizes.includes(product.defaultSize)) setSelectedSize(product.defaultSize);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [product]);
+
+  // Drop stale 'undefined' / empty values left over from legacy products.
+  // A non-empty entry that is the string "undefined" came from an older bug where
+  // unset form fields were stringified into FormData — treat it as no value.
+  const cleanList = (arr) =>
+    (arr || [])
+      .map((x) => (typeof x === 'string' ? x.trim() : x))
+      .filter((x) => x && x !== 'undefined');
+
+  const productColors = cleanList(product?.colors);
+  const productSizes = cleanList(product?.sizes);
+  const colorT = product?.colorTranslations || {};
+  const sizeT = product?.sizeTranslations || {};
+  const labelColor = (c) => translateVariant(c, colorT, lang);
+  const labelSize = (s) => translateVariant(s, sizeT, lang);
+  const variants = (product?.variants || []).filter((v) => {
+    const c = (v.color || '').trim();
+    const s = (v.size || '').trim();
+    return (c && c !== 'undefined') || (s && s !== 'undefined');
+  });
   const hasVariants = variants.length > 0;
 
   const stockForColor = (color) => {
@@ -101,11 +136,11 @@ export default function ProductDetail() {
   const variantStock = hasVariants ? (selectedVariant ? selectedVariant.stock : null) : product?.stock;
 
   const handleAddToCart = () => {
-    if (product.colors?.length > 0 && !selectedColor) {
+    if (productColors.length > 0 && !selectedColor) {
       setVariantError(ui.pleaseSelectColor);
       return;
     }
-    if (product.sizes?.length > 0 && !selectedSize) {
+    if (productSizes.length > 0 && !selectedSize) {
       setVariantError(ui.pleaseSelectSize);
       return;
     }
@@ -370,16 +405,16 @@ export default function ProductDetail() {
               {product.stock > 0 ? (
                 <div className="space-y-6 mt-auto">
 
-                  {(product.colors?.length > 0 || product.sizes?.length > 0) && (
+                  {(productColors.length > 0 || productSizes.length > 0) && (
                     <div className="space-y-5">
-                      {product.colors?.length > 0 && (
+                      {productColors.length > 0 && (
                         <div>
                           <div className="flex items-center justify-between mb-3">
                             <span className="text-xs uppercase tracking-widest font-semibold text-brand-900">{ui.chooseColor}</span>
-                            {selectedColor && <span className="text-xs font-bold text-brand-primary">{selectedColor}</span>}
+                            {selectedColor && <span className="text-xs font-bold text-brand-primary">{labelColor(selectedColor)}</span>}
                           </div>
                           <div className="flex flex-wrap gap-2">
-                            {product.colors.map((c) => {
+                            {productColors.map((c) => {
                               const colorStock = stockForColor(c);
                               const disabled = hasVariants && colorStock <= 0;
                               return (
@@ -403,7 +438,7 @@ export default function ProductDetail() {
                                         : 'bg-white text-brand-900 border-brand-100 hover:border-brand-primary'
                                   }`}
                                 >
-                                  {c}
+                                  {labelColor(c)}
                                 </button>
                               );
                             })}
@@ -411,14 +446,14 @@ export default function ProductDetail() {
                         </div>
                       )}
 
-                      {product.sizes?.length > 0 && (
+                      {productSizes.length > 0 && (
                         <div>
                           <div className="flex items-center justify-between mb-3">
                             <span className="text-xs uppercase tracking-widest font-semibold text-brand-900">{ui.chooseSize}</span>
-                            {selectedSize && <span className="text-xs font-bold text-brand-primary">{selectedSize}</span>}
+                            {selectedSize && <span className="text-xs font-bold text-brand-primary">{labelSize(selectedSize)}</span>}
                           </div>
                           <div className="flex flex-wrap gap-2">
-                            {product.sizes.map((s) => {
+                            {productSizes.map((s) => {
                               const sizeStock = stockForSize(s);
                               const disabled = hasVariants && sizeStock <= 0;
                               return (
@@ -435,7 +470,7 @@ export default function ProductDetail() {
                                         : 'bg-white text-brand-900 border-brand-100 hover:border-brand-primary'
                                   }`}
                                 >
-                                  {s}
+                                  {labelSize(s)}
                                 </button>
                               );
                             })}
@@ -445,7 +480,7 @@ export default function ProductDetail() {
 
                       {hasVariants && selectedVariant && selectedVariant.stock > 0 && (
                         <p className="text-xs font-bold text-green-600">
-                          ✔ {selectedVariant.stock} {ui.availableInVariant} {[selectedColor, selectedSize].filter(Boolean).join(' / ')}
+                          ✔ {selectedVariant.stock} {ui.availableInVariant} {[labelColor(selectedColor), labelSize(selectedSize)].filter(Boolean).join(' / ')}
                         </p>
                       )}
 

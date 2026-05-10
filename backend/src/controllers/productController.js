@@ -112,10 +112,29 @@ const parseVariants = (raw) => {
   }
 };
 
+// Parse a JSON object of variant translations { Pink: "وردي", ... } from a form field.
+const parseTranslations = (raw) => {
+  if (!raw) return {};
+  if (typeof raw === 'object' && !Array.isArray(raw)) return raw;
+  try {
+    const parsed = JSON.parse(raw);
+    if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) return {};
+    const out = {};
+    Object.entries(parsed).forEach(([k, v]) => {
+      const key = String(k || '').trim();
+      const val = String(v || '').trim();
+      if (key && val) out[key] = val;
+    });
+    return out;
+  } catch {
+    return {};
+  }
+};
+
 // Admin: create product
 const createProduct = async (req, res, next) => {
   try {
-    const { nameAr, nameEn, descriptionAr, descriptionEn, price, costPrice, categoryId, stock, isFeatured, colors, sizes, variants } = req.body;
+    const { nameAr, nameEn, descriptionAr, descriptionEn, price, costPrice, categoryId, stock, isFeatured, colors, sizes, variants, defaultColor, defaultSize, colorTranslations, sizeTranslations } = req.body;
     const images = req.files ? req.files.map((f) => f.path) : [];
 
     const parsedVariants = parseVariants(variants);
@@ -135,6 +154,10 @@ const createProduct = async (req, res, next) => {
       colors: colors ? (Array.isArray(colors) ? colors : colors.split(',').map(c => c.trim()).filter(Boolean)) : [],
       sizes: sizes ? (Array.isArray(sizes) ? sizes : sizes.split(',').map(s => s.trim()).filter(Boolean)) : [],
       variants: parsedVariants,
+      defaultColor: defaultColor || '',
+      defaultSize: defaultSize || '',
+      colorTranslations: parseTranslations(colorTranslations),
+      sizeTranslations: parseTranslations(sizeTranslations),
     });
 
     // Telegram notification + auto backup (non-blocking)
@@ -153,7 +176,7 @@ const updateProduct = async (req, res, next) => {
     const product = await Product.findById(req.params.id);
     if (!product) return res.status(404).json({ message: 'Product not found' });
 
-    const { nameAr, nameEn, descriptionAr, descriptionEn, price, costPrice, categoryId, stock, isFeatured, existingImages, colors, sizes, variants } = req.body;
+    const { nameAr, nameEn, descriptionAr, descriptionEn, price, costPrice, categoryId, stock, isFeatured, existingImages, colors, sizes, variants, defaultColor, defaultSize, colorTranslations, sizeTranslations } = req.body;
 
     if (nameAr !== undefined) product.nameAr = nameAr;
     if (nameEn !== undefined) product.nameEn = nameEn;
@@ -166,6 +189,27 @@ const updateProduct = async (req, res, next) => {
     if (isFeatured !== undefined) product.isFeatured = isFeatured === 'true' || isFeatured === true;
     if (colors !== undefined) product.colors = Array.isArray(colors) ? colors : colors.split(',').map(c => c.trim()).filter(Boolean);
     if (sizes !== undefined) product.sizes = Array.isArray(sizes) ? sizes : sizes.split(',').map(s => s.trim()).filter(Boolean);
+    if (defaultColor !== undefined) product.defaultColor = defaultColor;
+    if (defaultSize !== undefined) product.defaultSize = defaultSize;
+    if (colorTranslations !== undefined) product.colorTranslations = parseTranslations(colorTranslations);
+    if (sizeTranslations !== undefined) product.sizeTranslations = parseTranslations(sizeTranslations);
+    // Clear default if it is no longer one of the available options.
+    if (product.defaultColor && !(product.colors || []).includes(product.defaultColor)) product.defaultColor = '';
+    if (product.defaultSize && !(product.sizes || []).includes(product.defaultSize)) product.defaultSize = '';
+    // Drop stale translations for colors/sizes that were removed.
+    const pruneMap = (map, validKeys) => {
+      if (!map) return;
+      const valid = new Set(validKeys);
+      if (typeof map.forEach === 'function') {
+        const keys = [];
+        map.forEach((_v, k) => keys.push(k));
+        keys.forEach((k) => { if (!valid.has(k)) map.delete(k); });
+      } else if (typeof map === 'object') {
+        Object.keys(map).forEach((k) => { if (!valid.has(k)) delete map[k]; });
+      }
+    };
+    pruneMap(product.colorTranslations, product.colors || []);
+    pruneMap(product.sizeTranslations, product.sizes || []);
 
     if (variants !== undefined) {
       product.variants = parseVariants(variants);

@@ -130,6 +130,31 @@ export default function AdminProducts() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [form.colors, form.sizes, showModal]);
 
+  // Clear the default selection or stale translations if their color/size was removed.
+  useEffect(() => {
+    if (!showModal) return;
+    let changed = false;
+    let nextDefaultColor = form.defaultColor;
+    let nextDefaultSize = form.defaultSize;
+    if (nextDefaultColor && !colorsArr.includes(nextDefaultColor)) { nextDefaultColor = ''; changed = true; }
+    if (nextDefaultSize && !sizesArr.includes(nextDefaultSize)) { nextDefaultSize = ''; changed = true; }
+    const prune = (obj, valid) => {
+      if (!obj) return { obj: {}, changed: false };
+      const out = {};
+      let modified = false;
+      Object.entries(obj).forEach(([k, v]) => {
+        if (valid.includes(k)) out[k] = v;
+        else modified = true;
+      });
+      return { obj: out, changed: modified };
+    };
+    const colorRes = prune(form.colorTranslations, colorsArr);
+    const sizeRes = prune(form.sizeTranslations, sizesArr);
+    if (colorRes.changed || sizeRes.changed) changed = true;
+    if (changed) setForm((f) => ({ ...f, defaultColor: nextDefaultColor, defaultSize: nextDefaultSize, colorTranslations: colorRes.obj, sizeTranslations: sizeRes.obj }));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [form.colors, form.sizes, showModal]);
+
   const updateVariantStock = (idx, val) => {
     setForm((f) => {
       const variants = [...(f.variants || [])];
@@ -138,12 +163,40 @@ export default function AdminProducts() {
     });
   };
 
-  const openCreate = () => { setEditProduct(null); setForm({ nameAr: '', nameEn: '', descriptionAr: '', descriptionEn: '', price: '', costPrice: '', categoryId: categories[0]?._id || '', stock: '', isFeatured: false, colors: '', sizes: '', variants: [] }); setFiles([]); setExistingImages([]); setShowModal(true); };
+  const openCreate = () => { setEditProduct(null); setForm({ nameAr: '', nameEn: '', descriptionAr: '', descriptionEn: '', price: '', costPrice: '', categoryId: categories[0]?._id || '', stock: '', isFeatured: false, colors: '', sizes: '', variants: [], defaultColor: '', defaultSize: '', colorTranslations: {}, sizeTranslations: {} }); setFiles([]); setExistingImages([]); setShowModal(true); };
   const openEdit = (p) => {
-    const colorsStr = (p.colors || []).length > 0 ? (p.colors || []).join(', ') + ', ' : '';
-    const sizesStr = (p.sizes || []).length > 0 ? (p.sizes || []).join(', ') + ', ' : '';
+    // Strip legacy 'undefined' entries (from a previous bug) so the admin sees a clean state.
+    const cleanColors = (p.colors || []).filter((c) => c && c !== 'undefined');
+    const cleanSizes = (p.sizes || []).filter((s) => s && s !== 'undefined');
+    const cleanVariants = (p.variants || []).filter((v) => {
+      const c = (v.color || '').trim();
+      const s = (v.size || '').trim();
+      return (c && c !== 'undefined') || (s && s !== 'undefined');
+    });
+    const colorsStr = cleanColors.length > 0 ? cleanColors.join(', ') + ', ' : '';
+    const sizesStr = cleanSizes.length > 0 ? cleanSizes.join(', ') + ', ' : '';
+    // colorTranslations / sizeTranslations may arrive as a Map-like or plain object — normalize to a plain {key:value} object.
+    const mapToObject = (m) => {
+      if (!m) return {};
+      if (typeof m === 'object' && !Array.isArray(m)) {
+        const out = {};
+        Object.entries(m).forEach(([k, v]) => { if (v) out[k] = v; });
+        return out;
+      }
+      return {};
+    };
     setEditProduct(p);
-    setForm({ nameAr: p.nameAr || '', nameEn: p.nameEn || '', descriptionAr: p.descriptionAr || '', descriptionEn: p.descriptionEn || '', price: p.price, costPrice: p.costPrice || '', categoryId: p.categoryId?._id || p.categoryId || '', stock: p.stock, isFeatured: p.isFeatured, colors: colorsStr, sizes: sizesStr, variants: p.variants || [] });
+    setForm({
+      nameAr: p.nameAr || '', nameEn: p.nameEn || '', descriptionAr: p.descriptionAr || '', descriptionEn: p.descriptionEn || '',
+      price: p.price, costPrice: p.costPrice || '',
+      categoryId: p.categoryId?._id || p.categoryId || '',
+      stock: p.stock, isFeatured: p.isFeatured,
+      colors: colorsStr, sizes: sizesStr, variants: cleanVariants,
+      defaultColor: cleanColors.includes(p.defaultColor) ? p.defaultColor : '',
+      defaultSize: cleanSizes.includes(p.defaultSize) ? p.defaultSize : '',
+      colorTranslations: mapToObject(p.colorTranslations),
+      sizeTranslations: mapToObject(p.sizeTranslations),
+    });
     setFiles([]); setExistingImages(p.images || []); setShowModal(true);
   };
 
@@ -151,10 +204,15 @@ export default function AdminProducts() {
     e.preventDefault(); setSaving(true);
     try {
       const fd = new FormData();
-      Object.keys(form).forEach((k) => { if (!['colors', 'sizes', 'variants'].includes(k)) fd.append(k, form[k]); });
+      Object.keys(form).forEach((k) => {
+        if (['colors', 'sizes', 'variants', 'colorTranslations', 'sizeTranslations'].includes(k)) return;
+        fd.append(k, form[k]);
+      });
       fd.append('colors', form.colors || '');
       fd.append('sizes', form.sizes || '');
       fd.append('variants', JSON.stringify(form.variants || []));
+      fd.append('colorTranslations', JSON.stringify(form.colorTranslations || {}));
+      fd.append('sizeTranslations', JSON.stringify(form.sizeTranslations || {}));
       files.forEach((f) => fd.append('images', f));
       if (editProduct) {
         if (existingImages.length > 0) { existingImages.forEach((img) => fd.append('existingImages', img)); }
@@ -298,6 +356,85 @@ export default function AdminProducts() {
                   hint={ui.sizesHint}
                 />
               </div>
+
+              {/* Per-chip Arabic translations */}
+              {(colorsArr.length > 0 || sizesArr.length > 0) && (
+                <div className="p-5 bg-gray-50 rounded-2xl border border-gray-100 space-y-4">
+                  <div>
+                    <h3 className="text-sm font-black text-gray-900">{ui.arabicTranslations}</h3>
+                    <p className="text-[11px] text-gray-500 font-bold mt-0.5">{ui.arabicTranslationsHint}</p>
+                  </div>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                    {colorsArr.length > 0 && (
+                      <div className="space-y-2">
+                        {colorsArr.map((c) => (
+                          <div key={c} className="flex items-center gap-3">
+                            <span className="inline-flex items-center h-9 px-3 rounded-full text-xs font-black bg-pink-100 text-pink-700 border border-pink-200 min-w-[80px] justify-center">{c}</span>
+                            <span className="text-gray-300 font-bold">→</span>
+                            <input
+                              value={form.colorTranslations?.[c] || ''}
+                              onChange={(e) => setForm({ ...form, colorTranslations: { ...(form.colorTranslations || {}), [c]: e.target.value } })}
+                              placeholder={ui.arabicPlaceholder}
+                              dir="rtl"
+                              className="flex-1 h-9 px-3 rounded-lg border-2 border-white focus:border-pink-400 outline-none text-gray-900 font-bold bg-white shadow-sm text-sm text-right"
+                            />
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                    {sizesArr.length > 0 && (
+                      <div className="space-y-2">
+                        {sizesArr.map((s) => (
+                          <div key={s} className="flex items-center gap-3">
+                            <span className="inline-flex items-center h-9 px-3 rounded-full text-xs font-black bg-purple-100 text-purple-700 border border-purple-200 min-w-[80px] justify-center">{s}</span>
+                            <span className="text-gray-300 font-bold">→</span>
+                            <input
+                              value={form.sizeTranslations?.[s] || ''}
+                              onChange={(e) => setForm({ ...form, sizeTranslations: { ...(form.sizeTranslations || {}), [s]: e.target.value } })}
+                              placeholder={ui.arabicPlaceholder}
+                              dir="rtl"
+                              className="flex-1 h-9 px-3 rounded-lg border-2 border-white focus:border-purple-400 outline-none text-gray-900 font-bold bg-white shadow-sm text-sm text-right"
+                            />
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )}
+
+              {/* Default Variant Pickers — only useful when there are 2+ options */}
+              {(colorsArr.length > 1 || sizesArr.length > 1) && (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                  {colorsArr.length > 1 && (
+                    <div>
+                      <label className="block text-xs font-black text-gray-500 uppercase tracking-wider mb-2">{ui.defaultColorLabel}</label>
+                      <select
+                        value={form.defaultColor || ''}
+                        onChange={(e) => setForm({ ...form, defaultColor: e.target.value })}
+                        className="w-full h-11 px-4 rounded-xl border-2 border-gray-100 focus:border-pink-400 outline-none text-gray-900 font-bold bg-gray-50 cursor-pointer"
+                      >
+                        <option value="">{ui.noDefault}</option>
+                        {colorsArr.map((c) => <option key={c} value={c}>{c}</option>)}
+                      </select>
+                    </div>
+                  )}
+                  {sizesArr.length > 1 && (
+                    <div>
+                      <label className="block text-xs font-black text-gray-500 uppercase tracking-wider mb-2">{ui.defaultSizeLabel}</label>
+                      <select
+                        value={form.defaultSize || ''}
+                        onChange={(e) => setForm({ ...form, defaultSize: e.target.value })}
+                        className="w-full h-11 px-4 rounded-xl border-2 border-gray-100 focus:border-pink-400 outline-none text-gray-900 font-bold bg-gray-50 cursor-pointer"
+                      >
+                        <option value="">{ui.noDefault}</option>
+                        {sizesArr.map((s) => <option key={s} value={s}>{s}</option>)}
+                      </select>
+                    </div>
+                  )}
+                  <p className="md:col-span-2 text-[11px] text-gray-500 font-bold -mt-2">{ui.defaultsHint}</p>
+                </div>
+              )}
 
               {/* Variant Stock Matrix */}
               {(form.variants || []).length > 0 && (

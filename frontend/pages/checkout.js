@@ -7,8 +7,9 @@ import { createOrder, validateCoupon, fetchShippingZones } from '@/lib/api';
 import { useFeatureFlags } from '@/context/FeatureFlagContext';
 
 export default function Checkout() {
-  const { ui } = useLang();
+  const { ui, lang } = useLang();
   const { items, total, clearCart } = useCart();
+  const labelFor = (canonical, ar) => (lang === 'ar' && ar ? ar : canonical);
   const { isEnabled, getFlag } = useFeatureFlags();
   const [giftWrap, setGiftWrap] = useState(false);
   const giftWrapPrice = isEnabled('feature_gift_wrap') ? (getFlag('gift_wrap_price') || 20) : 0;
@@ -184,8 +185,8 @@ export default function Checkout() {
                       <span className="text-gray-700 font-body font-medium line-clamp-1">{item.productNameSnapshot} <span className="text-gray-500 font-bold ml-1">×{item.qty}</span></span>
                       {(item.color || item.size) && (
                         <p className="text-[10px] text-gray-500 font-bold mt-0.5">
-                          {item.color && <span className="mr-2">● {item.color}</span>}
-                          {item.size && <span>{item.size}</span>}
+                          {item.color && <span className="mr-2">● {labelFor(item.color, item.colorAr)}</span>}
+                          {item.size && <span>{labelFor(item.size, item.sizeAr)}</span>}
                         </p>
                       )}
                     </div>

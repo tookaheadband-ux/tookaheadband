@@ -20,6 +20,11 @@ const productSchema = new mongoose.Schema(
     soldCount: { type: Number, default: 0 },
     colors: [{ type: String }],
     sizes: [{ type: String }],
+    // Optional per-product Arabic translations, keyed by the canonical (English) value.
+    colorTranslations: { type: Map, of: String, default: {} },
+    sizeTranslations: { type: Map, of: String, default: {} },
+    defaultColor: { type: String, default: '' },
+    defaultSize: { type: String, default: '' },
     variants: [
       {
         _id: false,

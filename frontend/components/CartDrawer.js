@@ -4,8 +4,9 @@ import { useLang } from '@/context/LanguageContext';
 import { useCart } from '@/context/CartContext';
 
 export default function CartDrawer() {
-  const { ui } = useLang();
+  const { ui, lang } = useLang();
   const { items, updateQty, removeItem, total, isOpen, setIsOpen } = useCart();
+  const labelFor = (canonical, ar) => (lang === 'ar' && ar ? ar : canonical);
 
   if (!isOpen) return null;
 
@@ -72,8 +73,8 @@ export default function CartDrawer() {
                           <p className="font-heading font-bold text-brand-text truncate pr-6">{item.productNameSnapshot}</p>
                           {(item.color || item.size) && (
                             <p className="text-[11px] text-gray-500 font-bold mt-0.5">
-                              {item.color && <span className="mr-2">● {item.color}</span>}
-                              {item.size && <span>{item.size}</span>}
+                              {item.color && <span className="mr-2">● {labelFor(item.color, item.colorAr)}</span>}
+                              {item.size && <span>{labelFor(item.size, item.sizeAr)}</span>}
                             </p>
                           )}
                           <p className="text-sm font-body font-black text-gray-700 mt-1 uppercase tracking-wide">{item.priceSnapshot} {ui.egp}</p>

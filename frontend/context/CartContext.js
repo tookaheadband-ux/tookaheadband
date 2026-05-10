@@ -38,6 +38,13 @@ export function CartProvider({ children }) {
     const size = variant.size || '';
     const cartItemId = buildCartItemId(product._id, color, size);
 
+    // Snapshot the Arabic translations so the cart still shows the right label
+    // even if the admin later edits the product.
+    const colorT = product.colorTranslations || {};
+    const sizeT = product.sizeTranslations || {};
+    const colorAr = (typeof colorT.get === 'function' ? colorT.get(color) : colorT[color]) || '';
+    const sizeAr = (typeof sizeT.get === 'function' ? sizeT.get(size) : sizeT[size]) || '';
+
     setItems((prev) => {
       const existing = prev.find((i) => i.cartItemId === cartItemId);
       if (existing) {
@@ -56,6 +63,8 @@ export function CartProvider({ children }) {
           imageSnapshot: product.images?.[0] || '',
           color,
           size,
+          colorAr,
+          sizeAr,
         },
       ];
     });
